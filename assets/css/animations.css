@@ -1,0 +1,740 @@
+/* Анимации для карточек */
+@keyframes cardHover {
+    0% {
+        transform: translateY(0);
+        box-shadow: 0 5px 20px var(--shadow-color);
+    }
+    50% {
+        transform: translateY(-10px);
+        box-shadow: 0 8px 30px var(--shadow-color);
+    }
+    100% {
+        transform: translateY(0);
+        box-shadow: 0 5px 20px var(--shadow-color);
+    }
+}
+
+.expertise-card:hover, .project-card:hover, .contact-item:hover {
+    animation: cardHover 1s ease infinite;
+}
+
+/* Базовые анимации */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Применение анимаций */
+.animate-fade-in {
+    animation: fadeIn 0.5s ease forwards;
+}
+
+.animate-slide-up {
+    animation: slideUp 0.6s ease forwards;
+}
+
+/* Анимация появления */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideInLeft {
+    from {
+        opacity: 0;
+        transform: translateX(-30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes slideInRight {
+    from {
+        opacity: 0;
+        transform: translateX(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* Анимация для временной шкалы */
+.timeline-item {
+    opacity: 0;
+    animation: slideUp 0.6s ease forwards;
+    animation-delay: calc(var(--animation-order) * 0.2s);
+}
+
+/* Анимация для навигации */
+.nav-link {
+    position: relative;
+}
+
+.nav-link::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background: var(--gradient-1);
+    transition: width 0.3s ease;
+}
+
+.nav-link:hover::after {
+    width: 100%;
+}
+
+/* Анимация для кнопок */
+.btn {
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255, 255, 255, 0.2),
+        transparent
+    );
+    transition: 0.5s;
+}
+
+.btn:hover::before {
+    left: 100%;
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 16px var(--shadow-color);
+}
+
+/* Анимация для иконок */
+.contact-item i {
+    transition: all 0.3s ease;
+}
+
+.contact-item:hover i {
+    transform: scale(1.2);
+}
+
+/* Анимация для заголовков */
+.main-title {
+    animation: slideUp 0.8s ease forwards;
+}
+
+.hook-text {
+    animation: slideUp 0.8s ease forwards;
+    animation-delay: 0.2s;
+}
+
+/* Анимация для профиля */
+.profile-image {
+    animation: fadeIn 1s ease forwards;
+    animation-delay: 0.5s;
+    position: relative;
+}
+
+.profile-image::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border: 2px solid var(--primary-color);
+    border-radius: 15px;
+    animation: borderPulse 2s ease infinite;
+}
+
+@keyframes borderPulse {
+    0% {
+        box-shadow: 0 0 0 0 var(--shadow-color);
+    }
+    70% {
+        box-shadow: 0 0 20px 10px var(--shadow-color);
+    }
+    100% {
+        box-shadow: 0 0 0 0 var(--shadow-color);
+    }
+}
+
+/* Анимация пульсации */
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 var(--shadow-color);
+    }
+    50% {
+        transform: scale(1.05);
+        box-shadow: 0 0 20px 10px var(--shadow-color);
+    }
+    100% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 var(--shadow-color);
+    }
+}
+
+.pulse {
+    animation: pulse 2s ease infinite;
+}
+
+/* Анимация градиента */
+@keyframes gradientShift {
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+.gradient-animate {
+    background: var(--gradient-1);
+    background-size: 200% 200%;
+    animation: gradientShift 5s ease infinite;
+}
+
+/* Анимация прогресса */
+@keyframes progressFill {
+    from {
+        width: 0;
+    }
+    to {
+        width: 100%;
+    }
+}
+
+.progress-bar {
+    animation: progressFill 1s ease forwards;
+}
+
+/* Анимация иконок */
+@keyframes iconFloat {
+    0% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-5px);
+    }
+    100% {
+        transform: translateY(0);
+    }
+}
+
+.card-icon {
+    animation: iconFloat 3s ease infinite;
+}
+
+/* Анимация навигации */
+@keyframes navLinkHover {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.1);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+.nav-link:hover {
+    animation: navLinkHover 0.3s ease;
+}
+
+/* Анимация заголовка */
+@keyframes titleGlow {
+    0% {
+        text-shadow: 0 0 10px rgba(0,255,255,0.5);
+    }
+    50% {
+        text-shadow: 0 0 20px rgba(0,255,255,0.8);
+    }
+    100% {
+        text-shadow: 0 0 10px rgba(0,255,255,0.5);
+    }
+}
+
+.main-title {
+    animation: titleGlow 2s ease infinite;
+}
+
+/* Анимация кнопок */
+@keyframes buttonPulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(0,159,253,0.4);
+    }
+    70% {
+        box-shadow: 0 0 0 10px rgba(0,159,253,0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(0,159,253,0);
+    }
+}
+
+.btn-primary {
+    animation: buttonPulse 2s infinite;
+}
+
+/* Анимация загрузки */
+@keyframes loadingSpin {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+.loading {
+    animation: loadingSpin 1s linear infinite;
+}
+
+/* Анимация появления секций */
+@keyframes sectionReveal {
+    from {
+        opacity: 0;
+        transform: translateY(50px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.section-reveal {
+    animation: sectionReveal 0.8s ease forwards;
+}
+
+/* Анимация карточек при появлении */
+.promise-card {
+    opacity: 0;
+    animation: fadeInUp 0.5s ease forwards;
+}
+
+.promise-card:nth-child(1) { animation-delay: 0.1s; }
+.promise-card:nth-child(2) { animation-delay: 0.2s; }
+.promise-card:nth-child(3) { animation-delay: 0.3s; }
+.promise-card:nth-child(4) { animation-delay: 0.4s; }
+.promise-card:nth-child(5) { animation-delay: 0.5s; }
+.promise-card:nth-child(6) { animation-delay: 0.6s; }
+.promise-card:nth-child(7) { animation-delay: 0.7s; }
+.promise-card:nth-child(8) { animation-delay: 0.8s; }
+
+/* Анимации для карточек */
+.expertise-card, .project-card, .contact-item {
+    opacity: 0;
+    animation: slideUp 0.6s ease forwards;
+    animation-delay: calc(var(--animation-order) * 0.1s);
+}
+
+.expertise-card:hover, .project-card:hover, .contact-item:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 24px var(--shadow-color);
+}
+
+/* Анимация для временной шкалы */
+.timeline-item {
+    opacity: 0;
+    animation: slideUp 0.6s ease forwards;
+    animation-delay: calc(var(--animation-order) * 0.2s);
+}
+
+/* Анимация для навигации */
+.nav-link {
+    position: relative;
+}
+
+.nav-link::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background: var(--gradient-1);
+    transition: width 0.3s ease;
+}
+
+.nav-link:hover::after {
+    width: 100%;
+}
+
+/* Анимация для кнопок */
+.btn {
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255, 255, 255, 0.2),
+        transparent
+    );
+    transition: 0.5s;
+}
+
+.btn:hover::before {
+    left: 100%;
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 16px var(--shadow-color);
+}
+
+/* Анимация для иконок */
+.contact-item i {
+    transition: all 0.3s ease;
+}
+
+.contact-item:hover i {
+    transform: scale(1.2);
+}
+
+/* Анимация для заголовков */
+.main-title {
+    animation: slideUp 0.8s ease forwards;
+}
+
+.main-title::after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 2px;
+    background: var(--primary-color);
+    box-shadow: 0 0 10px var(--primary-color);
+    animation: widthGrow 1s ease forwards 1s;
+}
+
+@keyframes widthGrow {
+    to {
+        width: 100px;
+    }
+}
+
+/* Анимация для профиля */
+.profile-image {
+    animation: fadeIn 1s ease forwards;
+    animation-delay: 0.5s;
+    position: relative;
+}
+
+.profile-image::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border: 2px solid var(--primary-color);
+    border-radius: 15px;
+    animation: borderPulse 2s ease infinite;
+}
+
+@keyframes borderPulse {
+    0% {
+        box-shadow: 0 0 0 0 var(--shadow-color);
+    }
+    70% {
+        box-shadow: 0 0 20px 10px var(--shadow-color);
+    }
+    100% {
+        box-shadow: 0 0 0 0 var(--shadow-color);
+    }
+}
+
+/* Глюк 1: Мерцающий текст */
+@keyframes glitch-text {
+    0% { text-shadow: 2px 2px var(--primary-color); }
+    25% { text-shadow: -2px -2px var(--primary-color); }
+    50% { text-shadow: 2px -2px var(--primary-color); }
+    75% { text-shadow: -2px 2px var(--primary-color); }
+    100% { text-shadow: 2px 2px var(--primary-color); }
+}
+
+/* Глюк 2: Сканирующая линия */
+@keyframes scan-line {
+    0% { transform: translateY(-100%); }
+    100% { transform: translateY(100%); }
+}
+
+/* Глюк 3: Искажение формы */
+@keyframes distort {
+    0% { transform: skew(0deg); }
+    25% { transform: skew(2deg); }
+    50% { transform: skew(0deg); }
+    75% { transform: skew(-2deg); }
+    100% { transform: skew(0deg); }
+}
+
+/* Глюк 4: Цифровой шум */
+@keyframes noise {
+    0% { background-position: 0 0; }
+    100% { background-position: 100% 100%; }
+}
+
+/* Глюк 5: Пульсация */
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+/* Глюк 6: RGB развод */
+@keyframes rgb-split {
+    0% { filter: hue-rotate(0deg); }
+    33% { filter: hue-rotate(120deg); }
+    66% { filter: hue-rotate(240deg); }
+    100% { filter: hue-rotate(360deg); }
+}
+
+/* Глюк 7: Моргание */
+@keyframes blink {
+    0% { opacity: 1; }
+    50% { opacity: 0.3; }
+    100% { opacity: 1; }
+}
+
+/* Глюк 8: Дрожание */
+@keyframes shake {
+    0% { transform: translate(0, 0); }
+    25% { transform: translate(-2px, 2px); }
+    50% { transform: translate(2px, -2px); }
+    75% { transform: translate(-2px, -2px); }
+    100% { transform: translate(0, 0); }
+}
+
+/* Применение глюков к элементам */
+.main-title {
+    animation: glitch-text 2s infinite;
+}
+
+.hero::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: var(--primary-color);
+    animation: scan-line 3s linear infinite;
+}
+
+.expertise-card {
+    animation: distort 4s infinite;
+}
+
+.project-card {
+    animation: pulse 3s infinite;
+}
+
+.timeline-content {
+    animation: shake 5s infinite;
+}
+
+.contact-item {
+    animation: blink 4s infinite;
+}
+
+footer {
+    animation: rgb-split 8s infinite;
+}
+
+.navbar {
+    animation: noise 10s infinite;
+}
+
+/* Эффект глюка текста */
+@keyframes glitchText {
+    0% {
+        text-shadow: 2px 2px 10px rgba(0, 255, 0, 0.8);
+    }
+    25% {
+        text-shadow: -2px -2px 10px rgba(0, 255, 0, 0.8);
+    }
+    50% {
+        text-shadow: 2px -2px 10px rgba(0, 255, 0, 0.8);
+    }
+    75% {
+        text-shadow: -2px 2px 10px rgba(0, 255, 0, 0.8);
+    }
+    100% {
+        text-shadow: 2px 2px 10px rgba(0, 255, 0, 0.8);
+    }
+}
+
+/* Эффект глюка при переключении */
+.glitch-effect {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(45deg, 
+        transparent 0%,
+        rgba(0, 255, 0, 0.1) 25%,
+        transparent 50%,
+        rgba(0, 255, 0, 0.1) 75%,
+        transparent 100%
+    );
+    animation: glitchEffect 1s ease-in-out;
+    pointer-events: none;
+    z-index: 1000;
+}
+
+@keyframes glitchEffect {
+    0% {
+        opacity: 0;
+        transform: translateX(-100%);
+    }
+    50% {
+        opacity: 0.5;
+        transform: translateX(0);
+    }
+    100% {
+        opacity: 0;
+        transform: translateX(100%);
+    }
+}
+
+/* Эффект пульсации для активных элементов */
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 10px rgba(0, 255, 0, 0.3);
+    }
+    50% {
+        box-shadow: 0 0 20px rgba(0, 255, 0, 0.5);
+    }
+    100% {
+        box-shadow: 0 0 10px rgba(0, 255, 0, 0.3);
+    }
+}
+
+/* Эффект мерцания для неоновых элементов */
+@keyframes neonFlicker {
+    0% {
+        opacity: 1;
+    }
+    5% {
+        opacity: 0.8;
+    }
+    10% {
+        opacity: 1;
+    }
+    15% {
+        opacity: 0.8;
+    }
+    20% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
+/* Применяем анимации к элементам */
+.navbar-brand {
+    animation: neonFlicker 4s infinite;
+}
+
+.nav-link.active {
+    animation: pulse 2s infinite;
+}
+
+.glitch-preview:hover {
+    animation: pulse 1s infinite;
+}
+
+/* Эффект размытия при переключении */
+.glitch-section {
+    backdrop-filter: blur(10px);
+    transition: backdrop-filter 0.5s ease;
+}
+
+.glitch-section.active {
+    backdrop-filter: blur(0);
+}
+
+/* Эффект волны при наведении */
+.glitch-preview::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: radial-gradient(circle at center, 
+        rgba(0, 255, 0, 0.1) 0%,
+        transparent 70%
+    );
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.glitch-preview:hover::after {
+    opacity: 1;
+    animation: wave 1s ease-out;
+}
+
+@keyframes wave {
+    0% {
+        transform: scale(0.8);
+        opacity: 0;
+    }
+    50% {
+        opacity: 0.5;
+    }
+    100% {
+        transform: scale(1.2);
+        opacity: 0;
+    }
+} 

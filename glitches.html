@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Квантовые Парадоксы</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        :root {
+            --neon-green: #00ff00;
+            --neon-blue: #00ffff;
+            --neon-pink: #ff00ff;
+            --bg-dark: #000000;
+            --text-light: #ffffff;
+        }
+
+        body {
+            font-family: 'Orbitron', sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-light);
+            overflow-x: hidden;
+            margin: 0;
+            padding: 0;
+        }
+
+        .glitch-container {
+            min-height: 100vh;
+            padding: 80px 20px 20px;
+        }
+
+        .glitch-card {
+            background: rgba(0, 0, 0, 0.8);
+            border: 2px solid var(--neon-green);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+        }
+
+        .glitch-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(
+                90deg,
+                transparent,
+                rgba(0, 255, 0, 0.2),
+                transparent
+            );
+            transition: 0.5s;
+        }
+
+        .glitch-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 0 20px var(--neon-green);
+        }
+
+        .glitch-card:hover::before {
+            left: 100%;
+        }
+
+        .glitch-title {
+            color: var(--neon-green);
+            font-size: 2rem;
+            margin-bottom: 15px;
+            text-shadow: 0 0 10px var(--neon-green);
+        }
+
+        .glitch-icon {
+            font-size: 3rem;
+            color: var(--neon-green);
+            margin-bottom: 15px;
+            text-shadow: 0 0 10px var(--neon-green);
+        }
+
+        .glitch-description {
+            color: var(--text-light);
+            font-size: 1.1rem;
+            line-height: 1.6;
+        }
+
+        .glitch-details {
+            display: none;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid var(--neon-green);
+        }
+
+        .glitch-card.active .glitch-details {
+            display: block;
+        }
+
+        .glitch-card.active {
+            transform: scale(1.02);
+        }
+
+        .navbar {
+            background: rgba(0, 0, 0, 0.9) !important;
+            border-bottom: 2px solid var(--neon-green);
+            box-shadow: 0 0 20px var(--neon-green);
+        }
+
+        .navbar-brand {
+            color: var(--neon-green) !important;
+            font-size: 1.8rem;
+            text-shadow: 0 0 10px var(--neon-green);
+        }
+
+        .nav-link {
+            color: var(--text-light) !important;
+            transition: all 0.3s ease;
+        }
+
+        .nav-link:hover {
+            color: var(--neon-green) !important;
+            text-shadow: 0 0 10px var(--neon-green);
+        }
+
+        .main-title {
+            font-size: 4rem;
+            color: var(--neon-green);
+            text-align: center;
+            margin-bottom: 2rem;
+            text-shadow: 0 0 20px var(--neon-green);
+            animation: glitch 2s infinite;
+        }
+
+        @keyframes glitch {
+            0% { text-shadow: 2px 2px var(--neon-green); }
+            25% { text-shadow: -2px -2px var(--neon-pink); }
+            50% { text-shadow: 2px -2px var(--neon-blue); }
+            75% { text-shadow: -2px 2px var(--neon-green); }
+            100% { text-shadow: 2px 2px var(--neon-green); }
+        }
+
+        .demo-canvas {
+            width: 100%;
+            height: 400px;
+            background: rgba(0, 0, 0, 0.5);
+            border: 2px solid var(--neon-green);
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+
+        .code-block {
+            background: rgba(0, 0, 0, 0.8);
+            border: 1px solid var(--neon-green);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            font-family: monospace;
+            color: var(--neon-green);
+        }
+
+        .paradox-list {
+            list-style: none;
+            padding: 0;
+            margin: 20px 0;
+        }
+
+        .paradox-list li {
+            margin: 10px 0;
+            padding: 10px;
+            background: rgba(0, 255, 0, 0.1);
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .paradox-list li:hover {
+            background: rgba(0, 255, 0, 0.2);
+            transform: translateX(10px);
+        }
+
+        .paradox-list li::before {
+            content: '→';
+            color: var(--neon-green);
+            margin-right: 10px;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="index.html">8 Парадоксов</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html">Главная</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="glitches.html">Парадоксы</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="projects.html">Проекты</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="about.html">О нас</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container glitch-container">
+        <h1 class="main-title">Квантовые Парадоксы</h1>
+        
+        <div class="row">
+            <div class="col-md-4">
+                <div class="glitch-card" id="tunnel">
+                    <i class="fas fa-atom glitch-icon"></i>
+                    <h2 class="glitch-title">Парадокс Туннелирования</h2>
+                    <p class="glitch-description">
+                        Частица может пройти сквозь барьер, который по классической физике непреодолим.
+                        Как будто мяч проходит сквозь стену!
+                    </p>
+                    <div class="glitch-details">
+                        <h3>Что происходит?</h3>
+                        <ul class="paradox-list">
+                            <li>Частица приближается к барьеру</li>
+                            <li>Волновая функция проникает в барьер</li>
+                            <li>Есть вероятность найти частицу по другую сторону</li>
+                            <li>Энергия частицы не меняется</li>
+                        </ul>
+                        <canvas class="demo-canvas" id="tunnelCanvas"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="glitch-card" id="nonlocality">
+                    <i class="fas fa-project-diagram glitch-icon"></i>
+                    <h2 class="glitch-title">Парадокс ЭПР</h2>
+                    <p class="glitch-description">
+                        Две частицы могут быть связаны так, что измерение одной мгновенно влияет на другую,
+                        даже если они находятся на разных концах Вселенной!
+                    </p>
+                    <div class="glitch-details">
+                        <h3>Как это работает?</h3>
+                        <ul class="paradox-list">
+                            <li>Частицы создаются в запутанном состоянии</li>
+                            <li>Разлетаются в разные стороны</li>
+                            <li>Измерение одной определяет состояние другой</li>
+                            <li>Связь мгновенная, быстрее света!</li>
+                        </ul>
+                        <canvas class="demo-canvas" id="nonlocalityCanvas"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="glitch-card" id="observer">
+                    <i class="fas fa-eye glitch-icon"></i>
+                    <h2 class="glitch-title">Парадокс Наблюдателя</h2>
+                    <p class="glitch-description">
+                        Простое наблюдение за частицей меняет её поведение.
+                        Как будто Луна существует только когда мы на неё смотрим!
+                    </p>
+                    <div class="glitch-details">
+                        <h3>В чём парадокс?</h3>
+                        <ul class="paradox-list">
+                            <li>До измерения - волновая функция</li>
+                            <li>При измерении - коллапс в частицу</li>
+                            <li>Наблюдение влияет на реальность</li>
+                            <li>Сознание влияет на материю?</li>
+                        </ul>
+                        <canvas class="demo-canvas" id="observerCanvas"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="assets/js/glitches.js"></script>
+    <script>
+        // Обработка кликов по карточкам
+        document.querySelectorAll('.glitch-card').forEach(card => {
+            card.addEventListener('click', () => {
+                card.classList.toggle('active');
+            });
+        });
+    </script>
+</body>
+</html> 

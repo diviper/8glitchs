@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Квантовые Глюки Реальности - [НАЗВАНИЕ ГЛИТЧА]</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .glitch-page {
+            background: linear-gradient(135deg, var(--dark-bg) 0%, var(--light-bg) 100%);
+            min-height: 100vh;
+            padding: 2rem 0;
+        }
+
+        .glitch-content {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .glitch-title {
+            font-size: 3rem;
+            margin-bottom: 2rem;
+            position: relative;
+            display: inline-block;
+        }
+
+        .glitch-title::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: var(--accent-color);
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+
+        .glitch-title:hover::after {
+            transform: scaleX(1);
+        }
+
+        .glitch-section {
+            margin-bottom: 3rem;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+
+        .glitch-section.animate-fade-in {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .glitch-number {
+            font-size: 5rem;
+            font-weight: bold;
+            color: var(--accent-color);
+            opacity: 0.2;
+            position: absolute;
+            right: 2rem;
+            top: 2rem;
+            z-index: -1;
+        }
+
+        .interactive-element {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin: 1rem 0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .interactive-element:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .interactive-element.active {
+            background: var(--accent-color);
+            color: var(--dark-bg);
+        }
+
+        .experiment-container {
+            position: relative;
+            width: 100%;
+            height: 300px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 2rem 0;
+        }
+
+        .experiment-controls {
+            display: flex;
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+
+        .experiment-stats {
+            display: flex;
+            justify-content: space-between;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            margin-top: 1rem;
+        }
+
+        .navigation-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 2rem;
+        }
+
+        .navigation-buttons a {
+            padding: 0.5rem 1.5rem;
+            border-radius: 25px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .navigation-buttons a:hover {
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <section class="hero">
+            <h1 class="main-title">[НАЗВАНИЕ ГЛИТЧА]</h1>
+            <h2 class="subtitle">[ПОДЗАГОЛОВОК]</h2>
+            <div class="hook-text">
+                [КРАТКОЕ ОПИСАНИЕ ГЛИТЧА]
+            </div>
+        </section>
+
+        <section class="promise-section">
+            <h2 class="promise-title">Эксперимент</h2>
+            <div class="promise-grid">
+                <div class="promise-card understanding">
+                    <div class="card-icon">🔬</div>
+                    <h3 class="card-title">Интерактивная Симуляция</h3>
+                    <div id="experiment-container">
+                        [КОНТЕЙНЕР ДЛЯ ЭКСПЕРИМЕНТА]
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="bugs-preview">
+            <h2 class="bugs-title">Теория</h2>
+            <div class="promise-grid">
+                <div class="promise-card understanding">
+                    <h3 class="card-title">Научное Объяснение</h3>
+                    <p>[НАУЧНОЕ ОБЪЯСНЕНИЕ]</p>
+                </div>
+                <div class="promise-card practical">
+                    <h3 class="card-title">Исторический Контекст</h3>
+                    <p>[ИСТОРИЧЕСКИЙ КОНТЕКСТ]</p>
+                </div>
+                <div class="promise-card transformation">
+                    <h3 class="card-title">Практическое Применение</h3>
+                    <p>[ПРАКТИЧЕСКОЕ ПРИМЕНЕНИЕ]</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="revelation">
+            <div class="revelation-content">
+                <h2 class="revelation-title">Что это значит?</h2>
+                <p>[ИНТЕРПРЕТАЦИЯ И ЗНАЧЕНИЕ]</p>
+            </div>
+        </section>
+
+        <nav class="navigation">
+            <a href="index.html" class="nav-link">← Назад к списку глитчей</a>
+        </nav>
+    </div>
+
+    <script src="scripts.js"></script>
+</body>
+</html> 

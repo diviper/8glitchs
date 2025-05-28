@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Обо мне - Квантовые Парадоксы</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        :root {
+            --neon-green: #00ff00;
+            --neon-blue: #00ffff;
+            --neon-pink: #ff00ff;
+            --bg-dark: #000000;
+            --text-light: #ffffff;
+        }
+
+        body {
+            font-family: 'Orbitron', sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-light);
+            overflow-x: hidden;
+            margin: 0;
+            padding: 0;
+        }
+
+        .profile-container {
+            min-height: 100vh;
+            padding: 80px 20px 20px;
+        }
+
+        .profile-header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        .profile-avatar {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            border: 3px solid var(--neon-green);
+            box-shadow: 0 0 20px var(--neon-green);
+            margin-bottom: 20px;
+            object-fit: cover;
+        }
+
+        .profile-name {
+            font-size: 3rem;
+            color: var(--neon-green);
+            text-shadow: 0 0 10px var(--neon-green);
+            margin-bottom: 10px;
+        }
+
+        .profile-title {
+            font-size: 1.5rem;
+            color: var(--neon-blue);
+            margin-bottom: 20px;
+        }
+
+        .profile-section {
+            background: rgba(0, 0, 0, 0.8);
+            border: 2px solid var(--neon-green);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            transition: all 0.3s ease;
+        }
+
+        .profile-section:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 0 20px var(--neon-green);
+        }
+
+        .section-title {
+            color: var(--neon-green);
+            font-size: 2rem;
+            margin-bottom: 20px;
+            text-shadow: 0 0 10px var(--neon-green);
+        }
+
+        .experience-item {
+            margin-bottom: 20px;
+            padding: 15px;
+            background: rgba(0, 255, 0, 0.1);
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .experience-item:hover {
+            background: rgba(0, 255, 0, 0.2);
+            transform: translateX(10px);
+        }
+
+        .experience-title {
+            color: var(--neon-blue);
+            font-size: 1.3rem;
+            margin-bottom: 10px;
+        }
+
+        .experience-date {
+            color: var(--neon-pink);
+            font-size: 0.9rem;
+            margin-bottom: 10px;
+        }
+
+        .experience-description {
+            color: var(--text-light);
+            line-height: 1.6;
+        }
+
+        .skill-tag {
+            display: inline-block;
+            padding: 5px 15px;
+            margin: 5px;
+            background: rgba(0, 255, 0, 0.2);
+            border: 1px solid var(--neon-green);
+            border-radius: 20px;
+            color: var(--neon-green);
+            transition: all 0.3s ease;
+        }
+
+        .skill-tag:hover {
+            background: rgba(0, 255, 0, 0.3);
+            transform: scale(1.1);
+        }
+
+        .social-links {
+            margin-top: 20px;
+        }
+
+        .social-link {
+            display: inline-block;
+            width: 50px;
+            height: 50px;
+            line-height: 50px;
+            text-align: center;
+            background: rgba(0, 255, 0, 0.1);
+            border: 2px solid var(--neon-green);
+            border-radius: 50%;
+            color: var(--neon-green);
+            margin: 0 10px;
+            transition: all 0.3s ease;
+        }
+
+        .social-link:hover {
+            background: rgba(0, 255, 0, 0.2);
+            transform: translateY(-5px);
+            color: var(--neon-green);
+        }
+
+        .navbar {
+            background: rgba(0, 0, 0, 0.9) !important;
+            border-bottom: 2px solid var(--neon-green);
+            box-shadow: 0 0 20px var(--neon-green);
+        }
+
+        .navbar-brand {
+            color: var(--neon-green) !important;
+            font-size: 1.8rem;
+            text-shadow: 0 0 10px var(--neon-green);
+        }
+
+        .nav-link {
+            color: var(--text-light) !important;
+            transition: all 0.3s ease;
+        }
+
+        .nav-link:hover {
+            color: var(--neon-green) !important;
+            text-shadow: 0 0 10px var(--neon-green);
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="index.html">8 Парадоксов</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html">Главная</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="glitches.html">Парадоксы</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="projects.html">Проекты</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="about.html">О нас</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container profile-container">
+        <div class="profile-header">
+            <img src="assets/images/avatar.jpg" alt="Фото профиля" class="profile-avatar">
+            <h1 class="profile-name">Ваше Имя</h1>
+            <p class="profile-title">Квантовый Исследователь</p>
+            <div class="social-links">
+                <a href="#" class="social-link"><i class="fab fa-github"></i></a>
+                <a href="#" class="social-link"><i class="fab fa-linkedin"></i></a>
+                <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6">
+                <div class="profile-section">
+                    <h2 class="section-title">Опыт работы</h2>
+                    <div class="experience-item">
+                        <h3 class="experience-title">Квантовый Исследователь</h3>
+                        <p class="experience-date">2020 - Настоящее время</p>
+                        <p class="experience-description">
+                            Исследование квантовых парадоксов и их визуализация.
+                            Разработка интерактивных демонстраций квантовых эффектов.
+                        </p>
+                    </div>
+                    <div class="experience-item">
+                        <h3 class="experience-title">Физик-теоретик</h3>
+                        <p class="experience-date">2018 - 2020</p>
+                        <p class="experience-description">
+                            Исследование квантовой механики и её парадоксов.
+                            Публикация научных статей и проведение лекций.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="profile-section">
+                    <h2 class="section-title">Навыки</h2>
+                    <div class="skill-tag">Квантовая механика</div>
+                    <div class="skill-tag">WebGL</div>
+                    <div class="skill-tag">JavaScript</div>
+                    <div class="skill-tag">Python</div>
+                    <div class="skill-tag">Three.js</div>
+                    <div class="skill-tag">HTML/CSS</div>
+                    <div class="skill-tag">Визуализация данных</div>
+                    <div class="skill-tag">Научная коммуникация</div>
+                </div>
+
+                <div class="profile-section">
+                    <h2 class="section-title">Образование</h2>
+                    <div class="experience-item">
+                        <h3 class="experience-title">Магистр физики</h3>
+                        <p class="experience-date">2016 - 2018</p>
+                        <p class="experience-description">
+                            Специализация в квантовой механике и квантовой информатике.
+                        </p>
+                    </div>
+                    <div class="experience-item">
+                        <h3 class="experience-title">Бакалавр физики</h3>
+                        <p class="experience-date">2012 - 2016</p>
+                        <p class="experience-description">
+                            Изучение теоретической физики и математики.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html> 

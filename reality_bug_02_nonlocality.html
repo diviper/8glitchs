@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Глитчи Юниверси - Квантовая Нелокальность</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="styles.css" rel="stylesheet">
+    <style>
+        /* Специфичные стили для страниц глитчей */
+        .glitch-page {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--dark-bg) 100%);
+            color: white;
+            min-height: 100vh;
+        }
+
+        .glitch-content {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            padding: 30px;
+            margin: 20px 0;
+            backdrop-filter: blur(10px);
+        }
+
+        .glitch-title {
+            font-size: 2.5em;
+            text-align: center;
+            margin-bottom: 30px;
+            background: linear-gradient(45deg, var(--secondary-color), var(--accent-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .glitch-number {
+            font-size: 4em;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 20px;
+            color: var(--accent-color);
+        }
+
+        .glitch-section {
+            margin-bottom: 40px;
+        }
+
+        .glitch-section-title {
+            color: var(--secondary-color);
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+
+        .glitch-text {
+            font-size: 1.1em;
+            line-height: 1.8;
+        }
+
+        .glitch-image {
+            width: 100%;
+            border-radius: 15px;
+            margin: 20px 0;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .glitch-quote {
+            border-left: 4px solid var(--accent-color);
+            padding-left: 20px;
+            margin: 20px 0;
+            font-style: italic;
+        }
+
+        .glitch-navigation {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .glitch-navigation a {
+            color: var(--secondary-color);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .glitch-navigation a:hover {
+            color: var(--accent-color);
+        }
+
+        .timeline-item {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-left: 4px solid var(--secondary-color);
+        }
+
+        .timeline-year {
+            color: var(--accent-color);
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body class="glitch-page">
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container">
+            <a class="navbar-brand glitch-text" data-text="Глитчи Юниверси" href="index.html">Глитчи Юниверси</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html#glitches">Глитчи</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html#visualizations">Визуализации</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html#about">О проекте</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container py-5">
+        <div class="glitch-content animate-fade-in">
+            <div class="glitch-number">#02</div>
+            <h1 class="glitch-title">Нелокальность</h1>
+            
+            <div class="glitch-section">
+                <h2 class="glitch-section-title">Введение</h2>
+                <p class="glitch-text">
+                    Представьте две частицы, разлетевшиеся на огромное расстояние. Когда вы измеряете состояние одной из них, 
+                    вторая мгновенно "узнает" об этом и меняет своё состояние. Это явление, известное как квантовая запутанность, 
+                    нарушает все наши представления о пространстве и времени.
+                </p>
+            </div>
+
+            <div class="glitch-section">
+                <h2 class="glitch-section-title">Парадокс ЭПР</h2>
+                <div class="timeline-item">
+                    <div class="timeline-year">1935</div>
+                    <p class="glitch-text">
+                        Эйнштейн, Подольский и Розен публикуют работу, в которой указывают на "жуткое дальнодействие" 
+                        в квантовой механике, считая это доказательством неполноты теории.
+                    </p>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-year">1964</div>
+                    <p class="glitch-text">
+                        Джон Белл формулирует свои неравенства, которые позволяют экспериментально проверить, 
+                        существует ли "скрытая переменная" или частицы действительно мгновенно влияют друг на друга.
+                    </p>
+                </div>
+            </div>
+
+            <div class="glitch-section">
+                <h2 class="glitch-section-title">Эксперименты Алена Аспекта</h2>
+                <p class="glitch-text">
+                    В 1980-х годах Ален Аспект провел серию экспериментов, которые подтвердили нарушение неравенств Белла. 
+                    Это означало, что квантовая механика верна, а частицы действительно могут мгновенно влиять друг на друга, 
+                    независимо от расстояния.
+                </p>
+                <div class="glitch-quote">
+                    "Если квантовая механика не потрясла вас, значит, вы её не поняли" - Нильс Бор
+                </div>
+            </div>
+
+            <div class="glitch-navigation">
+                <a href="reality_bug_01_observer_problem.html" class="btn btn-outline-light">← Предыдущий глитч</a>
+                <a href="index.html" class="btn btn-outline-light">На главную</a>
+                <a href="reality_bug_03_quantum_tunneling.html" class="btn btn-outline-light">Следующий глитч →</a>
+            </div>
+        </div>
+    </div>
+
+    <footer class="bg-dark text-white py-4 mt-5">
+        <div class="container text-center">
+            <p>&copy; 2024 Глитчи Юниверси. Все права защищены.</p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

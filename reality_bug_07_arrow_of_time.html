@@ -1,0 +1,1191 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>БАГ #7: Стрела Времени</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0c0c0c 0%, #1a1a2e 50%, #16213e 100%);
+            color: #ffffff;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .series-header {
+            text-align: center;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: rgba(139, 0, 255, 0.1);
+            border: 2px solid #8b00ff;
+            border-radius: 15px;
+        }
+        
+        .series-title {
+            font-size: 1.2em;
+            color: #8b00ff;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            margin-top: 10px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            width: 87.5%;
+            height: 100%;
+            background: linear-gradient(90deg, #8b00ff, #ff1493);
+            animation: progressPulse 2s ease-in-out infinite alternate;
+        }
+        
+        @keyframes progressPulse {
+            from { opacity: 0.7; }
+            to { opacity: 1; }
+        }
+        
+        .bug-number {
+            font-size: 4em;
+            font-weight: bold;
+            background: linear-gradient(45deg, #ff6b6b, #ffe66d);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-align: center;
+            margin-bottom: 20px;
+            animation: timeGlitch 8s ease-in-out infinite;
+        }
+        
+        @keyframes timeGlitch {
+            0%, 70%, 100% { transform: translate(0); filter: hue-rotate(0deg); }
+            5% { transform: translate(-2px, 1px); filter: hue-rotate(60deg); }
+            10% { transform: translate(1px, -2px); filter: hue-rotate(120deg); }
+            15% { transform: translate(-1px, -1px); filter: hue-rotate(180deg); }
+            20% { transform: translate(2px, 2px); filter: hue-rotate(240deg); }
+            25% { transform: translate(-2px, 1px); filter: hue-rotate(300deg); }
+            30% { transform: translate(1px, -1px); filter: hue-rotate(360deg); }
+        }
+        
+        .main-title {
+            font-size: 2.5em;
+            text-align: center;
+            margin-bottom: 30px;
+            background: linear-gradient(45deg, #ff6b6b, #ffe66d);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .hook {
+            font-size: 1.4em;
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border-left: 4px solid #ff6b6b;
+            border-radius: 10px;
+            font-style: italic;
+        }
+        
+        .time-paradox {
+            background: rgba(255, 230, 109, 0.1);
+            border: 2px solid #ffe66d;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        
+        .paradox-title {
+            font-size: 1.6em;
+            color: #ffe66d;
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+        
+        .scientist-story {
+            background: rgba(255, 107, 107, 0.1);
+            border: 2px solid #ff6b6b;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+            position: relative;
+        }
+        
+        .scientist-avatar {
+            position: absolute;
+            top: -20px;
+            left: 20px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: #ff6b6b;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5em;
+            border: 3px solid #fff;
+        }
+        
+        .scientist-name {
+            font-size: 1.4em;
+            color: #ff6b6b;
+            margin-bottom: 10px;
+            margin-left: 70px;
+            font-weight: bold;
+        }
+        
+        .diary-entry {
+            background: rgba(255, 255, 255, 0.05);
+            border-left: 4px solid #ff6b6b;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 5px;
+            font-style: italic;
+            position: relative;
+        }
+        
+        .diary-date {
+            position: absolute;
+            top: -10px;
+            right: 10px;
+            background: #ff6b6b;
+            padding: 5px 10px;
+            border-radius: 10px;
+            font-size: 0.8em;
+            font-weight: bold;
+        }
+        
+        .secret-note {
+            background: rgba(255, 230, 109, 0.1);
+            border: 2px dashed #ffe66d;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 15px 0;
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+        
+        .time-timeline {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .timeline-title {
+            font-size: 1.8em;
+            color: #ffe66d;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+        
+        .timeline-item {
+            display: flex;
+            margin-bottom: 25px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 10px;
+            border-left: 4px solid;
+            position: relative;
+        }
+        
+        .timeline-item.boltzmann { border-left-color: #ff6b6b; }
+        .timeline-item.einstein { border-left-color: #ffe66d; }
+        .timeline-item.hawking { border-left-color: #4ecdc4; }
+        .timeline-item.rovelli { border-left-color: #8b00ff; }
+        
+        .timeline-year {
+            font-size: 1.3em;
+            font-weight: bold;
+            margin-right: 20px;
+            min-width: 80px;
+            color: #ffe66d;
+        }
+        
+        .timeline-content h4 {
+            color: #ff6b6b;
+            margin-bottom: 8px;
+            font-size: 1.2em;
+        }
+        
+        .experiment-section {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 40px;
+            border: 2px solid #ffe66d;
+        }
+        
+        .section-title {
+            font-size: 1.8em;
+            margin-bottom: 20px;
+            color: #ffe66d;
+            text-align: center;
+        }
+        
+        .tabs {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .tab {
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: white;
+        }
+        
+        .tab.active {
+            background: linear-gradient(45deg, #ff6b6b, #ffe66d);
+            color: #000;
+        }
+        
+        .experiment-container {
+            display: none;
+            margin-bottom: 20px;
+        }
+        
+        .experiment-container.active {
+            display: block;
+        }
+        
+        /* ЭКСПЕРИМЕНТ 1: СИМУЛЯТОР ЭНТРОПИИ */
+        .entropy-simulator {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            height: 500px;
+            margin: 0 auto;
+            background: linear-gradient(135deg, rgba(255, 107, 107, 0.1), rgba(255, 230, 109, 0.1));
+            border: 2px solid #ff6b6b;
+            border-radius: 15px;
+            overflow: hidden;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+        }
+        
+        .box-side {
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+        }
+        
+        .box-left {
+            border-right: 2px solid #ff6b6b;
+            background: rgba(255, 107, 107, 0.1);
+        }
+        
+        .box-right {
+            background: rgba(255, 230, 109, 0.1);
+        }
+        
+        .box-title {
+            font-size: 1.2em;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: #ffe66d;
+        }
+        
+        .particle {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background: radial-gradient(circle, #ffff00, #ff8800);
+            border-radius: 50%;
+            transition: all 2s ease;
+        }
+        
+        .entropy-meter {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid #ffe66d;
+        }
+        
+        .entropy-value {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #ffe66d;
+        }
+        
+        /* ЭКСПЕРИМЕНТ 2: МАШИНА ВРЕМЕНИ */
+        .time-machine {
+            position: relative;
+            width: 100%;
+            max-width: 700px;
+            height: 450px;
+            margin: 0 auto;
+            background: radial-gradient(circle, rgba(139, 0, 255, 0.2), rgba(0, 0, 0, 0.9));
+            border: 2px solid #8b00ff;
+            border-radius: 15px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .time-portal {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            background: radial-gradient(circle, #8b00ff, #ff1493, transparent);
+            animation: portalSpin 3s linear infinite;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 30px;
+        }
+        
+        @keyframes portalSpin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        
+        .time-controls {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .time-display {
+            font-size: 2em;
+            font-weight: bold;
+            color: #8b00ff;
+            text-align: center;
+        }
+        
+        .paradox-warning {
+            background: rgba(255, 0, 0, 0.1);
+            border: 2px solid #ff0000;
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 20px;
+            text-align: center;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+        
+        .paradox-warning.visible {
+            opacity: 1;
+        }
+        
+        /* ЭКСПЕРИМЕНТ 3: ВРЕМЕННЫЕ ПАРАДОКСЫ */
+        .paradox-explorer {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            height: 400px;
+            margin: 0 auto;
+            background: linear-gradient(45deg, rgba(255, 230, 109, 0.1), rgba(139, 0, 255, 0.1));
+            border: 2px solid #ffe66d;
+            border-radius: 15px;
+            overflow: hidden;
+            padding: 20px;
+        }
+        
+        .paradox-scenario {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .paradox-question {
+            font-size: 1.3em;
+            margin-bottom: 20px;
+            color: #ffe66d;
+        }
+        
+        .paradox-options {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+        
+        .paradox-option {
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid #8b00ff;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .paradox-option:hover {
+            background: rgba(139, 0, 255, 0.3);
+            transform: translateY(-3px);
+        }
+        
+        .paradox-explanation {
+            text-align: center;
+            font-size: 1.1em;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .paradox-explanation.visible {
+            opacity: 1;
+        }
+        
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 30px;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            padding: 15px 30px;
+            font-size: 1.1em;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(45deg, #ff6b6b, #ffe66d);
+            color: #000;
+        }
+        
+        .btn-secondary {
+            background: linear-gradient(45deg, #8b00ff, #ff1493);
+            color: white;
+        }
+        
+        .btn-danger {
+            background: linear-gradient(45deg, #ff0000, #cc0000);
+            color: white;
+        }
+        
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        .status {
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            text-align: center;
+            font-size: 1.1em;
+            font-weight: bold;
+            min-height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .explanation {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .explanation h3 {
+            color: #ffe66d;
+            margin-bottom: 15px;
+            font-size: 1.4em;
+        }
+        
+        .time-theories {
+            background: rgba(139, 0, 255, 0.1);
+            border: 2px solid #8b00ff;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+        }
+        
+        .theories-title {
+            color: #8b00ff;
+            font-size: 1.4em;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .theory-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+        
+        .theory-card {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 4px solid;
+        }
+        
+        .theory-card.linear { border-left-color: #ff6b6b; }
+        .theory-card.block { border-left-color: #ffe66d; }
+        .theory-card.cyclic { border-left-color: #4ecdc4; }
+        .theory-card.illusion { border-left-color: #8b00ff; }
+        
+        .theory-card h4 {
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
+        
+        .theory-connection {
+            background: rgba(255, 107, 107, 0.1);
+            border: 2px solid #ff6b6b;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+        }
+        
+        .big-questions {
+            background: rgba(255, 230, 109, 0.1);
+            border: 2px solid #ffe66d;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+        }
+        
+        .practical-meaning {
+            background: rgba(139, 0, 255, 0.1);
+            border: 2px solid #8b00ff;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+        }
+        
+        .next-bug {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            margin-top: 40px;
+        }
+        
+        .rick-quote {
+            background: rgba(0, 255, 0, 0.1);
+            border-left: 4px solid #00ff00;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+            font-style: italic;
+        }
+        
+        .highlight {
+            background: linear-gradient(45deg, #ffff00, #ff8800);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="series-header">
+            <div class="series-title">🌌 СЕРИЯ "БАГИ РЕАЛЬНОСТИ" 🌌</div>
+            <div class="progress-bar">
+                <div class="progress-fill"></div>
+            </div>
+            <div style="margin-top: 10px; font-size: 0.9em;">7 из 8 багов</div>
+        </div>
+        
+        <div class="bug-number">БАГ #7</div>
+        
+        <h1 class="main-title">СТРЕЛА ВРЕМЕНИ</h1>
+        
+        <div class="hook">
+            "Время течёт только вперёд. Но почему? И что такое время вообще?"
+        </div>
+        
+        <div class="time-paradox">
+            <div class="paradox-title">🤯 ГЛАВНЫЙ ПАРАДОКС ВРЕМЕНИ</div>
+            <p>Все законы физики работают <strong>в обе стороны времени</strong>! Уравнения Ньютона, Максвелла, Эйнштейна - все симметричны. Если снять фильм о планетах и прокрутить назад, законы физики не нарушатся.</p>
+            <br>
+            <p><strong>НО!</strong> В реальности время течёт только вперёд. Мы стареем, а не молодеем. Кофе остывает, а не нагревается. Почему?</p>
+        </div>
+        
+        <div class="scientist-story">
+            <div class="scientist-avatar">🌡️</div>
+            <div class="scientist-name">Людвиг Больцман, 1877 год</div>
+            <p>Австрийский физик, который <strong>решил загадку времени</strong> через понятие энтропии. Его открытие объясняет, почему время необратимо, но стоило ему жизни...</p>
+            
+            <div class="diary-entry">
+                <div class="diary-date">Венский университет</div>
+                "Я понял! Время - это не физическая сила, а статистическая тенденция. Системы переходят от порядка к хаосу просто потому, что хаотичных состояний намного больше, чем упорядоченных. Энтропия всегда растёт - вот почему время течёт вперёд!"
+            </div>
+            
+            <div class="secret-note">
+                <strong>💔 Трагедия гения:</strong> Больцман покончил с собой в 1906 году, не дождавшись признания. Его теории были слишком революционными. Сегодня он считается одним из величайших физиков в истории.
+            </div>
+        </div>
+        
+        <div class="time-timeline">
+            <div class="timeline-title">⏰ БИТВА ЗА ПОНИМАНИЕ ВРЕМЕНИ</div>
+            
+            <div class="timeline-item boltzmann">
+                <div class="timeline-year">1877</div>
+                <div class="timeline-content">
+                    <h4>Энтропия Больцмана</h4>
+                    <p>Формулирует второй закон термодинамики статистически: энтропия растёт, потому что беспорядка больше, чем порядка. Это объясняет стрелу времени!</p>
+                </div>
+            </div>
+            
+            <div class="timeline-item einstein">
+                <div class="timeline-year">1905</div>
+                <div class="timeline-content">
+                    <h4>Относительность Эйнштейна</h4>
+                    <p>Время относительно! Чем быстрее движешься, тем медленнее течёт время. При скорости света время останавливается. Время - не абсолют, а измерение!</p>
+                </div>
+            </div>
+            
+            <div class="timeline-item hawking">
+                <div class="timeline-year">1988</div>
+                <div class="timeline-content">
+                    <h4>Стрелы времени Хокинга</h4>
+                    <p>Стивен Хокинг выделяет три стрелы времени: термодинамическую (энтропия), космологическую (расширение) и психологическую (память). Все связаны!</p>
+                </div>
+            </div>
+            
+            <div class="timeline-item rovelli">
+                <div class="timeline-year">2017</div>
+                <div class="timeline-content">
+                    <h4>Иллюзия времени Ровелли</h4>
+                    <p>Карло Ровелли шокирует мир: времени не существует! Есть только изменения и наша память о них. Время - иллюзия сознания!</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="scientist-story">
+            <div class="scientist-avatar">🕳️</div>
+            <div class="scientist-name">Стивен Хокинг, 1988 год</div>
+            <p>Легендарный физик, который <strong>связал время с космологией</strong>. Несмотря на болезнь, он раскрыл глубочайшие тайны Вселенной и времени.</p>
+            
+            <div class="diary-entry">
+                <div class="diary-date">Из книги "Краткая история времени"</div>
+                "Существует три стрелы времени. Термодинамическая - энтропия растёт. Космологическая - Вселенная расширяется. Психологическая - мы помним прошлое, но не будущее. Все они указывают в одном направлении. Но почему?"
+            </div>
+            
+            <div class="secret-note">
+                <strong>🌌 Глубокая связь:</strong> Хокинг предположил: все стрелы времени связаны с начальными условиями Большого взрыва. Вселенная началась в состоянии низкой энтропии и с тех пор "разматывается".
+            </div>
+        </div>
+        
+        <div class="experiment-section">
+            <h2 class="section-title">🔬 ИССЛЕДУЙ ПРИРОДУ ВРЕМЕНИ</h2>
+            
+            <div class="tabs">
+                <button class="tab active" onclick="showExperiment('entropy')">📈 Симулятор Энтропии</button>
+                <button class="tab" onclick="showExperiment('timemachine')">⏰ Машина Времени</button>
+                <button class="tab" onclick="showExperiment('paradox')">🌀 Временные Парадоксы</button>
+            </div>
+            
+            <!-- ЭКСПЕРИМЕНТ 1: СИМУЛЯТОР ЭНТРОПИИ -->
+            <div class="experiment-container active" id="entropy">
+                <div class="entropy-simulator">
+                    <div class="box-side box-left">
+                        <div class="box-title">УПОРЯДОЧЕННОЕ СОСТОЯНИЕ</div>
+                        <div style="color: #ff6b6b; font-size: 0.9em;">Все частицы слева</div>
+                    </div>
+                    
+                    <div class="box-side box-right">
+                        <div class="box-title">ХАОТИЧНОЕ СОСТОЯНИЕ</div>
+                        <div style="color: #ffe66d; font-size: 0.9em;">Частицы везде</div>
+                    </div>
+                    
+                    <div class="entropy-meter">
+                        <div>Энтропия</div>
+                        <div class="entropy-value" id="entropyValue">Низкая</div>
+                        <div style="font-size: 0.8em; margin-top: 5px;">Время: <span id="timeCounter">0</span>с</div>
+                    </div>
+                </div>
+                
+                <div class="controls">
+                    <button class="btn btn-primary" onclick="startEntropy()">🎬 ЗАПУСТИТЬ ВРЕМЯ</button>
+                    <button class="btn btn-secondary" onclick="reverseTime()">⏪ ОБРАТИТЬ ВРЕМЯ</button>
+                    <button class="btn btn-danger" onclick="resetEntropy()">🔄 СБРОС</button>
+                </div>
+            </div>
+            
+            <!-- ЭКСПЕРИМЕНТ 2: МАШИНА ВРЕМЕНИ -->
+            <div class="experiment-container" id="timemachine">
+                <div class="time-machine">
+                    <div class="time-portal" id="timePortal">
+                        <div style="font-size: 2em;">⏰</div>
+                    </div>
+                    
+                    <div class="time-controls">
+                        <button class="btn btn-secondary" onclick="travelToPast()">⏪ В ПРОШЛОЕ</button>
+                        <button class="btn btn-primary" onclick="travelToFuture()">⏩ В БУДУЩЕЕ</button>
+                    </div>
+                    
+                    <div class="time-display" id="timeDisplay">2025 ГОД</div>
+                    
+                    <div class="paradox-warning" id="paradoxWarning">
+                        ⚠️ ПАРАДОКС ОБНАРУЖЕН!
+                    </div>
+                </div>
+                
+                <div class="controls">
+                    <button class="btn btn-primary" onclick="analyzeParadox()">🔍 АНАЛИЗ ПАРАДОКСОВ</button>
+                    <button class="btn btn-danger" onclick="resetTimeMachine()">🏠 ВЕРНУТЬСЯ В НАСТОЯЩЕЕ</button>
+                </div>
+            </div>
+            
+            <!-- ЭКСПЕРИМЕНТ 3: ВРЕМЕННЫЕ ПАРАДОКСЫ -->
+            <div class="experiment-container" id="paradox">
+                <div class="paradox-explorer">
+                    <div class="paradox-scenario">
+                        <div class="paradox-question" id="paradoxQuestion">
+                            Ты отправляешься в прошлое и предотвращаешь встречу своих родителей. Что произойдёт?
+                        </div>
+                        
+                        <div class="paradox-options">
+                            <div class="paradox-option" onclick="answerParadox(1)">Ты исчезнешь</div>
+                            <div class="paradox-option" onclick="answerParadox(2)">Создастся параллельная линия времени</div>
+                            <div class="paradox-option" onclick="answerParadox(3)">История сама себя исправит</div>
+                            <div class="paradox-option" onclick="answerParadox(4)">Путешествие невозможно</div>
+                        </div>
+                        
+                        <div class="paradox-explanation" id="paradoxExplanation"></div>
+                    </div>
+                </div>
+                
+                <div class="controls">
+                    <button class="btn btn-primary" onclick="nextParadox()">🔄 СЛЕДУЮЩИЙ ПАРАДОКС</button>
+                    <button class="btn btn-secondary" onclick="explainTime()">🤓 ОБЪЯСНИТЬ ВРЕМЯ</button>
+                </div>
+            </div>
+            
+            <div class="status" id="status">
+                Исследуй самую большую загадку физики - природу времени!
+            </div>
+        </div>
+        
+        <div class="time-theories">
+            <div class="theories-title">🧠 ЧЕТЫРЕ ТЕОРИИ ВРЕМЕНИ</div>
+            
+            <div class="theory-grid">
+                <div class="theory-card linear">
+                    <h4 style="color: #ff6b6b;">⏳ ЛИНЕЙНОЕ ВРЕМЯ</h4>
+                    <p>Время течёт от прошлого к будущему как река. Классическое понимание Ньютона.</p>
+                </div>
+                
+                <div class="theory-card block">
+                    <h4 style="color: #ffe66d;">🧊 БЛОКОВАЯ ВСЕЛЕННАЯ</h4>
+                    <p>Всё время существует одновременно. Прошлое, настоящее и будущее равноправны. Эйнштейн.</p>
+                </div>
+                
+                <div class="theory-card cyclic">
+                    <h4 style="color: #4ecdc4;">🔄 ЦИКЛИЧЕСКОЕ ВРЕМЯ</h4>
+                    <p>Время повторяется циклами. Вселенная умирает и рождается заново. Древние культуры.</p>
+                </div>
+                
+                <div class="theory-card illusion">
+                    <h4 style="color: #8b00ff;">👻 ВРЕМЯ-ИЛЛЮЗИЯ</h4>
+                    <p>Времени не существует. Есть только изменения и наша память. Ровелли.</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="explanation">
+            <h3>🤯 ЧТО ТЫ ТОЛЬКО ЧТО ПОНЯЛ?</h3>
+            <p><strong>ЭНТРОПИЯ:</strong> Время течёт вперёд, потому что хаотичных состояний намного больше упорядоченных. Вселенная "скатывается" к максимальному беспорядку.</p>
+            <br>
+            <p><strong>ОТНОСИТЕЛЬНОСТЬ:</strong> Время не абсолютно. Оно замедляется при больших скоростях и в сильных гравитационных полях.</p>
+            <br>
+            <p><strong>СТРЕЛЫ ВРЕМЕНИ:</strong> Энтропия растёт, Вселенная расширяется, мы помним прошлое - все указывает в одном направлении!</p>
+        </div>
+        
+        <div class="rick-quote">
+            "Морти, время - это не река, это океан! Ты можешь плыть в любом направлении, если знаешь как управлять гребными винтами пространства-времени!" - Рик Санчез
+        </div>
+        
+        <div class="theory-connection">
+            <h3>🧬 СВЯЗЬ С ТЕОРИЯМИ СУЩЕСТВОВАНИЯ</h3>
+            <p><strong>📱 Симуляционная гипотеза:</strong> Время может быть тактовой частотой космического компьютера. "Кадры" реальности сменяют друг друга.</p>
+            <br>
+            <p><strong>🔮 Сознание-творец:</strong> Возможно, время существует только в сознании. Без наблюдателя нет течения времени.</p>
+            <br>
+            <p><strong>📡 Голографический принцип:</strong> Время может быть способом декодирования информации с границы реальности.</p>
+            <br>
+            <p><strong>🌊 Блоковая Вселенная:</strong> Если всё время существует одновременно, то свобода воли - иллюзия, а будущее уже определено.</p>
+        </div>
+        
+        <div class="big-questions">
+            <h3>❓ ГЛАВНЫЕ ВОПРОСЫ</h3>
+            <p><strong>⏰ Существует ли время?</strong> Или это иллюзия сознания, пытающегося понять изменения?</p>
+            <br>
+            <p><strong>🔄 Можно ли путешествовать во времени?</strong> Физика не запрещает, но парадоксы делают это проблематичным.</p>
+            <br>
+            <p><strong>🧠 Почему мы помним прошлое, но не будущее?</strong> Это фундаментальное свойство или особенность мозга?</p>
+            <br>
+            <p><strong>🌌 Что было до Большого взрыва?</strong> Имеет ли этот вопрос смысл, если время началось с Большого взрыва?</p>
+        </div>
+        
+        <div class="practical-meaning">
+            <h3>💡 ПРАКТИЧЕСКИЙ СМЫСЛ ДЛЯ ЖИЗНИ</h3>
+            <p><strong>⏰ Ценность момента:</strong> Если время - иллюзия, то есть только "сейчас". Живи в настоящем моменте!</p>
+            <br>
+            <p><strong>📈 Энтропия и порядок:</strong> Для поддержания порядка нужна постоянная энергия. Это касается и жизни, и отношений.</p>
+            <br>
+            <p><strong>🎯 Необратимость выборов:</strong> Как энтропия, некоторые решения необратимы. Выбирай осознанно.</p>
+            <br>
+            <p><strong>🌊 Поток времени:</strong> Не борись со временем, а плыви по его течению. Принимай изменения как естественный процесс.</p>
+        </div>
+        
+        <div class="next-bug">
+            <h3>🔜 ФИНАЛЬНЫЙ БАГ</h3>
+            <p><strong>БАГ #8: КОСМИЧЕСКОЕ ОДИНОЧЕСТВО</strong></p>
+            <p>"Где все инопланетяне?"</p>
+            <p><em>Спойлер: Ответ может изменить всё...</em></p>
+        </div>
+    </div>
+    
+    <script>
+        let currentExperiment = 'entropy';
+        let particles = [];
+        let entropyLevel = 0;
+        let timeValue = 2025;
+        let timeCounter = 0;
+        let entropyAnimation = null;
+        let currentParadoxIndex = 0;
+        
+        const paradoxes = [
+            {
+                question: "Ты отправляешься в прошлое и предотвращаешь встречу своих родителей. Что произойдёт?",
+                answers: [
+                    "Классический парадокс дедушки! Если ты не родишься, кто предотвратил встречу?",
+                    "Теория многих миров: создается параллельная временная линия.",
+                    "Принцип самосогласованности: история найдёт способ исправиться.",
+                    "Принцип защиты хронологии: Вселенная не позволит такие путешествия."
+                ]
+            },
+            {
+                question: "Ты узнаёшь номера лотереи из будущего и возвращаешься, чтобы выиграть. Что случится?",
+                answers: [
+                    "Информационный парадокс: откуда взялась информация о номерах?",
+                    "Эффект бабочки: твои действия изменят будущее, и номера будут другими.",
+                    "Петля причинности: всё было предопределено, ты всегда выигрывал.",
+                    "Квантовая суперпозиция: одновременно выигрываешь и не выигрываешь."
+                ]
+            },
+            {
+                question: "Встречаешь себя из будущего. Кто из вас настоящий?",
+                answers: [
+                    "Оба настоящие в разные моменты времени.",
+                    "Один из вас из параллельной временной линии.",
+                    "Это невозможно - Вселенная запретит встречу.",
+                    "Вы аннигилируете, как частица и античастица."
+                ]
+            }
+        ];
+        
+        function showExperiment(type) {
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.experiment-container').forEach(exp => exp.classList.remove('active'));
+            
+            event.target.classList.add('active');
+            document.getElementById(type).classList.add('active');
+            
+            currentExperiment = type;
+            
+            if (type === 'entropy') {
+                resetEntropy();
+            } else if (type === 'timemachine') {
+                resetTimeMachine();
+            }
+            
+            updateStatus();
+        }
+        
+        function createParticles() {
+            const leftBox = document.querySelector('.box-left');
+            leftBox.querySelectorAll('.particle').forEach(p => p.remove());
+            
+            particles = [];
+            
+            for (let i = 0; i < 20; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                
+                // Все частицы начинают слева (низкая энтропия)
+                const x = Math.random() * 300 + 50;
+                const y = Math.random() * 350 + 100;
+                
+                particle.style.left = x + 'px';
+                particle.style.top = y + 'px';
+                
+                leftBox.appendChild(particle);
+                particles.push({ 
+                    element: particle, 
+                    x: x, 
+                    y: y, 
+                    originalX: x, 
+                    originalY: y 
+                });
+            }
+        }
+        
+        function startEntropy() {
+            if (entropyAnimation) return;
+            
+            timeCounter = 0;
+            entropyLevel = 0;
+            
+            entropyAnimation = setInterval(() => {
+                timeCounter++;
+                document.getElementById('timeCounter').textContent = timeCounter;
+                
+                // Перемещаем частицы случайно
+                particles.forEach(particle => {
+                    const newX = Math.random() * 750 + 25;
+                    const newY = Math.random() * 350 + 100;
+                    
+                    particle.element.style.left = newX + 'px';
+                    particle.element.style.top = newY + 'px';
+                    particle.x = newX;
+                    particle.y = newY;
+                });
+                
+                // Вычисляем энтропию
+                calculateEntropy();
+                
+                if (timeCounter >= 30) {
+                    clearInterval(entropyAnimation);
+                    entropyAnimation = null;
+                }
+            }, 200);
+        }
+        
+        function calculateEntropy() {
+            // Подсчитываем, сколько частиц в левой половине
+            const leftCount = particles.filter(p => p.x < 400).length;
+            const rightCount = particles.length - leftCount;
+            
+            // Энтропия максимальна при равном распределении
+            const balance = Math.abs(leftCount - rightCount);
+            entropyLevel = Math.max(0, 100 - balance * 5);
+            
+            const entropyValue = document.getElementById('entropyValue');
+            if (entropyLevel > 80) {
+                entropyValue.textContent = 'Максимальная';
+                entropyValue.style.color = '#ff6b6b';
+            } else if (entropyLevel > 50) {
+                entropyValue.textContent = 'Высокая';
+                entropyValue.style.color = '#ffe66d';
+            } else {
+                entropyValue.textContent = 'Низкая';
+                entropyValue.style.color = '#4ecdc4';
+            }
+        }
+        
+        function reverseTime() {
+            const status = document.getElementById('status');
+            status.innerHTML = `
+                ⏪ <strong>ПОПЫТКА ОБРАТИТЬ ВРЕМЯ</strong><br>
+                Невозможно! Энтропия не может уменьшаться. Это нарушило бы второй закон термодинамики!
+            `;
+            
+            // Визуальный эффект "глитча"
+            particles.forEach((particle, index) => {
+                setTimeout(() => {
+                    particle.element.style.transform = 'scale(1.5)';
+                    setTimeout(() => {
+                        particle.element.style.transform = 'scale(1)';
+                    }, 100);
+                }, index * 20);
+            });
+        }
+        
+        function resetEntropy() {
+            if (entropyAnimation) {
+                clearInterval(entropyAnimation);
+                entropyAnimation = null;
+            }
+            
+            timeCounter = 0;
+            entropyLevel = 0;
+            document.getElementById('timeCounter').textContent = '0';
+            document.getElementById('entropyValue').textContent = 'Низкая';
+            document.getElementById('entropyValue').style.color = '#4ecdc4';
+            
+            createParticles();
+            updateStatus();
+        }
+        
+        function travelToPast() {
+            timeValue = Math.max(1900, timeValue - Math.floor(Math.random() * 100 + 50));
+            document.getElementById('timeDisplay').textContent = timeValue + ' ГОД';
+            
+            if (timeValue < 1955) {
+                showParadoxWarning();
+            }
+            
+            const portal = document.getElementById('timePortal');
+            portal.style.animation = 'portalSpin 0.5s linear infinite';
+            setTimeout(() => {
+                portal.style.animation = 'portalSpin 3s linear infinite';
+            }, 1000);
+        }
+        
+        function travelToFuture() {
+            timeValue = Math.min(3000, timeValue + Math.floor(Math.random() * 100 + 50));
+            document.getElementById('timeDisplay').textContent = timeValue + ' ГОД';
+            
+            const portal = document.getElementById('timePortal');
+            portal.style.animation = 'portalSpin 0.5s linear infinite';
+            setTimeout(() => {
+                portal.style.animation = 'portalSpin 3s linear infinite';
+            }, 1000);
+        }
+        
+        function showParadoxWarning() {
+            document.getElementById('paradoxWarning').classList.add('visible');
+            setTimeout(() => {
+                document.getElementById('paradoxWarning').classList.remove('visible');
+            }, 3000);
+        }
+        
+        function analyzeParadox() {
+            const status = document.getElementById('status');
+            const paradoxes = [
+                "Парадокс дедушки: можешь ли ты убить своего дедушку в прошлом?",
+                "Информационный парадокс: откуда берётся знание о будущем?",
+                "Парадокс предопределённости: можешь ли изменить известное будущее?",
+                "Парадокс близнецов: кто постареет быстрее при путешествии во времени?"
+            ];
+            
+            const randomParadox = paradoxes[Math.floor(Math.random() * paradoxes.length)];
+            status.innerHTML = `🌀 <strong>ВРЕМЕННОЙ ПАРАДОКС</strong><br>${randomParadox}`;
+        }
+        
+        function resetTimeMachine() {
+            timeValue = 2025;
+            document.getElementById('timeDisplay').textContent = '2025 ГОД';
+            document.getElementById('paradoxWarning').classList.remove('visible');
+            updateStatus();
+        }
+        
+        function answerParadox(answer) {
+            const explanation = document.getElementById('paradoxExplanation');
+            const currentParadox = paradoxes[currentParadoxIndex];
+            
+            explanation.textContent = currentParadox.answers[answer - 1];
+            explanation.classList.add('visible');
+        }
+        
+        function nextParadox() {
+            currentParadoxIndex = (currentParadoxIndex + 1) % paradoxes.length;
+            const question = document.getElementById('paradoxQuestion');
+            const explanation = document.getElementById('paradoxExplanation');
+            
+            question.textContent = paradoxes[currentParadoxIndex].question;
+            explanation.classList.remove('visible');
+        }
+        
+        function explainTime() {
+            const explanation = document.getElementById('paradoxExplanation');
+            explanation.innerHTML = `
+                <strong>СОВРЕМЕННОЕ ПОНИМАНИЕ:</strong><br>
+                Время - не абсолютная сущность, а измерение пространства-времени. 
+                Возможно, это иллюзия, создаваемая нашим сознанием для понимания изменений.
+                Путешествия во времени теоретически возможны, но парадоксы делают их проблематичными.
+            `;
+            explanation.classList.add('visible');
+        }
+        
+        function updateStatus() {
+            const status = document.getElementById('status');
+            
+            switch(currentExperiment) {
+                case 'entropy':
+                    status.textContent = 'Наблюдай, как энтропия растёт со временем! Порядок превращается в хаос - вот почему время необратимо.';
+                    break;
+                    
+                case 'timemachine':
+                    status.textContent = 'Экспериментируй с путешествиями во времени! Но осторожно - парадоксы могут разрушить причинность.';
+                    break;
+                    
+                case 'paradox':
+                    status.textContent = 'Исследуй временные парадоксы! Каждый ответ ведёт к новым философским вопросам о природе времени.';
+                    break;
+            }
+        }
+        
+        // Инициализация
+        createParticles();
+        updateStatus();
+        
+        // Параллакс эффект
+        window.addEventListener('scroll', () => {
+            const scrolled = window.pageYOffset;
+            const rate = scrolled * -0.5;
+            
+            const bugNumber = document.querySelector('.bug-number');
+            if (bugNumber) {
+                bugNumber.style.transform = `translateY(${rate}px)`;
+            }
+        });
+        
+        // Анимация появления элементов
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+        
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+        
+        document.querySelectorAll('.explanation, .theory-connection, .big-questions, .practical-meaning').forEach(el => {
+            el.style.opacity = '0';
+            el.style.transform = 'translateY(30px)';
+            el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+            observer.observe(el);
+        });
+    </script>
+</body>
+</html>

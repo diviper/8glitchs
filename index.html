@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>8 Глюков Реальности</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        :root {
+            --neon-green: #00ff00;
+            --neon-blue: #00ffff;
+            --neon-pink: #ff00ff;
+            --bg-dark: #000000;
+            --text-light: #ffffff;
+        }
+
+        body {
+            font-family: 'Orbitron', sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-light);
+            overflow: hidden;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+        }
+
+        /* Видео фон */
+        .video-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        .video-background video {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            min-width: 100%;
+            min-height: 100%;
+            width: auto;
+            height: auto;
+            transform: translateX(-50%) translateY(-50%);
+            object-fit: cover;
+            filter: brightness(0.7) contrast(1.2);
+        }
+
+        .video-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            z-index: -1;
+            backdrop-filter: blur(5px);
+        }
+
+        /* Навигация */
+        .navbar {
+            background: rgba(0, 0, 0, 0.9) !important;
+            border-bottom: 2px solid var(--neon-green);
+            box-shadow: 0 0 20px var(--neon-green);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+        }
+
+        .navbar-brand {
+            color: var(--neon-green) !important;
+            font-size: 1.8rem;
+            text-shadow: 0 0 10px var(--neon-green);
+        }
+
+        .nav-link {
+            color: var(--text-light) !important;
+            transition: all 0.3s ease;
+            font-size: 1.2rem;
+            margin: 0 15px;
+        }
+
+        .nav-link:hover {
+            color: var(--neon-green) !important;
+            text-shadow: 0 0 10px var(--neon-green);
+            transform: translateY(-2px);
+        }
+
+        /* Слайдер */
+        .slider-container {
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            overflow: hidden;
+            padding-top: 80px;
+        }
+
+        .slider {
+            display: flex;
+            transition: transform 0.5s ease;
+            height: 100%;
+        }
+
+        .slide {
+            min-width: 100vw;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .slide-content {
+            max-width: 1200px;
+            text-align: center;
+        }
+
+        .slide-title {
+            font-size: 4rem;
+            color: var(--neon-green);
+            margin-bottom: 2rem;
+            text-shadow: 0 0 20px var(--neon-green);
+            animation: glitch 2s infinite;
+        }
+
+        .slide-description {
+            font-size: 1.5rem;
+            color: var(--text-light);
+            margin-bottom: 3rem;
+            line-height: 1.6;
+        }
+
+        .slide-button {
+            background: transparent;
+            border: 2px solid var(--neon-green);
+            color: var(--neon-green);
+            padding: 15px 40px;
+            font-size: 1.2rem;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .slide-button:hover {
+            background: var(--neon-green);
+            color: var(--bg-dark);
+            box-shadow: 0 0 20px var(--neon-green);
+        }
+
+        .slide-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(
+                90deg,
+                transparent,
+                rgba(0, 255, 0, 0.2),
+                transparent
+            );
+            transition: 0.5s;
+        }
+
+        .slide-button:hover::before {
+            left: 100%;
+        }
+
+        @keyframes glitch {
+            0% { text-shadow: 2px 2px var(--neon-green); }
+            25% { text-shadow: -2px -2px var(--neon-pink); }
+            50% { text-shadow: 2px -2px var(--neon-blue); }
+            75% { text-shadow: -2px 2px var(--neon-green); }
+            100% { text-shadow: 2px 2px var(--neon-green); }
+        }
+
+        /* Навигационные точки */
+        .slider-dots {
+            position: fixed;
+            right: 30px;
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .dot.active {
+            background: var(--neon-green);
+            box-shadow: 0 0 10px var(--neon-green);
+            transform: scale(1.2);
+        }
+    </style>
+</head>
+<body>
+    <!-- Видео фон -->
+    <div class="video-background">
+        <video autoplay muted loop>
+            <source src="assets/video/background.mp4" type="video/mp4">
+        </video>
+        <div class="video-overlay"></div>
+    </div>
+
+    <!-- Навигация -->
+    <nav class="navbar navbar-expand-lg">
+        <div class="container">
+            <a class="navbar-brand" href="#">8 Глюков</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#home">Главная</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#glitches">Глюки</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#projects">Проекты</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#about">О нас</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Слайдер -->
+    <div class="slider-container">
+        <div class="slider">
+            <!-- Главная -->
+            <div class="slide" id="home">
+                <div class="slide-content">
+                    <h1 class="slide-title">8 Глюков Реальности</h1>
+                    <p class="slide-description">
+                        Исследуйте загадки квантового мира и нарушайте законы классической физики
+                    </p>
+                    <button class="slide-button" onclick="scrollToSlide('glitches')">
+                        Начать исследование
+                    </button>
+                </div>
+            </div>
+
+            <!-- Глюки -->
+            <div class="slide" id="glitches">
+                <div class="slide-content">
+                    <h1 class="slide-title">Квантовые Глюки</h1>
+                    <p class="slide-description">
+                        Откройте для себя удивительные явления квантовой механики
+                    </p>
+                    <button class="slide-button" onclick="location.href='glitches.html'">
+                        Исследовать глюки
+                    </button>
+                </div>
+            </div>
+
+            <!-- Проекты -->
+            <div class="slide" id="projects">
+                <div class="slide-content">
+                    <h1 class="slide-title">Наши Проекты</h1>
+                    <p class="slide-description">
+                        Интерактивные демонстрации и научные эксперименты
+                    </p>
+                    <button class="slide-button" onclick="location.href='projects.html'">
+                        Смотреть проекты
+                    </button>
+                </div>
+            </div>
+
+            <!-- О нас -->
+            <div class="slide" id="about">
+                <div class="slide-content">
+                    <h1 class="slide-title">О Нас</h1>
+                    <p class="slide-description">
+                        Команда энтузиастов, исследующих границы реальности
+                    </p>
+                    <button class="slide-button" onclick="location.href='about.html'">
+                        Узнать больше
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Навигационные точки -->
+    <div class="slider-dots">
+        <div class="dot active" onclick="scrollToSlide('home')"></div>
+        <div class="dot" onclick="scrollToSlide('glitches')"></div>
+        <div class="dot" onclick="scrollToSlide('projects')"></div>
+        <div class="dot" onclick="scrollToSlide('about')"></div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const dots = document.querySelectorAll('.dot');
+        const slider = document.querySelector('.slider');
+
+        function scrollToSlide(id) {
+            const slide = document.getElementById(id);
+            const index = Array.from(slides).indexOf(slide);
+            currentSlide = index;
+            updateSlider();
+        }
+
+        function updateSlider() {
+            slider.style.transform = `translateX(-${currentSlide * 100}vw)`;
+            dots.forEach((dot, index) => {
+                dot.classList.toggle('active', index === currentSlide);
+            });
+        }
+
+        // Обработка колеса мыши
+        document.addEventListener('wheel', (e) => {
+            if (e.deltaY > 0 && currentSlide < slides.length - 1) {
+                currentSlide++;
+            } else if (e.deltaY < 0 && currentSlide > 0) {
+                currentSlide--;
+            }
+            updateSlider();
+        });
+
+        // Обработка свайпов на мобильных устройствах
+        let touchStartX = 0;
+        let touchEndX = 0;
+
+        document.addEventListener('touchstart', (e) => {
+            touchStartX = e.changedTouches[0].screenX;
+        });
+
+        document.addEventListener('touchend', (e) => {
+            touchEndX = e.changedTouches[0].screenX;
+            handleSwipe();
+        });
+
+        function handleSwipe() {
+            const swipeThreshold = 50;
+            if (touchEndX < touchStartX - swipeThreshold && currentSlide < slides.length - 1) {
+                currentSlide++;
+            } else if (touchEndX > touchStartX + swipeThreshold && currentSlide > 0) {
+                currentSlide--;
+            }
+            updateSlider();
+        }
+    </script>
+</body>
+</html> 
