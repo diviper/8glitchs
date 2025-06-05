@@ -22,6 +22,8 @@
 - `styles.css` - основные стили
 - `scripts.js` - общие скрипты
 - `assets/js/glitches.js` - JavaScript для визуализаций
+- `assets/js/double-slit.js` - визуализация эксперимента с двумя щелями
+- `assets/js/progress.js` - отображение прогресса загрузки
 
 ## Технологии
 
