@@ -45,6 +45,16 @@ npm install
 npm test
 ```
 
+## Проверка кода
+
+Для проверки JavaScript и CSS выполните:
+
+```bash
+npm run lint:js
+npm run lint:css
+```
+
+
 ## Лицензия
 
 MIT 
