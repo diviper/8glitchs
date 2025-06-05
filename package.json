@@ -4,13 +4,15 @@
   "description": "Интерактивная визуализация квантовых эффектов и парадоксов реальности.",
   "main": "scripts.js",
   "scripts": {
-    "test": "jest"
+    "test": "jest",
+    "lint:html": "htmlhint \"**/*.html\""
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "type": "commonjs",
   "devDependencies": {
+    "htmlhint": "^1.4.0",
     "jest": "^29.7.0",
     "jsdom": "^26.1.0"
   }
