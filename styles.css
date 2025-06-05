@@ -8,6 +8,13 @@
     --glitch-color-1: #ff0000;
     --glitch-color-2: #00ff00;
     --glitch-color-3: #0000ff;
+
+    /* Neon palette for landing pages */
+    --neon-green: #00ff00;
+    --neon-blue: #00ffff;
+    --neon-pink: #ff00ff;
+    --bg-dark: #000000;
+    --text-light: #ffffff;
 }
 
 * {
@@ -17,7 +24,7 @@
 }
 
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-family: 'Orbitron', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     background: linear-gradient(135deg, #0c0c0c 0%, #1a1a2e 50%, #16213e 100%);
     color: #ffffff;
     line-height: 1.6;
