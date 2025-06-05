@@ -1,0 +1,24 @@
+{
+  "name": "8glitchs",
+  "version": "1.0.0",
+  "description": "Интерактивная визуализация квантовых эффектов и парадоксов реальности.",
+  "main": "main.js",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "test": "echo \"Error: no test specified\" && exit 0"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "dependencies": {
+    "@fortawesome/fontawesome-free": "^6.7.2",
+    "bootstrap": "^5.3.6",
+    "fontsource-orbitron": "^4.0.0",
+    "fontsource-rajdhani": "^4.0.0"
+  },
+  "devDependencies": {
+    "vite": "^6.3.5"
+  }
+}
