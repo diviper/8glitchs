@@ -172,31 +172,7 @@
     </style>
 </head>
 <body>
-<nav class="navbar navbar-expand-lg fixed-top">
-    <div class="container">
-        <a class="navbar-brand" href="index.html">8 Парадоксов</a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav ms-auto">
-                <li class="nav-item">
-                    <a class="nav-link" href="index.html">Главная</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="glitches.html">Парадоксы</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="projects.html">Проекты</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="about.html">О нас</a>
-                </li>
-            </ul>
-        </div>
-    </div>
-</nav>
-
+{% include "partials/nav_simple.njk" %}
 
     <div class="container glitch-container">
         <h1 class="main-title">Квантовые Парадоксы</h1>

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Глитчи Юниверси - Квантовая Телепортация</title>
+    <title>Глитчи Юниверси - Квантовая Запутанность</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link href="styles.css" rel="stylesheet">
@@ -69,7 +69,7 @@
             z-index: -1;
         }
 
-        .teleportation-experiment {
+        .entanglement-experiment {
             position: relative;
             width: 100%;
             height: 300px;
@@ -92,14 +92,31 @@
 
         .qubit.entangled {
             background: var(--accent-color);
+            box-shadow: 0 0 20px var(--accent-color);
         }
 
-        .qubit.source {
+        .qubit.a {
             left: 20%;
         }
 
-        .qubit.target {
+        .qubit.b {
             left: 80%;
+        }
+
+        .entanglement-line {
+            position: absolute;
+            top: 50%;
+            left: 20%;
+            width: 60%;
+            height: 2px;
+            background: var(--accent-color);
+            transform: translateY(-50%);
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+
+        .entanglement-line.visible {
+            opacity: 0.5;
         }
 
         .measurement-result {
@@ -152,77 +169,58 @@
     </style>
 </head>
 <body>
-<nav class="navbar navbar-expand-lg navbar-dark">
-    <div class="container">
-        <a class="navbar-brand glitch-text"  href="index.html">Глитчи Юниверси</a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav ms-auto">
-                <li class="nav-item"><a class="nav-link" href="index.html#glitches">Глитчи</a></li>
-                <li class="nav-item"><a class="nav-link" href="index.html#visualizations">Визуализации</a></li>
-                <li class="nav-item"><a class="nav-link" href="index.html#about">О проекте</a></li>
-            </ul>
-        </div>
-    </div>
-</nav>
-
+{% include "partials/nav_bug.njk" %}
 
     <main class="glitch-page">
         <div class="container">
             <div class="glitch-content">
-                <h1 class="glitch-title glitch-text" data-text="Квантовая телепортация">Квантовая телепортация</h1>
-                <div class="glitch-number">04</div>
+                <h1 class="glitch-title glitch-text" data-text="Квантовая запутанность">Квантовая запутанность</h1>
+                <div class="glitch-number">07</div>
 
                 <div class="glitch-section">
                     <h2>Введение</h2>
-                    <p>Квантовая телепортация - это процесс передачи квантового состояния частицы на расстояние с помощью запутанных частиц. Важно понимать, что это не передача материи, а передача квантового состояния.</p>
+                    <p>Квантовая запутанность - это явление, при котором квантовые состояния двух или более частиц оказываются взаимосвязанными, даже если частицы разделены большим расстоянием. Это явление было названо Эйнштейном "жутким действием на расстоянии".</p>
                 </div>
 
                 <div class="glitch-section">
-                    <h2>Принцип работы</h2>
-                    <p>Процесс квантовой телепортации состоит из трёх основных этапов:</p>
-                    <ol>
-                        <li>Создание пары запутанных частиц</li>
-                        <li>Измерение состояния исходной частицы вместе с одной из запутанных частиц</li>
-                        <li>Применение соответствующего преобразования к второй запутанной частице</li>
-                    </ol>
+                    <h2>Парадокс ЭПР</h2>
+                    <p>Парадокс Эйнштейна-Подольского-Розена (ЭПР) был предложен для демонстрации неполноты квантовой механики. Однако последующие эксперименты подтвердили существование квантовой запутанности и нелокальности.</p>
                 </div>
 
                 <div class="glitch-section">
                     <h2>Интерактивный эксперимент</h2>
-                    <div class="teleportation-experiment" id="teleportation-experiment">
-                        <div class="qubit source"></div>
-                        <div class="qubit target"></div>
+                    <div class="entanglement-experiment" id="entanglement-experiment">
+                        <div class="qubit a"></div>
+                        <div class="qubit b"></div>
+                        <div class="entanglement-line"></div>
                         <div class="measurement-result">Результат измерения: <span id="measurement-value">-</span></div>
                     </div>
                     <div class="experiment-controls">
                         <button class="btn btn-primary" id="create-entangled">Создать запутанные частицы</button>
                         <button class="btn btn-primary" id="measure-state">Измерить состояние</button>
-                        <button class="btn btn-secondary" id="reset-teleportation">Сбросить</button>
+                        <button class="btn btn-secondary" id="reset-entanglement">Сбросить</button>
                     </div>
                     <div class="experiment-stats">
-                        <div>Успешные телепортации: <span id="successful-teleports">0</span></div>
-                        <div>Точность передачи: <span id="teleportation-accuracy">0%</span></div>
+                        <div>Корреляция: <span id="correlation">0%</span></div>
+                        <div>Расстояние: <span id="distance">0</span> км</div>
                     </div>
                 </div>
 
                 <div class="glitch-section">
                     <h2>Применение в квантовых технологиях</h2>
-                    <p>Квантовая телепортация является ключевым элементом в развитии:</p>
+                    <p>Квантовая запутанность является основой для:</p>
                     <ul>
-                        <li>Квантовых компьютеров</li>
+                        <li>Квантовой телепортации</li>
                         <li>Квантовой криптографии</li>
-                        <li>Квантовых сетей</li>
+                        <li>Квантовых вычислений</li>
                         <li>Квантовых сенсоров</li>
                     </ul>
                 </div>
 
                 <div class="navigation-buttons">
-                    <a href="reality_bug_03_quantum_tunneling.html" class="btn btn-outline-primary">← Квантовое туннелирование</a>
+                    <a href="reality_bug_06_quantum_decoherence.html" class="btn btn-outline-primary">← Квантовая декогеренция</a>
                     <a href="index.html" class="btn btn-outline-secondary">На главную</a>
-                    <a href="reality_bug_05_quantum_superposition.html" class="btn btn-outline-primary">Квантовая суперпозиция →</a>
+                    <a href="reality_bug_08_cosmic_loneliness.html" class="btn btn-outline-primary">Космическое одиночество →</a>
                 </div>
             </div>
         </div>
@@ -237,59 +235,69 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="scripts.js"></script>
     <script>
-        // Специфичный код для эксперимента с квантовой телепортацией
+        // Специфичный код для эксперимента с квантовой запутанностью
         document.addEventListener('DOMContentLoaded', () => {
-            const sourceQubit = document.querySelector('.qubit.source');
-            const targetQubit = document.querySelector('.qubit.target');
+            const qubitA = document.querySelector('.qubit.a');
+            const qubitB = document.querySelector('.qubit.b');
+            const entanglementLine = document.querySelector('.entanglement-line');
             const measurementResult = document.querySelector('.measurement-result');
             const measurementValue = document.getElementById('measurement-value');
             const createEntangledBtn = document.getElementById('create-entangled');
             const measureStateBtn = document.getElementById('measure-state');
-            const resetBtn = document.getElementById('reset-teleportation');
-            const successfulTeleports = document.getElementById('successful-teleports');
-            const teleportationAccuracy = document.getElementById('teleportation-accuracy');
+            const resetBtn = document.getElementById('reset-entanglement');
+            const correlation = document.getElementById('correlation');
+            const distance = document.getElementById('distance');
             
             let isEntangled = false;
-            let totalAttempts = 0;
-            let successfulAttempts = 0;
+            let totalMeasurements = 0;
+            let correlatedMeasurements = 0;
+            let currentDistance = 0;
 
             createEntangledBtn.addEventListener('click', () => {
                 if (!isEntangled) {
-                    sourceQubit.classList.add('entangled');
-                    targetQubit.classList.add('entangled');
+                    qubitA.classList.add('entangled');
+                    qubitB.classList.add('entangled');
+                    entanglementLine.classList.add('visible');
                     isEntangled = true;
                     measurementResult.classList.remove('visible');
+                    currentDistance = 0;
+                    updateStats();
                 }
             });
 
             measureStateBtn.addEventListener('click', () => {
                 if (isEntangled) {
-                    totalAttempts++;
-                    const state = Math.random() < 0.5 ? '0' : '1';
+                    totalMeasurements++;
+                    const state = Math.random() < 0.5 ? '|0⟩|1⟩' : '|1⟩|0⟩';
                     measurementValue.textContent = state;
                     measurementResult.classList.add('visible');
                     
-                    // Имитация телепортации
-                    setTimeout(() => {
-                        if (Math.random() < 0.95) { // 95% успешность
-                            successfulAttempts++;
-                        }
-                        successfulTeleports.textContent = successfulAttempts;
-                        teleportationAccuracy.textContent = 
-                            Math.round((successfulAttempts / totalAttempts) * 100) + '%';
-                    }, 1000);
+                    // Имитация корреляции
+                    if (Math.random() < 0.95) { // 95% корреляция
+                        correlatedMeasurements++;
+                    }
+                    
+                    currentDistance += 100;
+                    updateStats();
                 }
             });
 
+            function updateStats() {
+                correlation.textContent = Math.round((correlatedMeasurements / totalMeasurements) * 100) + '%';
+                distance.textContent = currentDistance;
+            }
+
             resetBtn.addEventListener('click', () => {
-                sourceQubit.classList.remove('entangled');
-                targetQubit.classList.remove('entangled');
+                qubitA.classList.remove('entangled');
+                qubitB.classList.remove('entangled');
+                entanglementLine.classList.remove('visible');
                 measurementResult.classList.remove('visible');
                 isEntangled = false;
-                totalAttempts = 0;
-                successfulAttempts = 0;
-                successfulTeleports.textContent = '0';
-                teleportationAccuracy.textContent = '0%';
+                totalMeasurements = 0;
+                correlatedMeasurements = 0;
+                currentDistance = 0;
+                correlation.textContent = '0%';
+                distance.textContent = '0';
             });
         });
     </script>

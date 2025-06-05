@@ -12,6 +12,7 @@
   "type": "commonjs",
   "devDependencies": {
     "jest": "^29.7.0",
-    "jsdom": "^26.1.0"
+    "jsdom": "^26.1.0",
+    "nunjucks": "^3.2.4"
   }
 }

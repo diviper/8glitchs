@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Квантовые Глюки Реальности - Проблема Наблюдателя</title>
+    <title>Глитчи Юниверси - Квантовая Нелокальность</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link href="styles.css" rel="stylesheet">
@@ -104,78 +104,65 @@
     </style>
 </head>
 <body class="glitch-page">
-
-
-<nav class="navbar navbar-expand-lg navbar-dark">
-    <div class="container">
-        <a class="navbar-brand glitch-text" data-text="Квантовые Глюки Реальности" href="index.html">Квантовые Глюки Реальности</a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav ms-auto">
-                <li class="nav-item"><a class="nav-link" href="index.html#glitches">Глитчи</a></li>
-                <li class="nav-item"><a class="nav-link" href="index.html#visualizations">Визуализации</a></li>
-                <li class="nav-item"><a class="nav-link" href="index.html#about">О проекте</a></li>
-            </ul>
-        </div>
-    </div>
-</nav>
-
+{% set brand = "Глитчи Юниверси" %}
+{% set dataText = "Глитчи Юниверси" %}
+{% include "partials/nav_bug.njk" %}
 
     <div class="container py-5">
         <div class="glitch-content animate-fade-in">
-            <div class="glitch-number">#01</div>
-            <h1 class="glitch-title">Проблема Наблюдателя</h1>
+            <div class="glitch-number">#02</div>
+            <h1 class="glitch-title">Нелокальность</h1>
             
             <div class="glitch-section">
                 <h2 class="glitch-section-title">Введение</h2>
                 <p class="glitch-text">
-                    Представьте, что вы смотрите на квантовую частицу. В этот момент происходит нечто удивительное - 
-                    сама частица "решает", как ей себя вести, основываясь на том, наблюдаете вы её или нет.
+                    Представьте две частицы, разлетевшиеся на огромное расстояние. Когда вы измеряете состояние одной из них, 
+                    вторая мгновенно "узнает" об этом и меняет своё состояние. Это явление, известное как квантовая запутанность, 
+                    нарушает все наши представления о пространстве и времени.
                 </p>
             </div>
 
             <div class="glitch-section">
-                <h2 class="glitch-section-title">Исторический контекст</h2>
-                <div class="timeline-item">
-                    <div class="timeline-year">1927</div>
-                    <p class="glitch-text">
-                        Вернер Гейзенберг формулирует принцип неопределенности, который показывает, что сам акт 
-                        измерения влияет на измеряемую систему.
-                    </p>
-                </div>
+                <h2 class="glitch-section-title">Парадокс ЭПР</h2>
                 <div class="timeline-item">
                     <div class="timeline-year">1935</div>
                     <p class="glitch-text">
-                        Эрвин Шрёдингер предлагает свой знаменитый мысленный эксперимент с котом, чтобы 
-                        продемонстрировать парадоксальность квантовой механики.
+                        Эйнштейн, Подольский и Розен публикуют работу, в которой указывают на "жуткое дальнодействие" 
+                        в квантовой механике, считая это доказательством неполноты теории.
+                    </p>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-year">1964</div>
+                    <p class="glitch-text">
+                        Джон Белл формулирует свои неравенства, которые позволяют экспериментально проверить, 
+                        существует ли "скрытая переменная" или частицы действительно мгновенно влияют друг на друга.
                     </p>
                 </div>
             </div>
 
             <div class="glitch-section">
-                <h2 class="glitch-section-title">Эксперимент с двумя щелями</h2>
+                <h2 class="glitch-section-title">Эксперименты Алена Аспекта</h2>
                 <p class="glitch-text">
-                    Классический эксперимент с двумя щелями демонстрирует, что частицы могут вести себя как волны, 
-                    пока за ними не наблюдают. Как только появляется наблюдатель, частицы "выбирают" конкретную 
-                    траекторию.
+                    В 1980-х годах Ален Аспект провел серию экспериментов, которые подтвердили нарушение неравенств Белла. 
+                    Это означало, что квантовая механика верна, а частицы действительно могут мгновенно влиять друг на друга, 
+                    независимо от расстояния.
                 </p>
                 <div class="glitch-quote">
-                    "Реальность создается наблюдением" - Нильс Бор
+                    "Если квантовая механика не потрясла вас, значит, вы её не поняли" - Нильс Бор
                 </div>
             </div>
 
             <div class="glitch-navigation">
-                <a href="index.html" class="btn btn-outline-light">← На главную</a>
-                <a href="reality_bug_02_nonlocality.html" class="btn btn-outline-light">Следующий глитч →</a>
+                <a href="reality_bug_01_observer_problem.html" class="btn btn-outline-light">← Предыдущий глитч</a>
+                <a href="index.html" class="btn btn-outline-light">На главную</a>
+                <a href="reality_bug_03_quantum_tunneling.html" class="btn btn-outline-light">Следующий глитч →</a>
             </div>
         </div>
     </div>
 
     <footer class="bg-dark text-white py-4 mt-5">
         <div class="container text-center">
-            <p>&copy; 2024 Квантовые Глюки Реальности. Все права защищены.</p>
+            <p>&copy; 2024 Глитчи Юниверси. Все права защищены.</p>
         </div>
     </footer>
 

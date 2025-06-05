@@ -1,0 +1,24 @@
+<nav class="navbar navbar-expand-lg fixed-top">
+    <div class="container">
+        <a class="navbar-brand" href="index.html">8 Парадоксов</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="index.html">Главная</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="glitches.html">Парадоксы</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="projects.html">Проекты</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link{% if page == 'about' %} active{% endif %}" href="about.html">О нас</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
