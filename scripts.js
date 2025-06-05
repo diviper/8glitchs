@@ -153,7 +153,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     let isObserving = false;
     let measurements = 0;
-    let superposition = true;
+    let spinUpCount = 0;
     let observationInterval;
 
     // Функция для обновления состояния частицы
@@ -164,8 +164,12 @@ document.addEventListener('DOMContentLoaded', function() {
             particle.className = 'quantum-particle ' + state;
             result.textContent = `Состояние: ${state === 'spin-up' ? 'Спин вверх ↑' : 'Спин вниз ↓'}`;
             measurements++;
+            if (state === 'spin-up') {
+                spinUpCount++;
+            }
             totalMeasurements.textContent = measurements;
-            probability.textContent = `${Math.round((measurements / 2) * 100)}%`;
+            const prob = measurements > 0 ? Math.round((spinUpCount / measurements) * 100) : 0;
+            probability.textContent = `${prob}%`;
         } else {
             // В суперпозиции частица находится в обоих состояниях
             particle.className = 'quantum-particle superposition';
@@ -191,6 +195,7 @@ document.addEventListener('DOMContentLoaded', function() {
     resetBtn.addEventListener('click', function() {
         isObserving = false;
         measurements = 0;
+        spinUpCount = 0;
         observer.style.opacity = '0.3';
         clearInterval(observationInterval);
         totalMeasurements.textContent = '0';
