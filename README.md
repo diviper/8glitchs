@@ -45,6 +45,14 @@ npm install
 npm test
 ```
 
+## Проверка HTML
+
+Для валидации разметки используется `htmlhint`. Запустите:
+
+```bash
+npm run lint:html
+```
+
 ## Лицензия
 
 MIT 
