@@ -1,0 +1,17 @@
+{
+  "name": "8glitchs",
+  "version": "1.0.0",
+  "description": "Интерактивная визуализация квантовых эффектов и парадоксов реальности.",
+  "main": "scripts.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "jsdom": "^26.1.0"
+  }
+}
