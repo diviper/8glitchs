@@ -6,27 +6,8 @@
   <script>
     (function () {
       var path = window.location.pathname;
-      var hash = window.location.hash || '';
-
-      // derive hash from path if direct link without # is opened
-      if (!hash) {
-        var scene = path.match(/\/scenes\/glitch-([^\/]+)\.html$/);
-        if (scene) {
-          hash = '#/scene/' + scene[1];
-        } else {
-          var glitch = path.match(/\/glitch\/([^\/]+)$/);
-          if (glitch) {
-            hash = '#/glitch/' + glitch[1];
-          } else {
-            var legacy = path.match(/\/([^\/]+)\.html$/);
-            if (legacy && !['index', '404'].includes(legacy[1])) {
-              hash = '#/glitch/' + legacy[1];
-            }
-          }
-        }
-      }
-
-      // climb back to repo root and redirect to index with preserved hash
+      var scene = path.match(/\/scenes\/glitch-([^\/]+)\.html$/);
+      var hash = scene ? '#/scene/' + scene[1] : '#/overview';
       var parts = path.split('/');
       var depth = parts.length - 3;
       var prefix = '';
