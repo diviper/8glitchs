@@ -107,4 +107,20 @@
     root.addEventListener('focusout',function(e){ if(current && (!e.relatedTarget || !e.relatedTarget.closest('.lex'))) close(); });
   }
   window.attachLexicon = attachLexicon;
+  window.isLexiconEnabled = function(){
+    try { return localStorage.getItem('ui:lexicon') !== 'off'; } catch(e){ return true; }
+  };
+  window.toggleLexicon = function(on){
+    try { localStorage.setItem('ui:lexicon', on ? 'on' : 'off'); } catch(e){}
+    var cont = document.querySelector('.md-body');
+    if (!cont) return;
+    if (!on) {
+      cont.querySelectorAll('.lex').forEach(function(el){
+        var t = document.createTextNode(el.textContent);
+        el.replaceWith(t);
+      });
+    } else if (window.__lexiconPromise) {
+      window.__lexiconPromise.then(function(dict){ attachLexicon(cont, dict); });
+    }
+  };
 })();

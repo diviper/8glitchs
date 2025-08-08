@@ -35,6 +35,7 @@
     var html = marked.parse(stripFrontMatter(markdown));
     var safe = DOMPurify.sanitize(html, { ADD_ATTR: ['target', 'rel'] });
     container.innerHTML = safe;
+    window.currentMarkdownContainer = container;
     container.querySelectorAll('a[target="_blank"]').forEach(function (a) {
       a.setAttribute('rel', 'noopener noreferrer');
     });
@@ -71,7 +72,9 @@
     }
     try {
       var dict = await window.__lexiconPromise;
-      if (window.attachLexicon) {
+      var enabled = true;
+      try { if (window.isLexiconEnabled) enabled = window.isLexiconEnabled(); } catch (e) {}
+      if (enabled && window.attachLexicon) {
         attachLexicon(container, dict);
       }
     } catch (e) {}
