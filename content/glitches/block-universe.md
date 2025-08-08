@@ -1,8 +1,10 @@
+---
 id: glitch-block-universe
 title: Блок-вселенная (вечное настоящее)
-layer: Время
+category: Время
 tags: [4D, детерминизм, опыт времени]
 status: draft
+---
 
 ### TL;DR
 

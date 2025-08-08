@@ -1,8 +1,10 @@
+---
 id: glitch-map-territory
 title: Карта и территория
-layer: Информация
+category: Информация
 tags: [модель, реальность, редукция]
 status: draft
+---
 
 ### TL;DR
 

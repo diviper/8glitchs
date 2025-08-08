@@ -1,8 +1,10 @@
+---
 id: glitch-bekenstein-bound
 title: Предел Бекенштейна
-layer: Информация
+category: Информация
 tags: [инфо-ёмкость, площадь, гравитация]
 status: draft
+---
 
 ### TL;DR
 

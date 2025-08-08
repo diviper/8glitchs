@@ -16,6 +16,9 @@
 
   window.renderMarkdown = async function (markdown, target) {
     await ready;
+    if (markdown.startsWith('---')) {
+      markdown = markdown.replace(/^---[\s\S]*?\n---\n?/, '');
+    }
     var html = marked.parse(markdown);
     var safe = DOMPurify.sanitize(html);
     target.innerHTML = safe;

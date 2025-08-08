@@ -1,8 +1,10 @@
+---
 id: glitch-godel
 title: Неполнота Гёделя
-layer: Логика
+category: Логика
 tags: [формальные системы, доказуемость]
 status: draft
+---
 
 ### TL;DR
 

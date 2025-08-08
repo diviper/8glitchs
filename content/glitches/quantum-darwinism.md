@@ -1,8 +1,10 @@
+---
 id: glitch-quantum-darwinism
 title: Квантовый дарвинизм
-layer: Квант
+category: Квант
 tags: [среда, декогеренция, избираемость]
 status: draft
+---
 
 ### TL;DR
 

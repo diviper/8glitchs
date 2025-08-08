@@ -1,8 +1,10 @@
+---
 id: glitch-ship-of-theseus
 title: Корабль Тесея
-layer: Идентичность
+category: Идентичность
 tags: [личность, замена, тождество]
 status: draft
+---
 
 ### TL;DR
 

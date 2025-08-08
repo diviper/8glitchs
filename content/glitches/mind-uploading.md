@@ -1,8 +1,10 @@
+---
 id: glitch-mind-uploading
 title: Загрузка разума / копирование личности
-layer: Идентичность
+category: Идентичность
 tags: [копия, оригинал, телепортация]
 status: draft
+---
 
 ### TL;DR
 

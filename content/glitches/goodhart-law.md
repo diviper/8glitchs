@@ -1,8 +1,10 @@
+---
 id: glitch-goodhart
 title: Закон Гудхарта
-layer: Информация
+category: Информация
 tags: [метрика, оптимизация, цель]
 status: draft
+---
 
 ### TL;DR
 

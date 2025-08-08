@@ -1,8 +1,10 @@
+---
 id: glitch-anthropic
 title: Антропный принцип
-layer: Наблюдатель
+category: Наблюдатель
 tags: [отбор наблюдателя, селекция]
 status: draft
+---
 
 ### TL;DR
 

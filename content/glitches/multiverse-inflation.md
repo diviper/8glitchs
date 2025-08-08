@@ -1,8 +1,10 @@
+---
 id: glitch-multiverse-inflation
 title: Инфляция и мультивселенные
-layer: Космос
+category: Космос
 tags: [инфляция, пузыри, ансамбль]
 status: draft
+---
 
 ### TL;DR
 

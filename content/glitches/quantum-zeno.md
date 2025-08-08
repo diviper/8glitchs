@@ -1,8 +1,10 @@
+---
 id: glitch-quantum-zeno
 title: Квантовый парадокс Зенона
-layer: Квант
+category: Квант
 tags: [измерение, динамика, заморозка]
 status: draft
+---
 
 ### TL;DR
 

@@ -1,8 +1,10 @@
+---
 id: glitch-big-crunch-rip
 title: Большое сжатие / Большой разрыв
-layer: Космос
+category: Космос
 tags: [судьба вселенной, геометрия]
 status: draft
+---
 
 ### TL;DR
 

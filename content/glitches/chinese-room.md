@@ -1,8 +1,10 @@
+---
 id: glitch-chinese-room
 title: Китайская комната (Сёрл)
-layer: Идентичность
+category: Идентичность
 tags: [понимание, символы, ИИ]
 status: draft
+---
 
 ### TL;DR
 

@@ -1,8 +1,10 @@
+---
 id: glitch-zeno
 title: Парадоксы Зенона
-layer: Логика
+category: Логика
 tags: [непрерывность, бесконечность, движение]
 status: draft
+---
 
 ### TL;DR
 
