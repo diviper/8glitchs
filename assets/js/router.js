@@ -13,6 +13,8 @@
     'Логика': 'logic',
     'Наблюдатель': 'observer'
   };
+  var slugCatMap = {};
+  Object.keys(catSlugMap).forEach(function (k) { slugCatMap[catSlugMap[k]] = k; });
   var sidebar = document.querySelector('.sidebar');
   var sidebarToggle = document.getElementById('sidebar-toggle');
   var sidebarOverlay = document.getElementById('sidebar-overlay');
@@ -29,6 +31,7 @@
       setTimeout(function () { t.remove(); }, 300);
     }, 2000);
   }
+  window.showToast = showToast;
 
   function openSidebar() {
     if (sidebar) sidebar.classList.add('open');
@@ -137,7 +140,12 @@
 
   function applyFilters(params) {
     searchInput.value = params.q || '';
-    categorySelect.value = params.cat || '';
+    var cat = params.cat || '';
+    if (slugCatMap[cat]) {
+      categorySelect.value = slugCatMap[cat];
+    } else {
+      categorySelect.value = cat;
+    }
   }
 
   function highlightActive(slug) {
@@ -155,6 +163,12 @@
     if (!rawHash) {
       location.hash = '#/overview';
       return;
+    }
+    var anchorIndex = rawHash.indexOf('#');
+    var anchor = null;
+    if (anchorIndex !== -1) {
+      anchor = rawHash.slice(anchorIndex + 1);
+      rawHash = rawHash.slice(0, anchorIndex);
     }
     var qIndex = rawHash.indexOf('?');
     var query = '';
@@ -214,26 +228,46 @@
           contentEl.appendChild(body);
           await window.renderMarkdown(md, body);
 
-          var toc = document.createElement('div');
           var headings = body.querySelectorAll('h3');
-          headings.forEach(function (h, i) {
-            var id = h.textContent.toLowerCase().replace(/\s+/g, '-').replace(/[^\w\-а-яё]/gi, '');
-            if (!id) id = 'sec-' + i;
-            h.id = id;
-            var link = document.createElement('a');
-            link.href = '#' + id;
-            link.textContent = h.textContent;
-            link.addEventListener('click', function (e) {
-              e.preventDefault();
-              document.getElementById(id).scrollIntoView({ behavior: 'smooth' });
-            });
-            toc.appendChild(link);
-          });
           if (headings.length) {
+            var toc = document.createElement('div');
             toc.className = 'toc';
+            headings.forEach(function (h) {
+              var id = h.id;
+              var link = document.createElement('a');
+              link.href = '#' + id;
+              link.textContent = h.textContent;
+              link.addEventListener('click', function (e) {
+                e.preventDefault();
+                var offset = document.querySelector('nav').offsetHeight || 0;
+                var top = h.getBoundingClientRect().top + window.scrollY - offset;
+                window.scrollTo({ top: top, behavior: 'smooth' });
+              });
+              toc.appendChild(link);
+            });
             contentEl.insertBefore(toc, body);
+            var links = toc.querySelectorAll('a');
+            var io = new IntersectionObserver(function (entries) {
+              entries.forEach(function (en) {
+                if (en.isIntersecting) {
+                  var id = en.target.id;
+                  links.forEach(function (a) {
+                    a.classList.toggle('active', a.getAttribute('href') === '#' + id);
+                  });
+                }
+              });
+            }, { rootMargin: '-80px 0px -70% 0px' });
+            headings.forEach(function (h) { io.observe(h); });
           }
 
+          if (anchor) {
+            var elA = document.getElementById(anchor);
+            if (elA) {
+              var off = document.querySelector('nav').offsetHeight || 0;
+              var topA = elA.getBoundingClientRect().top + window.scrollY - off;
+              window.scrollTo(0, topA);
+            }
+          }
           document.title = 'Glitch Registry — ' + item.title;
 
           shareBtn.addEventListener('click', function () {
@@ -261,9 +295,9 @@
             renderList(slug);
           });
 
-          try {
-            localStorage.setItem('lastVisited', JSON.stringify({ type: 'glitch', slug: slug }));
-          } catch (e) {}
+          if (typeof window.setLastVisited === 'function') {
+            window.setLastVisited({ type: 'glitch', slug: slug });
+          }
         } catch (e) {
           contentEl.innerHTML = '<div class="empty">Не нашлось</div>';
         }
@@ -274,9 +308,9 @@
       var itemScene = glitches.find(function (g) { return g.slug === slug; });
       if (itemScene) {
         document.title = 'Glitch Registry — ' + itemScene.title;
-        try {
-          localStorage.setItem('lastVisited', JSON.stringify({ type: 'scene', slug: slug }));
-        } catch (e) {}
+        if (typeof window.setLastVisited === 'function') {
+          window.setLastVisited({ type: 'scene', slug: slug });
+        }
         if (itemScene.status === 'cardOnly' || !itemScene.paths.scene) {
           contentEl.innerHTML = '<div class="scene-head">'
             + '<div class="actions-left"><a class="btn-link" href="#/glitch/' + slug + '">← К карточке</a></div>'
@@ -346,7 +380,9 @@
         grid.className = 'tiles';
 
         var last = null;
-        try { last = JSON.parse(localStorage.getItem('lastVisited')); } catch (e) {}
+        if (typeof window.getLastVisited === 'function') {
+          last = window.getLastVisited();
+        }
         if (last) {
           var lastItem = glitches.find(function (g) { return g.slug === last.slug; });
           if (lastItem) {
@@ -367,27 +403,67 @@
           acc[g.category] = (acc[g.category] || 0) + 1;
           return acc;
         }, {});
+        var stats = { byCategory: {} };
+        if (typeof window.getStats === 'function') {
+          try { stats = await window.getStats(); } catch (e) {}
+        }
+        function highlightTile(sl) {
+          grid.querySelectorAll('.tile').forEach(function (t) {
+            t.classList.toggle('active', t.dataset.cat === sl);
+          });
+        }
         Object.keys(catCounts).forEach(function (c) {
+          var slugCat = catSlugMap[c] || '';
+          var done = (stats.byCategory && stats.byCategory[slugCat]) || 0;
           var tile = document.createElement('div');
           tile.className = 'tile';
+          tile.dataset.cat = slugCat;
+          tile.setAttribute('tabindex', '0');
           var h = document.createElement('div');
           h.textContent = c;
           tile.appendChild(h);
           var count = document.createElement('div');
-          count.textContent = catCounts[c];
+          count.textContent = done + '/' + catCounts[c];
           tile.appendChild(count);
-          var btn = document.createElement('button');
-          btn.className = 'btn-link';
-          btn.textContent = 'Показать';
-          btn.addEventListener('click', function () {
+          tile.addEventListener('click', function () {
             categorySelect.value = c;
             renderList(null);
-            updateHashQuery();
+            history.replaceState(null, '', '#/overview?cat=' + slugCat);
+            highlightTile(slugCat);
             openSidebar();
           });
-          tile.appendChild(btn);
+          tile.addEventListener('keydown', function (e) {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              tile.click();
+            }
+          });
           grid.appendChild(tile);
         });
+        var activeSlug = params.cat;
+        if (!slugCatMap[activeSlug]) {
+          activeSlug = catSlugMap[params.cat] || '';
+        }
+        if (activeSlug) {
+          highlightTile(activeSlug);
+          openSidebar();
+        }
+
+        var resetTile = document.createElement('div');
+        resetTile.className = 'tile';
+        var resetBtn = document.createElement('button');
+        resetBtn.className = 'btn-link';
+        resetBtn.textContent = 'Сброс прогресса';
+        resetBtn.addEventListener('click', function () {
+          if (confirm('Сбросить прогресс?')) {
+            if (typeof window.resetProgress === 'function') { window.resetProgress(); }
+            showToast('Сброшено');
+            renderList(null);
+            load();
+          }
+        });
+        resetTile.appendChild(resetBtn);
+        grid.appendChild(resetTile);
 
         contentEl.appendChild(grid);
 
@@ -410,6 +486,8 @@
 
   function currentSlug() {
     var h = location.hash.slice(1).split('?')[0];
+    var a = h.indexOf('#');
+    if (a !== -1) h = h.slice(0, a);
     var p = h.split('/').filter(Boolean);
     return (p[0] === 'glitch' || p[0] === 'scene') ? p[1] : null;
   }

@@ -827,9 +827,12 @@ button, input, select {
 .btn-primary { background:rgba(255,255,255,.08); border-color:rgba(255,255,255,.3); }
 .btn-primary:hover { background:rgba(255,255,255,.15); }
 
-.toc { border:1px solid rgba(255,255,255,.12); border-radius:10px; padding:10px 12px; margin:12px 0; display:flex; flex-direction:column; gap:4px; }
+.toc { border:1px solid rgba(255,255,255,.12); border-radius:10px; padding:10px 12px; margin:12px 0; display:flex; flex-direction:column; gap:4px; position:sticky; top:80px; max-height:calc(100vh - 100px); overflow:auto; }
+.toc a.active { font-weight:700; }
+.anchor { margin-left:8px; font-size:.9em; opacity:.7; background:none; border:none; cursor:pointer; }
+.tile.active { background:rgba(255,255,255,.08); }
 .tiles { display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:16px; margin:16px 0; }
-.tile { border:1px solid rgba(255,255,255,.12); border-radius:12px; padding:16px 18px; backdrop-filter:blur(4px); }
+.tile { border:1px solid rgba(255,255,255,.12); border-radius:12px; padding:16px 18px; backdrop-filter:blur(4px); cursor:pointer; }
 .tile.continue { grid-column:1/-1; text-align:center; }
 .tile button { margin-top:8px; }
 
