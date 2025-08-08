@@ -31,6 +31,16 @@ body {
     overflow-x: hidden;
 }
 
+a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible {
+    outline: 2px solid var(--accent-color);
+    outline-offset: 2px;
+}
+
+mark {
+    background: var(--accent-color);
+    color: #000;
+}
+
 .container {
     max-width: 1200px;
     margin: 0 auto;
@@ -844,8 +854,9 @@ input, select {
 .tile.continue { grid-column:1/-1; text-align:center; }
 .tile button { margin-top:8px; }
 
-.toast { position:fixed; bottom:20px; right:20px; background:rgba(0,0,0,.8); padding:8px 14px; border-radius:8px; opacity:0; transition:opacity .3s; z-index:9999; }
+.toast { position:fixed; bottom:20px; right:20px; background:rgba(0,0,0,.8); padding:8px 14px; border-radius:8px; opacity:0; transition:opacity .3s; z-index:9999; display:flex; align-items:center; gap:8px; pointer-events:none; }
 .toast.show { opacity:1; }
+.toast button { pointer-events:auto; background:none; border:none; color:#fff; cursor:pointer; }
 
 .callout { border:1px solid rgba(255,255,255,.12); border-radius:12px; padding:16px 18px; margin:16px 0; background:rgba(255,255,255,.03); }
 .callout.warn { border-color:#ff7b7b33; background:rgba(255,0,0,.06); }
