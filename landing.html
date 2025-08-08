@@ -10,17 +10,18 @@
   <div class="landing" id="landing">
     <canvas id="fallback" hidden></canvas>
     <div class="overlay"></div>
+    <div class="controls">
+      <button id="skip-btn" tabindex="0" aria-label="Пропустить интро">Skip intro</button>
+      <button id="mute-btn" tabindex="0" aria-label="Переключить звук" hidden>Mute</button>
+      <button id="always-skip-btn" tabindex="0" aria-label="Всегда пропускать интро">Всегда пропускать</button>
+    </div>
     <div class="center">
       <div>
         <h1 id="landing-title"></h1>
         <p class="tag" id="landing-tagline"></p>
-        <button id="enter-btn" class="btn-big" tabindex="0" aria-label="Войти в реестр">Войти в реестр</button>
+        <div id="loader" class="loader" aria-label="Загрузка" role="status"></div>
+        <button id="enter-btn" class="btn-big" tabindex="0" aria-label="Войти в реестр" hidden>Войти в реестр</button>
       </div>
-    </div>
-    <div class="controls">
-      <button id="mute-btn" tabindex="0" aria-label="Переключить звук">Mute</button>
-      <button id="skip-btn" tabindex="0" aria-label="Пропустить интро">Skip intro</button>
-      <label tabindex="0" for="skip-checkbox" aria-label="Всегда пропускать"><input type="checkbox" id="skip-checkbox" tabindex="0" aria-label="Всегда пропускать"> Всегда пропускать</label>
     </div>
     <footer>
       <small>Звук включится после клика. <a href="about.html" tabindex="0" aria-label="Об архиве">Об архиве</a></small>

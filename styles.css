@@ -876,10 +876,16 @@ button, input, select {
 .landing { position:fixed; inset:0; overflow:hidden; }
 .landing video { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; filter:brightness(.8) saturate(1.1); }
 .landing .overlay { position:absolute; inset:0; background:radial-gradient(ellipse at 50% 40%, rgba(0,0,0,.25), rgba(0,0,0,.65)); }
-.landing .center { position:absolute; inset:0; display:grid; place-items:center; text-align:center; padding:24px; }
+.landing .center { position:absolute; inset:0; display:grid; place-items:center; text-align:center; padding:24px; padding-left:calc(24px + env(safe-area-inset-left)); padding-right:calc(24px + env(safe-area-inset-right)); padding-bottom:calc(24px + env(safe-area-inset-bottom)); }
 .landing h1 { font-size:clamp(28px,4vw,56px); margin:0 0 8px; }
 .landing p.tag { opacity:.85; margin:0 0 24px; }
 .btn-big { padding:12px 18px; border:1px solid rgba(255,255,255,.2); border-radius:12px; text-decoration:none; display:inline-block; }
-.landing .controls { position:absolute; top:14px; right:14px; display:flex; gap:10px; }
+.landing .controls { position:absolute; top:calc(env(safe-area-inset-top) + 14px); right:calc(env(safe-area-inset-right) + 14px); display:flex; gap:10px; }
 .fade-out { animation: fadeOut .6s ease forwards; }
 @keyframes fadeOut { to { opacity:0; transform:scale(1.02); } }
+.landing footer { position:absolute; left:0; right:0; bottom:0; text-align:center; padding:10px; padding-bottom:calc(10px + env(safe-area-inset-bottom)); }
+.landing button:focus-visible, .landing a:focus-visible { outline:2px solid #fff; outline-offset:2px; }
+.loader { width:24px; height:24px; border:3px solid rgba(255,255,255,.3); border-top-color:#fff; border-radius:50%; margin:0 auto 16px; animation:spin 1s linear infinite; }
+@keyframes spin { to { transform:rotate(360deg); } }
+.no-effects video { filter:none; }
+.no-effects .overlay { display:none; }
