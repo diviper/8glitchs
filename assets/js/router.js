@@ -16,6 +16,7 @@
   var sidebar = document.querySelector('.sidebar');
   var sidebarToggle = document.getElementById('sidebar-toggle');
   var sidebarOverlay = document.getElementById('sidebar-overlay');
+  var navIndex = -1;
 
   function openSidebar() {
     if (sidebar) sidebar.classList.add('open');
@@ -33,8 +34,38 @@
   if (sidebarOverlay) {
     sidebarOverlay.addEventListener('click', closeSidebar);
   }
+  function moveSelection(dir) {
+    var items = listEl.querySelectorAll('.gl-item');
+    if (!items.length) return;
+    var newIndex = navIndex + dir;
+    if (newIndex < 0) newIndex = items.length - 1;
+    if (newIndex >= items.length) newIndex = 0;
+    navIndex = newIndex;
+    items.forEach(function (el, i) {
+      el.classList.toggle('active', i === navIndex);
+    });
+    items[navIndex].scrollIntoView({ block: 'nearest' });
+  }
+
   document.addEventListener('keydown', function (e) {
     if (e.key === 'Escape') closeSidebar();
+    if (e.ctrlKey && (e.key === 'k' || e.key === 'K')) {
+      e.preventDefault();
+      searchInput.focus();
+    } else if (e.key === 'ArrowDown' && e.target.tagName !== 'SELECT') {
+      e.preventDefault();
+      moveSelection(1);
+    } else if (e.key === 'ArrowUp' && e.target.tagName !== 'SELECT') {
+      e.preventDefault();
+      moveSelection(-1);
+    } else if (e.key === 'Enter') {
+      var items = listEl.querySelectorAll('.gl-item');
+      if (navIndex >= 0 && items[navIndex]) {
+        e.preventDefault();
+        var href = items[navIndex].getAttribute('href');
+        location.hash = href;
+      }
+    }
   });
 
   function getManifest() {
@@ -54,7 +85,8 @@
 
   function updateHashQuery() {
     var base = location.hash.split('?')[0];
-    location.hash = base + getFilterQuery();
+    var newHash = base + getFilterQuery();
+    history.replaceState(null, '', newHash);
   }
 
   async function renderList(activeSlug) {
@@ -86,9 +118,9 @@
         doneIcon.textContent = '✔';
         a.appendChild(doneIcon);
       }
-      if (g.slug === activeSlug) a.classList.add('active');
       listEl.appendChild(a);
     });
+    highlightActive(activeSlug);
   }
 
   function applyFilters(params) {
@@ -97,9 +129,13 @@
   }
 
   function highlightActive(slug) {
-    listEl.querySelectorAll('.gl-item').forEach(function (el) {
-      el.classList.toggle('active', el.dataset.slug === slug);
+    var idx = -1;
+    listEl.querySelectorAll('.gl-item').forEach(function (el, i) {
+      var isActive = el.dataset.slug === slug;
+      el.classList.toggle('active', isActive);
+      if (isActive) idx = i;
     });
+    navIndex = idx;
   }
 
   async function load() {
