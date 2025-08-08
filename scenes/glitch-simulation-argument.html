@@ -15,6 +15,8 @@ input[type=range]{width:100%;}
 <label>cost: <span id="Cval"></span><input type="range" id="C" min="1" max="100" value="50"></label>
 <label>fraction_run: <span id="Fval"></span><input type="range" id="F" min="0" max="1" step="0.01" value="0.5"></label>
 <div id="result"></div>
+<button id="reset">Reset</button>
+<button data-share>Копировать ссылку</button>
 <script>
 var N=document.getElementById('N');
 var C=document.getElementById('C');
@@ -25,13 +27,15 @@ var Fval=document.getElementById('Fval');
 var res=document.getElementById('result');
 function fmt(v){return parseFloat(v).toFixed(2);}
 function update(){Nval.textContent=N.value;Cval.textContent=C.value;Fval.textContent=fmt(F.value);var prior=(F.value*N.value)/(1+F.value*N.value);res.textContent='prior ≈ '+fmt(prior)+' — упрощённо.';}
-N.addEventListener('input',update);
-C.addEventListener('input',update);
-F.addEventListener('input',update);
+function sync(){applyQuery({N_sims:N.value,cost:C.value,fraction_run:F.value});}
+N.addEventListener('input',function(){update();sync();});
+C.addEventListener('input',function(){update();sync();});
+F.addEventListener('input',function(){update();sync();});
 var params={N_sims:N.value,cost:C.value,fraction_run:F.value};
 window.__initScene=function(){update();};
 window.__applyParams=function(q){if(q.N_sims){N.value=q.N_sims;}if(q.cost){C.value=q.cost;}if(q.fraction_run){F.value=q.fraction_run;}update();};
 window.__getShareParams=function(){return {N_sims:N.value,cost:C.value,fraction_run:F.value};};
+document.getElementById('reset').addEventListener('click',function(){N.value=10;C.value=50;F.value=0.5;update();applyQuery({});});
 </script>
 <script src="../assets/js/scene-frame.js"></script>
 </body>

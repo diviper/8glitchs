@@ -777,6 +777,13 @@ body {
 }
 button, input, select {
   box-shadow: 0 1px 2.5px rgba(0,0,0,0.3);
+  min-height:44px;
+}
+input, select {
+  padding:0 16px;
+}
+.gl-item, .tile {
+  min-height:44px;
 }
 
 #sidebar-toggle{display:none;background:none;border:none;color:#0f0;font-size:16px;margin-right:1rem;cursor:pointer}
