@@ -708,6 +708,10 @@
     </style>
 </head>
 <body>
+    <div style="text-align:center;margin-top:10px;">
+        <button id="reset">Reset</button>
+        <button data-share>Копировать ссылку</button>
+    </div>
     <div class="container">
         <div class="series-header">
             <div class="series-title">🌌 СЕРИЯ "БАГИ РЕАЛЬНОСТИ" 🌌</div>
@@ -1281,7 +1285,11 @@
         }
         
         // Привязываем события
-        document.getElementById('beliefSlider').addEventListener('input', updateBeliefMeter);
+        document.getElementById('beliefSlider').addEventListener('input', function(){updateBeliefMeter();applyQuery({b:beliefStrength});});
+        document.getElementById('reset').addEventListener('click',function(){document.getElementById('beliefSlider').value=50;updateBeliefMeter();applyQuery({});});
+        window.__applyParams=function(q){if(q.b){document.getElementById('beliefSlider').value=q.b;updateBeliefMeter();}};
+        window.__getShareParams=function(){return {b:beliefStrength};};
+        window.__initScene=function(){updateBeliefMeter();};
         
         // Инициализация
         createDNAStrand();

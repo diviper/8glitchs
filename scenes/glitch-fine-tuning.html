@@ -614,6 +614,10 @@
     </style>
 </head>
 <body>
+    <div style="text-align:center;margin-top:10px;">
+        <button id="reset">Reset</button>
+        <button data-share>Копировать ссылку</button>
+    </div>
     <div class="container">
         <div class="series-header">
             <div class="series-title">🌌 СЕРИЯ "БАГИ РЕАЛЬНОСТИ" 🌌</div>
@@ -1116,16 +1120,39 @@
             }
         }
         
-        // Привязываем события к слайдерам
-        document.getElementById('gravity').addEventListener('input', updateConstants);
-        document.getElementById('nuclear').addEventListener('input', updateConstants);
-        document.getElementById('electromagnetic').addEventListener('input', updateConstants);
-        document.getElementById('darkEnergy').addEventListener('input', updateConstants);
+        function sync(){
+            applyQuery({g:constants.gravity,n:constants.nuclear,e:constants.electromagnetic,d:constants.darkEnergy});
+        }
+        document.getElementById('gravity').addEventListener('input', function(){updateConstants();sync();});
+        document.getElementById('nuclear').addEventListener('input', function(){updateConstants();sync();});
+        document.getElementById('electromagnetic').addEventListener('input', function(){updateConstants();sync();});
+        document.getElementById('darkEnergy').addEventListener('input', function(){updateConstants();sync();});
         
         // Инициализация
         updateConstants();
         updateStatus();
         updateFactoryStatus();
+
+        document.getElementById('reset').addEventListener('click',function(){
+            document.getElementById('gravity').value=1.0;
+            document.getElementById('nuclear').value=1.0;
+            document.getElementById('electromagnetic').value=1.0;
+            document.getElementById('darkEnergy').value=1.0;
+            updateConstants();
+            applyQuery({});
+        });
+
+        window.__applyParams = function(q){
+            if(q.g){document.getElementById('gravity').value=q.g;}
+            if(q.n){document.getElementById('nuclear').value=q.n;}
+            if(q.e){document.getElementById('electromagnetic').value=q.e;}
+            if(q.d){document.getElementById('darkEnergy').value=q.d;}
+            updateConstants();
+        };
+        window.__getShareParams = function(){
+            return {g:constants.gravity,n:constants.nuclear,e:constants.electromagnetic,d:constants.darkEnergy};
+        };
+        window.__initScene = function(){};
         
         // Параллакс эффект
         window.addEventListener('scroll', () => {

@@ -72,13 +72,14 @@
   }
 
   function openSidebar() {
-    if (!sidebar || !isMobile()) return;
+    if (!sidebar || !isMobile() || sidebar.classList.contains('open')) return;
     sidebar.classList.add('open');
     if (sidebarOverlay) sidebarOverlay.classList.add('show');
+    history.pushState({sb: true}, '');
   }
 
   function closeSidebar() {
-    if (!sidebar || !isMobile()) return;
+    if (!sidebar) return;
     sidebar.classList.remove('open');
     if (sidebarOverlay) sidebarOverlay.classList.remove('show');
   }
@@ -86,17 +87,20 @@
   if (sidebarToggle) {
     sidebarToggle.addEventListener('click', function () {
       if (sidebar.classList.contains('open')) {
-        closeSidebar();
+        history.back();
       } else {
         openSidebar();
       }
     });
   }
   if (sidebarOverlay) {
-    sidebarOverlay.addEventListener('click', closeSidebar);
+    sidebarOverlay.addEventListener('click', function(){ history.back(); });
   }
   window.addEventListener('resize', function () {
     if (!isMobile()) closeSidebar();
+  });
+  window.addEventListener('popstate', function(){
+    if (sidebar.classList.contains('open')) closeSidebar();
   });
   function moveSelection(dir) {
     var items = listEl.querySelectorAll('.gl-item');
@@ -118,7 +122,7 @@
         renderList(currentSlug());
         updateHashQuery();
       } else {
-        closeSidebar();
+        if(sidebar.classList.contains('open')){ history.back(); }
       }
     } else if ((e.ctrlKey || e.metaKey) && (e.key === 'k' || e.key === 'K')) {
       e.preventDefault();
