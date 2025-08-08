@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Intro</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="landing" id="landing">
+    <canvas id="fallback" hidden></canvas>
+    <div class="overlay"></div>
+    <div class="center">
+      <div>
+        <h1 id="landing-title"></h1>
+        <p class="tag" id="landing-tagline"></p>
+        <button id="enter-btn" class="btn-big" tabindex="0" aria-label="Войти в реестр">Войти в реестр</button>
+      </div>
+    </div>
+    <div class="controls">
+      <button id="mute-btn" tabindex="0" aria-label="Переключить звук">Mute</button>
+      <label tabindex="0"><input type="checkbox" id="skip-checkbox" tabindex="0" aria-label="Всегда пропускать"> Skip intro</label>
+    </div>
+    <footer>
+      <small>Звук включится после клика. <a href="about.html" tabindex="0" aria-label="Об архиве">Об архиве</a></small>
+    </footer>
+  </div>
+  <script src="assets/js/landing.js"></script>
+</body>
+</html>
