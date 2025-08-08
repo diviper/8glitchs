@@ -7,10 +7,27 @@
   var enterBtn = document.getElementById('enter-btn');
   var muteBtn = document.getElementById('mute-btn');
   var skipBtn = document.getElementById('skip-btn');
-  var skipCb = document.getElementById('skip-checkbox');
+  var alwaysSkipBtn = document.getElementById('always-skip-btn');
+  var loader = document.getElementById('loader');
   var canvas = document.getElementById('fallback');
   var audio;
-  var muted = localStorage.getItem('landing.muted') === 'true';
+  var muted = localStorage.getItem('landing:muted') === 'true';
+  var prefetched = false;
+  var gestured = false;
+  var lowFps = false;
+
+  var fpsCount = 0;
+  var fpsStart = performance.now();
+  function fpsCheck(now) {
+    fpsCount++;
+    if (now - fpsStart < 1000) {
+      requestAnimationFrame(fpsCheck);
+    } else if (fpsCount < 30) {
+      lowFps = true;
+      landing.classList.add('no-effects');
+    }
+  }
+  requestAnimationFrame(fpsCheck);
 
   function updateMuteBtn() {
     muteBtn.textContent = muted ? 'Unmute' : 'Mute';
@@ -29,13 +46,24 @@
     ensureAudio();
     muted = !muted;
     audio.volume = muted ? 0 : 1;
-    localStorage.setItem('landing.muted', String(muted));
+    localStorage.setItem('landing:muted', String(muted));
     updateMuteBtn();
+  }
+
+  function prefetchHub() {
+    if (prefetched) return;
+    prefetched = true;
+    ['assets/js/router.js', 'assets/js/md.js', 'assets/js/progress.js'].forEach(function (src) {
+      var link = document.createElement('link');
+      link.rel = 'prefetch';
+      link.href = src;
+      document.head.appendChild(link);
+    });
   }
 
   function enter() {
     ensureAudio();
-    localStorage.setItem('landing.lastSeenAt', Date.now().toString());
+    localStorage.setItem('landing:lastSeen', Date.now().toString());
     landing.classList.add('fade-out');
     setTimeout(function () {
       location.href = 'index.html#/overview';
@@ -44,11 +72,17 @@
 
   function showFallback() {
     landing.style.background = 'url(' + data.poster + ') center/cover no-repeat';
-    canvas.hidden = false;
-    startStars();
+    loader.hidden = true;
+    enterBtn.hidden = false;
+    if (!lowFps) {
+      canvas.hidden = false;
+      startStars();
+    }
+    prefetchHub();
   }
 
   function startStars() {
+    if (lowFps) return;
     var ctx = canvas.getContext('2d');
     var width = 0;
     var height = 0;
@@ -109,14 +143,19 @@
     step();
   }
 
+  function onFirstGesture() {
+    if (gestured) return;
+    gestured = true;
+    muteBtn.hidden = false;
+    ensureAudio();
+    prefetchHub();
+  }
+
   function init(dataJson) {
     data = dataJson;
     titleEl.textContent = data.title;
     tagEl.textContent = data.tagline;
     updateMuteBtn();
-    if (localStorage.getItem('landing.skip') === '1') {
-      skipCb.checked = true;
-    }
     var video = document.createElement('video');
     video.setAttribute('autoplay', '');
     video.setAttribute('muted', '');
@@ -128,28 +167,44 @@
     src.type = 'video/mp4';
     video.appendChild(src);
     landing.insertBefore(video, overlay);
+    video.addEventListener('canplay', function () {
+      loader.hidden = true;
+      enterBtn.hidden = false;
+      prefetchHub();
+    });
+    video.addEventListener('loadeddata', prefetchHub);
     video.addEventListener('error', showFallback);
     setTimeout(function () {
       if (!video.readyState) showFallback();
     }, 4000);
+    setTimeout(function () {
+      loader.hidden = true;
+      enterBtn.hidden = false;
+    }, 3000);
   }
+
+  document.addEventListener('click', onFirstGesture);
+  document.addEventListener('touchstart', onFirstGesture);
+  document.addEventListener('keydown', onFirstGesture);
 
   muteBtn.addEventListener('click', toggleMute);
   enterBtn.addEventListener('click', enter);
   skipBtn.addEventListener('click', enter);
-  skipCb.addEventListener('change', function () {
-    if (skipCb.checked) {
-      localStorage.setItem('landing.skip', '1');
-    } else {
-      localStorage.removeItem('landing.skip');
-    }
+  alwaysSkipBtn.addEventListener('click', function () {
+    localStorage.setItem('landing:skip', 'true');
+    enter();
   });
+
   document.addEventListener('keydown', function (e) {
-    if (e.code === 'Enter' || e.code === 'Space') {
+    if (e.code === 'Enter') {
       e.preventDefault();
       enter();
-    } else if (e.key === 'm' || e.key === 'M') {
+    } else if (e.code === 'Space') {
+      e.preventDefault();
       toggleMute();
+    } else if (e.code === 'Escape') {
+      e.preventDefault();
+      enter();
     }
   });
 
@@ -160,3 +215,4 @@
       console.error('landing manifest not found');
     });
 })();
+
