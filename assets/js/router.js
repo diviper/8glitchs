@@ -122,7 +122,9 @@
       }
     } else if ((e.ctrlKey || e.metaKey) && (e.key === 'k' || e.key === 'K')) {
       e.preventDefault();
+      openSidebar();
       searchInput.focus();
+      searchInput.select();
     } else if (e.key === 'ArrowDown' && e.target.tagName !== 'SELECT') {
       e.preventDefault();
       moveSelection(1);
@@ -573,10 +575,12 @@
   }
 
   searchInput.addEventListener('input', function () {
+    navIndex = -1;
     renderList(currentSlug());
     updateHashQuery();
   });
   categorySelect.addEventListener('change', function () {
+    navIndex = -1;
     renderList(currentSlug());
     updateHashQuery();
   });
