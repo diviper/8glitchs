@@ -262,59 +262,36 @@
     if (parts[0] === 'glitch' && slug) {
       var item = glitches.find(function (g) { return g.slug === slug; });
       if (item) {
+        var catSlug = catSlugMap[item.category] || 'unknown';
+        contentEl.innerHTML =
+          '<div class="card-head">' +
+            '<span class="cat cat-' + catSlug + '"></span>' +
+            '<h1>' + item.title + '</h1>' +
+            '<div class="actions">' +
+              (item.status === 'sceneExists' && item.paths && item.paths.scene ? '<a class="btn-link" href="#/scene/' + item.slug + '">Открыть сцену</a>' : '') +
+              '<button class="btn-link" data-share>Поделиться</button>' +
+              '<button class="btn-link" data-done>Пометить пройдено</button>' +
+            '</div>' +
+          '</div>' +
+          '<div class="md-body"></div>';
+        var target = contentEl.querySelector('.md-body');
+        var shareBtn = contentEl.querySelector('[data-share]');
+        var doneBtn = contentEl.querySelector('[data-done]');
+        var md;
         try {
-          var md = await fetch(item.paths.card).then(function (r) { return r.text(); });
-          contentEl.innerHTML = '';
-          var head = document.createElement('div');
-          head.className = 'card-head';
-          var catEl = document.createElement('span');
-          var catSlug = catSlugMap[item.category] || 'unknown';
-          catEl.className = 'cat cat-' + catSlug;
-          catEl.textContent = item.category;
-          head.appendChild(catEl);
-          var h1 = document.createElement('h1');
-          h1.textContent = item.title;
-          head.appendChild(h1);
-          var actions = document.createElement('div');
-          actions.className = 'actions';
-          if (item.status === 'sceneExists' && item.paths.scene) {
-            var sceneLink = document.createElement('a');
-            sceneLink.className = 'btn-link btn-primary';
-            sceneLink.href = '#/scene/' + slug + getFilterQuery();
-            sceneLink.textContent = 'Открыть сцену';
-            actions.appendChild(sceneLink);
-          }
-          var shareBtn = document.createElement('button');
-          shareBtn.className = 'btn-link';
-          shareBtn.textContent = 'Поделиться';
-          shareBtn.setAttribute('data-share', '');
-          actions.appendChild(shareBtn);
-          var doneBtn = document.createElement('button');
-          doneBtn.className = 'btn-link';
-          doneBtn.textContent = 'Пометить пройдено';
-          doneBtn.setAttribute('data-done', '');
-          actions.appendChild(doneBtn);
-          head.appendChild(actions);
-          contentEl.appendChild(head);
-          var body = document.createElement('div');
-          body.className = 'md-body';
-          contentEl.appendChild(body);
-          await window.renderMarkdown(md, body);
-          body.querySelectorAll('.hero,.legacy,.btns,.bug-series,.series-banner,.project-banner')
-            .forEach(function (n) { n.remove(); });
-          var first = body.querySelector('h3');
-          if (first) {
-            var txt = (first.textContent || '').trim().toLowerCase();
-            var legacyH = ['глюки', 'визуализации', 'о проекте'];
-            if (legacyH.some(function (t) { return txt.includes(t); })) {
-              while (body.firstChild && body.firstChild !== first) {
-                body.removeChild(body.firstChild);
-              }
-              first.remove();
-            }
-          }
+          var resp = await fetch(item.paths.card, { cache: 'no-store' });
+          if (!resp.ok) throw new Error('MD not found: ' + item.paths.card + ' (' + resp.status + ')');
+          md = await resp.text();
+        } catch (e) {
+          console.error(e);
+          target.innerHTML = '<div class="callout warn">Не удалось загрузить карточку.</div>';
+          return;
+        }
+        await window.renderMarkdown(md, target);
+        target.querySelectorAll('.hero,.legacy,.series,.bug-series,.project-banner')
+          .forEach(function (n) { n.remove(); });
 
-          var headings = body.querySelectorAll('h3');
+          var headings = target.querySelectorAll('h3');
           if (headings.length) {
             var toc = document.createElement('div');
             toc.className = 'toc';
@@ -331,7 +308,7 @@
               });
               toc.appendChild(link);
             });
-            contentEl.insertBefore(toc, body);
+            contentEl.insertBefore(toc, target);
             var links = toc.querySelectorAll('a');
             var io = new IntersectionObserver(function (entries) {
               entries.forEach(function (en) {
@@ -384,7 +361,7 @@
           if (typeof window.setLastVisited === 'function') {
             window.setLastVisited({ type: 'glitch', slug: slug });
           }
-        } catch (e) {
+        } else {
           contentEl.innerHTML = '<div class="empty">Не нашлось</div>';
         }
       } else {
