@@ -24,6 +24,7 @@
   function applyLexicon(root) {
     if (!window.LEXICON) return;
     var terms = Object.keys(window.LEXICON).sort(function (a, b) { return b.length - a.length; });
+    var skipTags = ['A', 'CODE', 'PRE', 'ABBR'];
     var walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, null, false);
     var nodes = [];
     while (walker.nextNode()) {
@@ -32,8 +33,7 @@
       var skip = false;
       var p = n.parentNode;
       while (p && p !== root) {
-        var tag = p.tagName;
-        if (tag === 'A' || tag === 'CODE' || tag === 'PRE' || tag === 'ABBR') { skip = true; break; }
+        if (skipTags.indexOf(p.tagName) !== -1) { skip = true; break; }
         p = p.parentNode;
       }
       if (!skip) nodes.push(n);
@@ -47,7 +47,8 @@
         var re = new RegExp('(^|[^' + boundary + '])(' + esc(term) + ')(?=[^' + boundary + ']|$)', 'gi');
         text = text.replace(re, function (match, p1, p2) {
           replaced = true;
-          return p1 + '<abbr class="lex" title="' + window.LEXICON[term] + '">' + p2 + '</abbr>';
+          var key = term.toLowerCase();
+          return p1 + '<abbr class="lex" title="' + window.LEXICON[key] + '">' + p2 + '</abbr>';
         });
       });
       if (replaced) {
