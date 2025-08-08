@@ -1,0 +1,1164 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>БАГ #5: Магическая Настройка</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0c0c0c 0%, #1a1a2e 50%, #16213e 100%);
+            color: #ffffff;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .series-header {
+            text-align: center;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: rgba(139, 0, 255, 0.1);
+            border: 2px solid #8b00ff;
+            border-radius: 15px;
+        }
+        
+        .series-title {
+            font-size: 1.2em;
+            color: #8b00ff;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            margin-top: 10px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            width: 62.5%;
+            height: 100%;
+            background: linear-gradient(90deg, #8b00ff, #ff1493);
+            animation: progressPulse 2s ease-in-out infinite alternate;
+        }
+        
+        @keyframes progressPulse {
+            from { opacity: 0.7; }
+            to { opacity: 1; }
+        }
+        
+        .bug-number {
+            font-size: 4em;
+            font-weight: bold;
+            background: linear-gradient(45deg, #ffd700, #ff6b6b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-align: center;
+            margin-bottom: 20px;
+            animation: divineGlitch 5s ease-in-out infinite;
+        }
+        
+        @keyframes divineGlitch {
+            0%, 80%, 100% { transform: translate(0); filter: hue-rotate(0deg); }
+            5% { transform: translate(-2px, 3px); filter: hue-rotate(120deg); }
+            10% { transform: translate(3px, -2px); filter: hue-rotate(240deg); }
+            15% { transform: translate(-3px, -3px); filter: hue-rotate(360deg); }
+        }
+        
+        .main-title {
+            font-size: 2.5em;
+            text-align: center;
+            margin-bottom: 30px;
+            background: linear-gradient(45deg, #ffd700, #ff6b6b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .hook {
+            font-size: 1.4em;
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border-left: 4px solid #ffd700;
+            border-radius: 10px;
+            font-style: italic;
+        }
+        
+        .shocking-precision {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+        
+        .precision-card {
+            background: rgba(255, 215, 0, 0.1);
+            border: 2px solid #ffd700;
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
+            animation: precisionPulse 4s ease-in-out infinite alternate;
+        }
+        
+        @keyframes precisionPulse {
+            from { box-shadow: 0 0 20px rgba(255, 215, 0, 0.3); }
+            to { box-shadow: 0 0 40px rgba(255, 215, 0, 0.7); }
+        }
+        
+        .precision-number {
+            font-size: 2.5em;
+            font-weight: bold;
+            background: linear-gradient(45deg, #ffd700, #ff6b6b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+        }
+        
+        .precision-label {
+            font-size: 1.1em;
+            margin-bottom: 10px;
+            color: #ffd700;
+            font-weight: bold;
+        }
+        
+        .precision-desc {
+            font-size: 0.9em;
+            opacity: 0.8;
+        }
+        
+        .scientist-story {
+            background: rgba(255, 107, 107, 0.1);
+            border: 2px solid #ff6b6b;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+            position: relative;
+        }
+        
+        .scientist-avatar {
+            position: absolute;
+            top: -20px;
+            left: 20px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: #ff6b6b;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5em;
+            border: 3px solid #fff;
+        }
+        
+        .scientist-name {
+            font-size: 1.4em;
+            color: #ff6b6b;
+            margin-bottom: 10px;
+            margin-left: 70px;
+            font-weight: bold;
+        }
+        
+        .diary-entry {
+            background: rgba(255, 255, 255, 0.05);
+            border-left: 4px solid #ff6b6b;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 5px;
+            font-style: italic;
+            position: relative;
+        }
+        
+        .diary-date {
+            position: absolute;
+            top: -10px;
+            right: 10px;
+            background: #ff6b6b;
+            padding: 5px 10px;
+            border-radius: 10px;
+            font-size: 0.8em;
+            font-weight: bold;
+        }
+        
+        .secret-note {
+            background: rgba(255, 215, 0, 0.1);
+            border: 2px dashed #ffd700;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 15px 0;
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+        
+        .controversy-timeline {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .timeline-title {
+            font-size: 1.8em;
+            color: #ffd700;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+        
+        .timeline-item {
+            display: flex;
+            margin-bottom: 25px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 10px;
+            border-left: 4px solid;
+            position: relative;
+        }
+        
+        .timeline-item.carter { border-left-color: #ffd700; }
+        .timeline-item.rees { border-left-color: #ff6b6b; }
+        .timeline-item.susskind { border-left-color: #4ecdc4; }
+        .timeline-item.multiverse { border-left-color: #8b00ff; }
+        
+        .timeline-year {
+            font-size: 1.3em;
+            font-weight: bold;
+            margin-right: 20px;
+            min-width: 80px;
+            color: #ffd700;
+        }
+        
+        .timeline-content h4 {
+            color: #ff6b6b;
+            margin-bottom: 8px;
+            font-size: 1.2em;
+        }
+        
+        .experiment-section {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 40px;
+            border: 2px solid #ffd700;
+        }
+        
+        .section-title {
+            font-size: 1.8em;
+            margin-bottom: 20px;
+            color: #ffd700;
+            text-align: center;
+        }
+        
+        .tabs {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .tab {
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: white;
+        }
+        
+        .tab.active {
+            background: linear-gradient(45deg, #ffd700, #ff6b6b);
+        }
+        
+        .experiment-container {
+            display: none;
+            margin-bottom: 20px;
+        }
+        
+        .experiment-container.active {
+            display: block;
+        }
+        
+        /* ЭКСПЕРИМЕНТ 1: ГЕНЕРАТОР ВСЕЛЕННЫХ */
+        .universe-generator {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            height: 500px;
+            margin: 0 auto;
+            background: radial-gradient(ellipse at center, rgba(255, 215, 0, 0.1) 0%, rgba(0, 0, 0, 0.9) 70%);
+            border: 2px solid #ffd700;
+            border-radius: 15px;
+            overflow: hidden;
+        }
+        
+        .universe-result {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            font-size: 1.5em;
+            font-weight: bold;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.7);
+            border-radius: 15px;
+            min-width: 300px;
+        }
+        
+        .constant-controls {
+            position: absolute;
+            left: 10px;
+            top: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+            width: 250px;
+        }
+        
+        .constant-control {
+            margin-bottom: 15px;
+        }
+        
+        .constant-label {
+            font-size: 0.9em;
+            margin-bottom: 5px;
+            color: #ffd700;
+        }
+        
+        .constant-slider {
+            width: 100%;
+            height: 5px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 5px;
+            outline: none;
+            -webkit-appearance: none;
+        }
+        
+        .constant-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 15px;
+            height: 15px;
+            background: #ffd700;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+        
+        .constant-value {
+            font-size: 0.8em;
+            color: #fff;
+            margin-top: 2px;
+        }
+        
+        /* ЭКСПЕРИМЕНТ 2: КАЛЬКУЛЯТОР ВЕРОЯТНОСТЕЙ */
+        .probability-calculator {
+            position: relative;
+            width: 100%;
+            max-width: 700px;
+            height: 400px;
+            margin: 0 auto;
+            background: #000;
+            border: 2px solid #ffd700;
+            border-radius: 15px;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+        
+        .probability-display {
+            font-size: 3em;
+            font-weight: bold;
+            background: linear-gradient(45deg, #ffd700, #ff6b6b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 20px;
+        }
+        
+        .probability-explanation {
+            font-size: 1.2em;
+            text-align: center;
+            max-width: 500px;
+            opacity: 0.8;
+        }
+        
+        /* ЭКСПЕРИМЕНТ 3: ЗВЕЗДНАЯ ФАБРИКА */
+        .star-factory {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            height: 450px;
+            margin: 0 auto;
+            background: radial-gradient(circle, rgba(255, 215, 0, 0.2) 0%, rgba(0, 0, 0, 0.9) 70%);
+            border: 2px solid #ffd700;
+            border-radius: 15px;
+            overflow: hidden;
+        }
+        
+        .star {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background: radial-gradient(circle, #ffff00, #ff8800);
+            border-radius: 50%;
+            box-shadow: 0 0 10px #ffff00;
+            animation: starTwinkle 2s ease-in-out infinite alternate;
+        }
+        
+        @keyframes starTwinkle {
+            from { opacity: 0.5; transform: scale(0.8); }
+            to { opacity: 1; transform: scale(1.2); }
+        }
+        
+        .galaxy {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            background: radial-gradient(ellipse at center, rgba(255, 255, 0, 0.3) 0%, transparent 70%);
+            animation: galaxyRotation 20s linear infinite;
+        }
+        
+        @keyframes galaxyRotation {
+            from { transform: translate(-50%, -50%) rotate(0deg); }
+            to { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+        
+        .factory-status {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 10px;
+            border-radius: 10px;
+            font-size: 0.9em;
+        }
+        
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 30px;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            padding: 15px 30px;
+            font-size: 1.1em;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(45deg, #ffd700, #ff6b6b);
+            color: #333;
+        }
+        
+        .btn-secondary {
+            background: linear-gradient(45deg, #4ecdc4, #ff6b6b);
+            color: white;
+        }
+        
+        .btn-danger {
+            background: linear-gradient(45deg, #ff0000, #cc0000);
+            color: white;
+        }
+        
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        .status {
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            text-align: center;
+            font-size: 1.1em;
+            font-weight: bold;
+            min-height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .explanation {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .explanation h3 {
+            color: #ffd700;
+            margin-bottom: 15px;
+            font-size: 1.4em;
+        }
+        
+        .controversy-box {
+            background: rgba(255, 20, 147, 0.1);
+            border: 2px solid #ff1493;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+        }
+        
+        .controversy-title {
+            color: #ff1493;
+            font-size: 1.4em;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        
+        .theory-camps {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+        
+        .camp {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 4px solid;
+        }
+        
+        .camp.god { border-left-color: #ffd700; }
+        .camp.multiverse { border-left-color: #8b00ff; }
+        .camp.coincidence { border-left-color: #ff6b6b; }
+        
+        .camp h4 {
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
+        
+        .theory-connection {
+            background: rgba(139, 0, 255, 0.1);
+            border: 2px solid #8b00ff;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+        }
+        
+        .big-questions {
+            background: rgba(255, 215, 0, 0.1);
+            border: 2px solid #ffd700;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+        }
+        
+        .practical-meaning {
+            background: rgba(255, 107, 107, 0.1);
+            border: 2px solid #ff6b6b;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+        }
+        
+        .next-bug {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            margin-top: 40px;
+        }
+        
+        .rick-quote {
+            background: rgba(0, 255, 0, 0.1);
+            border-left: 4px solid #00ff00;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+            font-style: italic;
+        }
+        
+        .highlight {
+            background: linear-gradient(45deg, #ffff00, #ff8800);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="series-header">
+            <div class="series-title">🌌 СЕРИЯ "БАГИ РЕАЛЬНОСТИ" 🌌</div>
+            <div class="progress-bar">
+                <div class="progress-fill"></div>
+            </div>
+            <div style="margin-top: 10px; font-size: 0.9em;">5 из 8 багов</div>
+        </div>
+        
+        <div class="bug-number">БАГ #5</div>
+        
+        <h1 class="main-title">МАГИЧЕСКАЯ НАСТРОЙКА</h1>
+        
+        <div class="hook">
+            "Вселенная настроена для жизни с точностью 1:10⁶⁰. Это не может быть случайностью!"
+        </div>
+        
+        <div class="shocking-precision">
+            <div class="precision-card">
+                <div class="precision-number">10⁶⁰</div>
+                <div class="precision-label">Точность космологической постоянной</div>
+                <div class="precision-desc">Если изменить на 1 часть из 10⁶⁰, Вселенная схлопнется или разлетится</div>
+            </div>
+            
+            <div class="precision-card">
+                <div class="precision-number">2%</div>
+                <div class="precision-label">Сильное ядерное взаимодействие</div>
+                <div class="precision-desc">Изменение на 2% - и звёзды не смогут синтезировать углерод</div>
+            </div>
+            
+            <div class="precision-card">
+                <div class="precision-number">4%</div>
+                <div class="precision-label">Электромагнитная сила</div>
+                <div class="precision-desc">Изменение на 4% - и атомы не смогут существовать</div>
+            </div>
+            
+            <div class="precision-card">
+                <div class="precision-number">0.007</div>
+                <div class="precision-label">Ядерная эффективность</div>
+                <div class="precision-desc">Точность до 7-го знака! Иначе звёзды не загорятся</div>
+            </div>
+        </div>
+        
+        <div class="scientist-story">
+            <div class="scientist-avatar">🎯</div>
+            <div class="scientist-name">Брэндон Картер, 1973 год</div>
+            <p>Британский космолог, который <strong>первым заметил</strong> невероятную точность настройки Вселенной. Он сформулировал <span class="highlight">антропный принцип</span>, который взорвал научное сообщество.</p>
+            
+            <div class="diary-entry">
+                <div class="diary-date">Конференция в Кракове</div>
+                "Я вычислил вероятность случайного возникновения Вселенной, способной породить жизнь. Число настолько мало, что его невозможно записать! Либо мы невероятно везучие, либо здесь что-то не так с нашим пониманием реальности."
+            </div>
+            
+            <div class="secret-note">
+                <strong>💥 Научный скандал:</strong> Многие коллеги обвинили Картера в "протаскивании религии в науку". Но он настаивал: "Я просто констатирую факт - наше существование требует объяснения!"
+            </div>
+        </div>
+        
+        <div class="controversy-timeline">
+            <div class="timeline-title">⚔️ ВЕЛИКИЙ СПОР О ТОНКОЙ НАСТРОЙКЕ</div>
+            
+            <div class="timeline-item carter">
+                <div class="timeline-year">1973</div>
+                <div class="timeline-content">
+                    <h4>Антропный принцип Картера</h4>
+                    <p>Формулирует проблему: Вселенная удивительно точно настроена для существования жизни. Вероятность случайности ничтожно мала!</p>
+                </div>
+            </div>
+            
+            <div class="timeline-item rees">
+                <div class="timeline-year">1999</div>
+                <div class="timeline-content">
+                    <h4>6 чисел Мартина Риса</h4>
+                    <p>Королевский астроном Британии выделяет 6 фундаментальных констант, которые должны быть настроены с невероятной точностью для существования Вселенной.</p>
+                </div>
+            </div>
+            
+            <div class="timeline-item susskind">
+                <div class="timeline-year">2005</div>
+                <div class="timeline-content">
+                    <h4>Ландшафт Сасскинда</h4>
+                    <p>Леонард Сасскинд предлагает решение через теорию струн: существует 10⁵⁰⁰ различных вселенных с разными законами физики!</p>
+                </div>
+            </div>
+            
+            <div class="timeline-item multiverse">
+                <div class="timeline-year">2010</div>
+                <div class="timeline-content">
+                    <h4>Война мультиверса</h4>
+                    <p>Научное сообщество раскалывается: одни поддерживают мультиверс, другие считают его "ненаучным". Спор продолжается до сих пор!</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="scientist-story">
+            <div class="scientist-avatar">🧮</div>
+            <div class="scientist-name">Мартин Рис, 1999 год</div>
+            <p>Королевский астроном Британии, который <strong>математически доказал</strong> невероятность нашего существования. Его книга "Всего шесть чисел" потрясла научный мир.</p>
+            
+            <div class="diary-entry">
+                <div class="diary-date">Из книги "Just Six Numbers"</div>
+                "Если бы гравитация была в триллион раз сильнее, звёзды сгорали бы за миллион лет вместо миллиардов. Если бы ядерная сила была на 0.007 слабее, звёзды вообще не смогли бы синтезировать углерод. Эти числа настроены с ювелирной точностью!"
+            </div>
+            
+            <div class="secret-note">
+                <strong>🎯 Момент озарения:</strong> Рис понял масштаб проблемы, когда вычислял условия формирования углерода в звёздах. "Окно возможностей оказалось микроскопически узким!"
+            </div>
+        </div>
+        
+        <div class="experiment-section">
+            <h2 class="section-title">🔬 СОЗДАЙ СВОЮ ВСЕЛЕННУЮ</h2>
+            
+            <div class="tabs">
+                <button class="tab active" onclick="showExperiment('generator')">🌌 Генератор Вселенных</button>
+                <button class="tab" onclick="showExperiment('probability')">📊 Калькулятор Вероятностей</button>
+                <button class="tab" onclick="showExperiment('stars')">⭐ Звёздная Фабрика</button>
+            </div>
+            
+            <!-- ЭКСПЕРИМЕНТ 1: ГЕНЕРАТОР ВСЕЛЕННЫХ -->
+            <div class="experiment-container active" id="generator">
+                <div class="universe-generator">
+                    <div class="constant-controls">
+                        <div class="constant-control">
+                            <div class="constant-label">Гравитация</div>
+                            <input type="range" class="constant-slider" id="gravity" min="0.1" max="2" step="0.1" value="1">
+                            <div class="constant-value" id="gravityValue">1.0 (норма)</div>
+                        </div>
+                        
+                        <div class="constant-control">
+                            <div class="constant-label">Ядерная сила</div>
+                            <input type="range" class="constant-slider" id="nuclear" min="0.8" max="1.2" step="0.01" value="1">
+                            <div class="constant-value" id="nuclearValue">1.0 (норма)</div>
+                        </div>
+                        
+                        <div class="constant-control">
+                            <div class="constant-label">Электромагнетизм</div>
+                            <input type="range" class="constant-slider" id="electromagnetic" min="0.8" max="1.2" step="0.01" value="1">
+                            <div class="constant-value" id="electromagneticValue">1.0 (норма)</div>
+                        </div>
+                        
+                        <div class="constant-control">
+                            <div class="constant-label">Тёмная энергия</div>
+                            <input type="range" class="constant-slider" id="darkEnergy" min="0.5" max="1.5" step="0.01" value="1">
+                            <div class="constant-value" id="darkEnergyValue">1.0 (норма)</div>
+                        </div>
+                    </div>
+                    
+                    <div class="universe-result" id="universeResult">
+                        🌌 СТАБИЛЬНАЯ ВСЕЛЕННАЯ<br>
+                        Возможна жизнь!
+                    </div>
+                </div>
+                
+                <div class="controls">
+                    <button class="btn btn-primary" onclick="generateUniverse()">🎲 СЛУЧАЙНАЯ ВСЕЛЕННАЯ</button>
+                    <button class="btn btn-secondary" onclick="resetConstants()">🔄 СБРОС К НОРМЕ</button>
+                </div>
+            </div>
+            
+            <!-- ЭКСПЕРИМЕНТ 2: КАЛЬКУЛЯТОР ВЕРОЯТНОСТЕЙ -->
+            <div class="experiment-container" id="probability">
+                <div class="probability-calculator">
+                    <div class="probability-display" id="probabilityDisplay">1 : 10⁶⁰</div>
+                    <div class="probability-explanation" id="probabilityExplanation">
+                        Это больше, чем количество атомов во всей наблюдаемой Вселенной!
+                    </div>
+                </div>
+                
+                <div class="controls">
+                    <button class="btn btn-primary" onclick="calculateProbability()">🎯 ВЫЧИСЛИТЬ ТОЧНОСТЬ</button>
+                    <button class="btn btn-secondary" onclick="showComparison()">📈 СРАВНИТЬ С РЕАЛЬНОСТЬЮ</button>
+                </div>
+            </div>
+            
+            <!-- ЭКСПЕРИМЕНТ 3: ЗВЁЗДНАЯ ФАБРИКА -->
+            <div class="experiment-container" id="stars">
+                <div class="star-factory" id="starFactory">
+                    <div class="galaxy"></div>
+                    <div class="factory-status" id="factoryStatus">
+                        Звёзд: 0<br>
+                        Углерод: 0%<br>
+                        Жизнь: Невозможна
+                    </div>
+                </div>
+                
+                <div class="controls">
+                    <button class="btn btn-primary" onclick="startStarFormation()">🔥 ЗАПУСТИТЬ ЗВЕЗДООБРАЗОВАНИЕ</button>
+                    <button class="btn btn-secondary" onclick="adjustNuclearForce()">⚛️ НАСТРОИТЬ ЯДЕРНУЮ СИЛУ</button>
+                    <button class="btn btn-danger" onclick="resetStars()">🔄 СБРОС</button>
+                </div>
+            </div>
+            
+            <div class="status" id="status">
+                Попробуй создать жизнепригодную Вселенную! Это намного сложнее, чем кажется...
+            </div>
+        </div>
+        
+        <div class="controversy-box">
+            <div class="controversy-title">⚔️ ТРИ ЛАГЕРЯ В ВЕЛИКОМ СПОРЕ</div>
+            
+            <div class="theory-camps">
+                <div class="camp god">
+                    <h4 style="color: #ffd700;">🙏 РАЗУМНЫЙ ЗАМЫСЕЛ</h4>
+                    <p>"Такая точность не может быть случайной. Вселенная создана разумным творцом для появления жизни."</p>
+                    <br>
+                    <strong>Сторонники:</strong> Многие физики-теоретики, философы
+                </div>
+                
+                <div class="camp multiverse">
+                    <h4 style="color: #8b00ff;">🌌 МУЛЬТИВЕРС</h4>
+                    <p>"Существует бесконечно много вселенных с разными константами. Мы просто в той, где жизнь возможна."</p>
+                    <br>
+                    <strong>Сторонники:</strong> Теоретики струн, космологи
+                </div>
+                
+                <div class="camp coincidence">
+                    <h4 style="color: #ff6b6b;">🎲 УДАЧНОЕ СОВПАДЕНИЕ</h4>
+                    <p>"Нам просто невероятно повезло. Или мы чего-то не понимаем в физике."</p>
+                    <br>
+                    <strong>Сторонники:</strong> Скептики, некоторые физики
+                </div>
+            </div>
+        </div>
+        
+        <div class="explanation">
+            <h3>🤯 ЧТО ТЫ ТОЛЬКО ЧТО ОТКРЫЛ?</h3>
+            <p><strong>ТОНКАЯ НАСТРОЙКА:</strong> Фундаментальные константы Вселенной настроены с невероятной точностью для существования жизни.</p>
+            <br>
+            <p><strong>ВЕРОЯТНОСТЬ:</strong> Шанс случайного возникновения такой Вселенной меньше 1 к 10⁶⁰ - это практически невозможно!</p>
+            <br>
+            <p><strong>ПРОБЛЕМА:</strong> Это требует объяснения. Либо мы невероятно везучие, либо есть скрытые механизмы (мультиверс, разумный замысел).</p>
+        </div>
+        
+        <div class="rick-quote">
+            "Морти, знаешь что самое охуенное? Вселенная настроена точнее швейцарских часов! Либо кто-то очень умный её спроектировал, либо существует хренова туча других вселенных!" - Рик Санчез
+        </div>
+        
+        <div class="theory-connection">
+            <h3>🧬 СВЯЗЬ С ТЕОРИЯМИ СУЩЕСТВОВАНИЯ</h3>
+            <p><strong>🎮 Симуляционная гипотеза:</strong> Возможно, кто-то "настроил" параметры нашей симулированной реальности для появления жизни.</p>
+            <br>
+            <p><strong>🌊 Мультиверс:</strong> Бесконечное количество вселенных с разными законами. Мы просто в той, где физика позволяет существовать наблюдателям.</p>
+            <br>
+            <p><strong>🔮 Сознание-творец:</strong> Возможно, само сознание участвует в формировании физических законов через антропный отбор.</p>
+            <br>
+            <p><strong>📡 Голографический принцип:</strong> Тонкая настройка может быть следствием голографической природы реальности.</p>
+        </div>
+        
+        <div class="big-questions">
+            <h3>❓ ГЛАВНЫЕ ВОПРОСЫ</h3>
+            <p><strong>🎯 Случайность или замысел?</strong> Такая точность настройки указывает на разумного творца или на мультиверс?</p>
+            <br>
+            <p><strong>🌌 Сколько вселенных существует?</strong> Если мультиверс реален, то их может быть бесконечно много!</p>
+            <br>
+            <p><strong>🔬 Можно ли это проверить?</strong> Как доказать существование других вселенных или разумного замысла?</p>
+            <br>
+            <p><strong>🤔 Что это говорит о нашем месте?</strong> Мы особенные или просто везучие?</p>
+        </div>
+        
+        <div class="practical-meaning">
+            <h3>💡 ПРАКТИЧЕСКИЙ СМЫСЛ ДЛЯ ЖИЗНИ</h3>
+            <p><strong>🙏 Благодарность за существование:</strong> Понимание невероятности нашего бытия учит ценить каждый момент жизни.</p>
+            <br>
+            <p><strong>🌟 Чувство особенности:</strong> Мы живём во Вселенной, настроенной для жизни с ювелирной точностью!</p>
+            <br>
+            <p><strong>🔍 Поиск смысла:</strong> Тонкая настройка заставляет задуматься о цели и смысле существования.</p>
+            <br>
+            <p><strong>🚀 Ответственность:</strong> Если мы так невероятно редки, то на нас лежит особая ответственность за развитие разума.</p>
+        </div>
+        
+        <div class="next-bug">
+            <h3>🔜 СЛЕДУЮЩИЙ БАГ</h3>
+            <p><strong>БАГ #6: СИЛА ВЕРЫ</strong></p>
+            <p>"Как мысли становятся материей"</p>
+            <p><em>Спойлер: Плацебо работает лучше многих лекарств...</em></p>
+        </div>
+    </div>
+    
+    <script>
+        let currentExperiment = 'generator';
+        let starCount = 0;
+        let carbonLevel = 0;
+        let universeType = 'stable';
+        
+        const constants = {
+            gravity: 1.0,
+            nuclear: 1.0,
+            electromagnetic: 1.0,
+            darkEnergy: 1.0
+        };
+        
+        function showExperiment(type) {
+            // Убираем активные классы
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.experiment-container').forEach(exp => exp.classList.remove('active'));
+            
+            // Добавляем активные классы
+            event.target.classList.add('active');
+            document.getElementById(type).classList.add('active');
+            
+            currentExperiment = type;
+            updateStatus();
+        }
+        
+        function updateConstants() {
+            constants.gravity = parseFloat(document.getElementById('gravity').value);
+            constants.nuclear = parseFloat(document.getElementById('nuclear').value);
+            constants.electromagnetic = parseFloat(document.getElementById('electromagnetic').value);
+            constants.darkEnergy = parseFloat(document.getElementById('darkEnergy').value);
+            
+            document.getElementById('gravityValue').textContent = constants.gravity.toFixed(1) + (constants.gravity === 1.0 ? ' (норма)' : '');
+            document.getElementById('nuclearValue').textContent = constants.nuclear.toFixed(2) + (constants.nuclear === 1.0 ? ' (норма)' : '');
+            document.getElementById('electromagneticValue').textContent = constants.electromagnetic.toFixed(2) + (constants.electromagnetic === 1.0 ? ' (норма)' : '');
+            document.getElementById('darkEnergyValue').textContent = constants.darkEnergy.toFixed(2) + (constants.darkEnergy === 1.0 ? ' (норма)' : '');
+            
+            analyzeUniverse();
+        }
+        
+        function analyzeUniverse() {
+            const result = document.getElementById('universeResult');
+            
+            // Проверяем критические параметры
+            if (constants.gravity > 1.5) {
+                result.innerHTML = '💥 КОЛЛАПС!<br>Слишком сильная гравитация';
+                result.style.color = '#ff0000';
+                universeType = 'collapsed';
+            } else if (constants.gravity < 0.3) {
+                result.innerHTML = '💨 ПУСТОТА!<br>Слишком слабая гравитация';
+                result.style.color = '#ff0000';
+                universeType = 'empty';
+            } else if (constants.nuclear < 0.98 || constants.nuclear > 1.02) {
+                result.innerHTML = '❄️ МЁРТВАЯ ВСЕЛЕННАЯ<br>Звёзды не синтезируют углерод';
+                result.style.color = '#0080ff';
+                universeType = 'dead';
+            } else if (constants.electromagnetic < 0.96 || constants.electromagnetic > 1.04) {
+                result.innerHTML = '⚛️ НЕТ АТОМОВ!<br>Электроны не связываются';
+                result.style.color = '#ff8800';
+                universeType = 'atomic_failure';
+            } else if (constants.darkEnergy > 1.1) {
+                result.innerHTML = '🌌 РАЗЛЁТ!<br>Слишком быстрое расширение';
+                result.style.color = '#ff0000';
+                universeType = 'expanding';
+            } else {
+                result.innerHTML = '🌌 СТАБИЛЬНАЯ ВСЕЛЕННАЯ<br>Возможна жизнь!';
+                result.style.color = '#00ff00';
+                universeType = 'stable';
+            }
+        }
+        
+        function generateUniverse() {
+            // Случайные константы в широком диапазоне
+            document.getElementById('gravity').value = (Math.random() * 1.9 + 0.1).toFixed(1);
+            document.getElementById('nuclear').value = (Math.random() * 0.4 + 0.8).toFixed(2);
+            document.getElementById('electromagnetic').value = (Math.random() * 0.4 + 0.8).toFixed(2);
+            document.getElementById('darkEnergy').value = (Math.random() * 1.0 + 0.5).toFixed(2);
+            
+            updateConstants();
+            
+            const status = document.getElementById('status');
+            if (universeType === 'stable') {
+                status.innerHTML = `🎉 <strong>НЕВЕРОЯТНАЯ УДАЧА!</strong><br>Ты случайно создал жизнепригодную Вселенную! Вероятность этого около 1 к миллиарду!`;
+            } else {
+                status.innerHTML = `💀 <strong>НЕУДАЧА!</strong><br>Твоя Вселенная нежизнеспособна. Видишь, как сложно создать условия для жизни?`;
+            }
+        }
+        
+        function resetConstants() {
+            document.getElementById('gravity').value = 1.0;
+            document.getElementById('nuclear').value = 1.0;
+            document.getElementById('electromagnetic').value = 1.0;
+            document.getElementById('darkEnergy').value = 1.0;
+            
+            updateConstants();
+            updateStatus();
+        }
+        
+        function calculateProbability() {
+            const probabilities = [
+                { name: 'Космологическая постоянная', prob: '10⁶⁰' },
+                { name: 'Отношение масс протона и электрона', prob: '10⁴⁰' },
+                { name: 'Ядерная эффективность', prob: '10¹⁰' },
+                { name: 'Электромагнитная сила', prob: '10⁴' }
+            ];
+            
+            const random = Math.floor(Math.random() * probabilities.length);
+            const prob = probabilities[random];
+            
+            document.getElementById('probabilityDisplay').textContent = `1 : ${prob.prob}`;
+            document.getElementById('probabilityExplanation').textContent = 
+                `Точность настройки ${prob.name.toLowerCase()} должна быть именно такой для существования жизни!`;
+            
+            updateStatus();
+        }
+        
+        function showComparison() {
+            const comparisons = [
+                'Это как попасть в монету с расстояния до Андромеды!',
+                'Словно случайно собрать Boeing 747 из деталей, разбросанных ураганом!',
+                'Как выиграть в лотерею миллиард раз подряд!',
+                'Точнее, чем попасть в атом с другого конца Вселенной!'
+            ];
+            
+            const random = Math.floor(Math.random() * comparisons.length);
+            document.getElementById('probabilityExplanation').textContent = comparisons[random];
+        }
+        
+        function startStarFormation() {
+            const factory = document.getElementById('starFactory');
+            
+            // Очищаем предыдущие звёзды
+            factory.querySelectorAll('.star').forEach(star => star.remove());
+            
+            starCount = 0;
+            carbonLevel = 0;
+            
+            // Создаём звёзды с учётом ядерной силы
+            const maxStars = constants.nuclear > 0.99 && constants.nuclear < 1.01 ? 50 : 10;
+            
+            const interval = setInterval(() => {
+                if (starCount < maxStars) {
+                    createStar();
+                    starCount++;
+                    
+                    // Вычисляем уровень углерода
+                    if (constants.nuclear > 0.993 && constants.nuclear < 1.007) {
+                        carbonLevel = Math.min(100, (starCount / maxStars) * 100);
+                    }
+                    
+                    updateFactoryStatus();
+                } else {
+                    clearInterval(interval);
+                }
+            }, 100);
+        }
+        
+        function createStar() {
+            const factory = document.getElementById('starFactory');
+            const star = document.createElement('div');
+            star.className = 'star';
+            
+            const x = Math.random() * 750 + 25;
+            const y = Math.random() * 400 + 25;
+            
+            star.style.left = x + 'px';
+            star.style.top = y + 'px';
+            
+            factory.appendChild(star);
+        }
+        
+        function adjustNuclearForce() {
+            const newForce = (Math.random() * 0.2 + 0.9).toFixed(3);
+            document.getElementById('nuclear').value = newForce;
+            updateConstants();
+            
+            const status = document.getElementById('status');
+            if (parseFloat(newForce) > 0.993 && parseFloat(newForce) < 1.007) {
+                status.innerHTML = `✅ <strong>ИДЕАЛЬНАЯ НАСТРОЙКА!</strong><br>Ядерная сила: ${newForce} - звёзды могут синтезировать углерод!`;
+            } else {
+                status.innerHTML = `❌ <strong>НЕТОЧНАЯ НАСТРОЙКА!</strong><br>Ядерная сила: ${newForce} - углерод не образуется!`;
+            }
+        }
+        
+        function updateFactoryStatus() {
+            const status = document.getElementById('factoryStatus');
+            const lifeStatus = carbonLevel > 50 ? 'Возможна!' : 'Невозможна';
+            const lifeColor = carbonLevel > 50 ? '#00ff00' : '#ff0000';
+            
+            status.innerHTML = `
+                Звёзд: ${starCount}<br>
+                Углерод: ${carbonLevel.toFixed(1)}%<br>
+                <span style="color: ${lifeColor}">Жизнь: ${lifeStatus}</span>
+            `;
+        }
+        
+        function resetStars() {
+            const factory = document.getElementById('starFactory');
+            factory.querySelectorAll('.star').forEach(star => star.remove());
+            
+            starCount = 0;
+            carbonLevel = 0;
+            updateFactoryStatus();
+            updateStatus();
+        }
+        
+        function updateStatus() {
+            const status = document.getElementById('status');
+            
+            switch(currentExperiment) {
+                case 'generator':
+                    status.textContent = 'Попробуй изменить физические константы и создать жизнепригодную Вселенную!';
+                    break;
+                    
+                case 'probability':
+                    status.textContent = 'Вычисли невероятную точность настройки фундаментальных констант!';
+                    break;
+                    
+                case 'stars':
+                    status.textContent = 'Запусти звездообразование и посмотри, как ядерная сила влияет на синтез углерода!';
+                    break;
+            }
+        }
+        
+        // Привязываем события к слайдерам
+        document.getElementById('gravity').addEventListener('input', updateConstants);
+        document.getElementById('nuclear').addEventListener('input', updateConstants);
+        document.getElementById('electromagnetic').addEventListener('input', updateConstants);
+        document.getElementById('darkEnergy').addEventListener('input', updateConstants);
+        
+        // Инициализация
+        updateConstants();
+        updateStatus();
+        updateFactoryStatus();
+        
+        // Параллакс эффект
+        window.addEventListener('scroll', () => {
+            const scrolled = window.pageYOffset;
+            const rate = scrolled * -0.5;
+            
+            const bugNumber = document.querySelector('.bug-number');
+            if (bugNumber) {
+                bugNumber.style.transform = `translateY(${rate}px)`;
+            }
+        });
+        
+        // Анимация появления элементов
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+        
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+        
+        document.querySelectorAll('.explanation, .theory-connection, .big-questions, .practical-meaning').forEach(el => {
+            el.style.opacity = '0';
+            el.style.transform = 'translateY(30px)';
+            el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+            observer.observe(el);
+        });
+    </script>
+</body>
+</html>

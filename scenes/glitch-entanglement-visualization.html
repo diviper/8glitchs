@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Квантовая Запутанность</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #0c0c0c 0%, #1a1a2e 50%, #16213e 100%);
+            color: #ffffff;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            width: 100%;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .title {
+            font-size: 2.5em;
+            margin-bottom: 20px;
+            background: linear-gradient(45deg, #00ffff, #ff00ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .explanation {
+            font-size: 1.2em;
+            margin-bottom: 30px;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            line-height: 1.6;
+        }
+        
+        .lab {
+            position: relative;
+            width: 90%;
+            max-width: 1200px;
+            height: 500px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            border: 2px solid #4ecdc4;
+            overflow: hidden;
+        }
+        
+        .crystal {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4, #ffe66d);
+            border-radius: 15px;
+            animation: crystalGlow 2s ease-in-out infinite alternate;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .crystal:hover {
+            transform: translate(-50%, -50%) scale(1.1);
+        }
+        
+        @keyframes crystalGlow {
+            from { box-shadow: 0 0 20px rgba(255, 107, 107, 0.8); }
+            to { box-shadow: 0 0 40px rgba(78, 205, 196, 0.8); }
+        }
+        
+        .laser {
+            position: absolute;
+            left: 10%;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 30%;
+            height: 4px;
+            background: linear-gradient(90deg, #ff0080, #ff4080);
+            opacity: 0;
+            animation: laserPulse 3s ease-in-out infinite;
+        }
+        
+        @keyframes laserPulse {
+            0%, 90%, 100% { opacity: 0; }
+            10%, 80% { opacity: 1; }
+        }
+        
+        .photon {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: radial-gradient(circle, #ffff00, #ff8800);
+            box-shadow: 0 0 15px #ffff00;
+            opacity: 0;
+        }
+        
+        .photon.entangled-a {
+            background: radial-gradient(circle, #00ff00, #008800);
+            box-shadow: 0 0 15px #00ff00;
+        }
+        
+        .photon.entangled-b {
+            background: radial-gradient(circle, #ff0000, #880000);
+            box-shadow: 0 0 15px #ff0000;
+        }
+        
+        .detector {
+            position: absolute;
+            width: 80px;
+            height: 80px;
+            border: 3px solid #00ffff;
+            border-radius: 10px;
+            background: rgba(0, 255, 255, 0.1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .detector:hover {
+            background: rgba(0, 255, 255, 0.3);
+            transform: scale(1.05);
+        }
+        
+        .detector.active {
+            background: rgba(0, 255, 255, 0.5);
+            box-shadow: 0 0 30px #00ffff;
+        }
+        
+        .detector-a {
+            left: 10%;
+            top: 20%;
+        }
+        
+        .detector-b {
+            right: 10%;
+            top: 20%;
+        }
+        
+        .detector-label {
+            font-size: 12px;
+            font-weight: bold;
+        }
+        
+        .detector-state {
+            font-size: 10px;
+            margin-top: 5px;
+        }
+        
+        .connection-line {
+            position: absolute;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #ff00ff, transparent);
+            top: 50%;
+            left: 0;
+            right: 0;
+            opacity: 0;
+            animation: connectionFlow 2s linear infinite;
+        }
+        
+        @keyframes connectionFlow {
+            0% { opacity: 0; transform: scaleX(0); }
+            50% { opacity: 1; transform: scaleX(1); }
+            100% { opacity: 0; transform: scaleX(0); }
+        }
+        
+        .controls {
+            margin-top: 30px;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            padding: 15px 30px;
+            font-size: 1.1em;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+        }
+        
+        .btn-create {
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+            color: white;
+        }
+        
+        .btn-measure {
+            background: linear-gradient(45deg, #ffe66d, #ff6b6b);
+            color: #333;
+        }
+        
+        .btn-reset {
+            background: linear-gradient(45deg, #a8e6cf, #88d8c0);
+            color: #333;
+        }
+        
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        .status {
+            margin-top: 30px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .status-title {
+            font-size: 1.5em;
+            margin-bottom: 15px;
+            color: #4ecdc4;
+        }
+        
+        .status-text {
+            font-size: 1.1em;
+            line-height: 1.5;
+        }
+        
+        .correlation-counter {
+            margin-top: 20px;
+            font-size: 1.3em;
+            font-weight: bold;
+        }
+        
+        .correlation-bar {
+            width: 100%;
+            height: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            margin-top: 10px;
+            overflow: hidden;
+        }
+        
+        .correlation-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #ff0000, #ffff00, #00ff00);
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+        
+        .legend {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+        }
+        
+        .spin-indicator {
+            position: absolute;
+            top: -30px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 24px;
+            font-weight: bold;
+        }
+        
+        .mystery-box {
+            margin-top: 30px;
+            padding: 20px;
+            background: rgba(255, 0, 255, 0.1);
+            border: 2px solid #ff00ff;
+            border-radius: 15px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .mystery-title {
+            font-size: 1.3em;
+            margin-bottom: 10px;
+            color: #ff00ff;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="title">🌌 КВАНТОВАЯ ЗАПУТАННОСТЬ 🌌</h1>
+        
+        <div class="explanation">
+            Сейчас ты увидишь самое охуенное в физике! Нажимай кнопки и смотри, как работает квантовая магия!
+        </div>
+        
+        <div class="lab" id="lab">
+            <div class="laser" id="laser"></div>
+            <div class="crystal" id="crystal">💎</div>
+            <div class="photon" id="photon-original"></div>
+            <div class="photon entangled-a" id="photon-a"></div>
+            <div class="photon entangled-b" id="photon-b"></div>
+            <div class="connection-line" id="connection" style="display: none;"></div>
+            
+            <div class="detector detector-a" id="detector-a">
+                <div class="detector-label">МОСКВА</div>
+                <div class="detector-state" id="state-a">❓</div>
+                <div class="spin-indicator" id="spin-a"></div>
+            </div>
+            
+            <div class="detector detector-b" id="detector-b">
+                <div class="detector-label">ПИТЕР</div>
+                <div class="detector-state" id="state-b">❓</div>
+                <div class="spin-indicator" id="spin-b"></div>
+            </div>
+        </div>
+        
+        <div class="controls">
+            <button class="btn btn-create" onclick="createEntangledPhotons()">🔥 СОЗДАТЬ ФОТОНЫ</button>
+            <button class="btn btn-measure" onclick="measurePhotons()">🔍 ИЗМЕРИТЬ!</button>
+            <button class="btn btn-reset" onclick="resetExperiment()">🔄 СБРОС</button>
+        </div>
+        
+        <div class="status">
+            <div class="status-title">📊 Состояние Эксперимента</div>
+            <div class="status-text" id="status-text">
+                Нажми "СОЗДАТЬ ФОТОНЫ" чтобы начать!
+            </div>
+            <div class="correlation-counter">
+                Корреляция: <span id="correlation-percent">0%</span> из <span id="total-measurements">0</span> измерений
+            </div>
+            <div class="correlation-bar">
+                <div class="correlation-fill" id="correlation-fill"></div>
+            </div>
+        </div>
+        
+        <div class="legend">
+            <div class="legend-item">
+                <div class="legend-color" style="background: radial-gradient(circle, #00ff00, #008800);"></div>
+                <span>Фотон A (зелёный)</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background: radial-gradient(circle, #ff0000, #880000);"></div>
+                <span>Фотон B (красный)</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background: #ff00ff;"></div>
+                <span>Квантовая связь</span>
+            </div>
+        </div>
+        
+        <div class="mystery-box">
+            <div class="mystery-title">🤯 А ТЕПЕРЬ ВНИМАНИЕ!</div>
+            <div>Когда ты измеришь фотон в Москве, фотон в Питере <strong>МГНОВЕННО</strong> узнает об этом и принимает противоположное состояние! Это происходит быстрее скорости света и никто не знает КАК это работает!</div>
+        </div>
+    </div>
+    
+    <script>
+        let experimentState = 'idle'; // idle, photons-created, measured
+        let totalMeasurements = 0;
+        let correlatedMeasurements = 0;
+        
+        function createEntangledPhotons() {
+            if (experimentState !== 'idle') return;
+            
+            experimentState = 'creating';
+            updateStatus('🔥 Лазер стреляет в кристалл...');
+            
+            // Показываем лазер
+            document.getElementById('laser').style.opacity = '1';
+            
+            // Анимация создания фотонов
+            setTimeout(() => {
+                const crystal = document.getElementById('crystal');
+                crystal.style.transform = 'translate(-50%, -50%) scale(1.3)';
+                
+                setTimeout(() => {
+                    crystal.style.transform = 'translate(-50%, -50%) scale(1)';
+                    
+                    // Создаём запутанные фотоны
+                    const photonA = document.getElementById('photon-a');
+                    const photonB = document.getElementById('photon-b');
+                    
+                    // Начальная позиция - кристалл
+                    photonA.style.left = '50%';
+                    photonA.style.top = '50%';
+                    photonA.style.opacity = '1';
+                    
+                    photonB.style.left = '50%';
+                    photonB.style.top = '50%';
+                    photonB.style.opacity = '1';
+                    
+                    // Анимация полёта
+                    setTimeout(() => {
+                        photonA.style.transition = 'all 2s ease-in-out';
+                        photonB.style.transition = 'all 2s ease-in-out';
+                        
+                        photonA.style.left = '18%';
+                        photonA.style.top = '28%';
+                        
+                        photonB.style.left = '82%';
+                        photonB.style.top = '28%';
+                        
+                        // Показываем связь
+                        document.getElementById('connection').style.display = 'block';
+                        
+                        setTimeout(() => {
+                            experimentState = 'photons-created';
+                            updateStatus('✨ Запутанные фотоны созданы и летят к детекторам! Они связаны квантовой магией!');
+                        }, 2000);
+                    }, 100);
+                }, 300);
+            }, 500);
+        }
+        
+        function measurePhotons() {
+            if (experimentState !== 'photons-created') return;
+            
+            experimentState = 'measuring';
+            updateStatus('🔍 Измеряем фотоны...');
+            
+            // Активируем детекторы
+            document.getElementById('detector-a').classList.add('active');
+            document.getElementById('detector-b').classList.add('active');
+            
+            // Случайно выбираем состояния (но противоположные!)
+            const stateA = Math.random() > 0.5 ? 'up' : 'down';
+            const stateB = stateA === 'up' ? 'down' : 'up';
+            
+            // Показываем результаты с задержкой
+            setTimeout(() => {
+                // Фотон A
+                document.getElementById('state-a').textContent = stateA === 'up' ? '↕️' : '↔️';
+                document.getElementById('spin-a').textContent = stateA === 'up' ? '↕️' : '↔️';
+                
+                setTimeout(() => {
+                    // Фотон B (мгновенно!)
+                    document.getElementById('state-b').textContent = stateB === 'up' ? '↕️' : '↔️';
+                    document.getElementById('spin-b').textContent = stateB === 'up' ? '↕️' : '↔️';
+                    
+                    // Считаем корреляцию
+                    totalMeasurements++;
+                    correlatedMeasurements++; // В нашей модели всегда 100% корреляция
+                    
+                    updateCorrelation();
+                    
+                    experimentState = 'measured';
+                    updateStatus(`🎯 МАГИЯ! Фотоны показали противоположные состояния! 
+                    Москва: ${stateA === 'up' ? 'вертикальный ↕️' : 'горизонтальный ↔️'}, 
+                    Питер: ${stateB === 'up' ? 'вертикальный ↕️' : 'горизонтальный ↔️'}. 
+                    Связь мгновенная!`);
+                }, 500);
+            }, 1000);
+        }
+        
+        function resetExperiment() {
+            experimentState = 'idle';
+            
+            // Сбрасываем все элементы
+            document.getElementById('laser').style.opacity = '0';
+            document.getElementById('photon-a').style.opacity = '0';
+            document.getElementById('photon-b').style.opacity = '0';
+            document.getElementById('connection').style.display = 'none';
+            
+            document.getElementById('detector-a').classList.remove('active');
+            document.getElementById('detector-b').classList.remove('active');
+            
+            document.getElementById('state-a').textContent = '❓';
+            document.getElementById('state-b').textContent = '❓';
+            document.getElementById('spin-a').textContent = '';
+            document.getElementById('spin-b').textContent = '';
+            
+            // Убираем transitions
+            document.getElementById('photon-a').style.transition = '';
+            document.getElementById('photon-b').style.transition = '';
+            
+            updateStatus('🔄 Эксперимент сброшен. Готов к новому запуску!');
+        }
+        
+        function updateStatus(text) {
+            document.getElementById('status-text').textContent = text;
+        }
+        
+        function updateCorrelation() {
+            const percent = Math.round((correlatedMeasurements / totalMeasurements) * 100);
+            document.getElementById('correlation-percent').textContent = percent + '%';
+            document.getElementById('total-measurements').textContent = totalMeasurements;
+            document.getElementById('correlation-fill').style.width = percent + '%';
+        }
+        
+        // Делаем кристалл кликабельным
+        document.getElementById('crystal').addEventListener('click', createEntangledPhotons);
+        
+        // Делаем детекторы кликабельными
+        document.getElementById('detector-a').addEventListener('click', measurePhotons);
+        document.getElementById('detector-b').addEventListener('click', measurePhotons);
+    </script>
+</body>
+</html>
