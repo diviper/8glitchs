@@ -1,24 +1,31 @@
-# Codex Agent Instructions
+# Project Agent Guide — Glitch Registry
 
-## Permissions
-- The agent may execute shell commands and install dependencies (`apt`, `pip`, `npm`).
-- The agent may create, modify, and delete any files in this repository.
-- The agent may run tests or build commands if they exist.
-- The agent may commit and push changes.
-- отвечать на русском языке.
+## Goals
+- Убрать привязку к числу 8. Ввести реестр открытого размера: "Glitch Registry".
+- Привести структуру к:
+  /scenes/*.html (фрагменты сцен)
+  /content/glitches/*.md (лор по шаблону)
+  /legacy/ (архив старых страниц)
+  /assets/js/{router.js,progress.js,lexicon.js}
 
-## Restrictions
-- Don’t modify files outside this repository.
-- Don’t access private credentials or external APIs unrelated to dependencies.
+## Naming
+- Файлы сцен: scenes/glitch-<slug>.html (латиница, дефисы).
+- Markdown-карточки: content/glitches/<slug>.md
+- Старые reality_bug_* → перенос в /legacy/ c сохранением ссылок в README.
 
-## Testing
-- If the repo has test scripts (e.g., `npm test` or `pytest`), run them after making changes.
-- If no tests exist, note that in the PR’s testing section.
+## Markdown rules
+- Всегда есть секции: TL;DR / Научная опора / Парадокс / Дневник Дивайпера / Юнг / Сенека / Рик / Сцена / Ссылки.
+- Заголовки до H3, абзацы короткие, без «стен текста».
 
-## Commit message guidelines
-- Use a short summary line (≤50 characters), followed by an optional detailed body.
-- Mention affected files or features when relevant.
+## Lint & CI
+- Добавить markdownlint (npm), скрипт "lint:md".
+- Добавить .github/workflows/ci.yml: npm ci → npm run lint:md.
 
-## PR message guidelines
-- Summarize key changes with file path references.
-- Include a testing section summarizing output from any commands run.
+## Commands to run
+- npx markdownlint-cli '**/*.md' --ignore node_modules --ignore legacy
+- htmlhint **/*.html  (если есть конфиг)
+- Отчёт: список изменённых/переименованных файлов, сводка нарушений markdownlint.
+
+## PR policy
+- Работать прямо из основной ветки песочницы Codex, но результат — Pull Request в GitHub.
+- В PR приложить summary: что перенесено в legacy, что создано, что удалить навсегда (если согласовано).
