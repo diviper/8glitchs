@@ -25,17 +25,17 @@
   {"slug":"ship-of-theseus","title":"Корабль Тесея","category":"Идентичность","status":"cardOnly","paths":{"card":"content/glitches/ship-of-theseus.md","scene":null}},
   {"slug":"mind-uploading","title":"Загрузка разума / копирование личности","category":"Идентичность","status":"cardOnly","paths":{"card":"content/glitches/mind-uploading.md","scene":null}},
   {"slug":"chinese-room","title":"Китайская комната (Сёрл)","category":"Идентичность","status":"cardOnly","paths":{"card":"content/glitches/chinese-room.md","scene":null}},
-  {"slug":"free-will-illusion","title":"Иллюзия свободы воли","category":"Идентичность","status":"cardOnly","paths":{"card":"content/glitches/free-will-illusion.md","scene":null}},
+  {"slug":"free-will-illusion","title":"Иллюзия свободы воли","category":"Идентичность","status":"sceneExists","paths":{"card":"content/glitches/free-will-illusion.md","scene":"scenes/glitch-free-will-illusion.html"}},
 
   {"slug":"belief-power","title":"Сила веры/ожиданий (метрики и симуляция)","category":"Информация","status":"sceneExists","paths":{"card":"content/glitches/belief-power.md","scene":"scenes/glitch-belief-power.html"}},
   {"slug":"landauer","title":"Принцип Ландауэра","category":"Информация","status":"cardOnly","paths":{"card":"content/glitches/landauer-principle.md","scene":null}},
   {"slug":"bekenstein-bound","title":"Предел Бекенштейна","category":"Информация","status":"cardOnly","paths":{"card":"content/glitches/bekenstein-bound.md","scene":null}},
   {"slug":"goodhart-law","title":"Закон Гудхарта","category":"Информация","status":"cardOnly","paths":{"card":"content/glitches/goodhart-law.md","scene":null}},
-  {"slug":"simulation","title":"Симуляционный аргумент","category":"Информация","status":"cardOnly","paths":{"card":"content/glitches/simulation-argument.md","scene":null}},
+  {"slug":"simulation","title":"Симуляционный аргумент","category":"Информация","status":"sceneExists","paths":{"card":"content/glitches/simulation-argument.md","scene":"scenes/glitch-simulation-argument.html"}},
   {"slug":"map-territory","title":"Карта и территория","category":"Информация","status":"cardOnly","paths":{"card":"content/glitches/map-vs-territory.md","scene":null}},
 
   {"slug":"zeno","title":"Парадоксы Зенона","category":"Логика","status":"cardOnly","paths":{"card":"content/glitches/zeno-paradoxes.md","scene":null}},
-  {"slug":"banach-tarski","title":"Банах–Тарский","category":"Логика","status":"cardOnly","paths":{"card":"content/glitches/banach-tarski.md","scene":null}},
+  {"slug":"banach-tarski","title":"Банах–Тарский","category":"Логика","status":"sceneExists","paths":{"card":"content/glitches/banach-tarski.md","scene":"scenes/glitch-banach-tarski.html"}},
   {"slug":"godel","title":"Неполнота Гёделя","category":"Логика","status":"cardOnly","paths":{"card":"content/glitches/godel-incompleteness.md","scene":null}},
   {"slug":"liar","title":"Парадокс лжеца","category":"Логика","status":"cardOnly","paths":{"card":"content/glitches/liar-paradox.md","scene":null}},
 

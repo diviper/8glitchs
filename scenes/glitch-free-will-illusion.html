@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>Иллюзия свободы воли</title>
+<style>
+body{background:#000;color:#fff;font-family:sans-serif;text-align:center;margin:0;padding:20px;}
+#timer{width:200px;height:200px;margin:0 auto;}
+#log{margin-top:15px;min-height:40px;}
+#controls{margin-top:10px;}
+</style>
+</head>
+<body>
+<svg id="timer" viewBox="0 0 200 200">
+  <circle cx="100" cy="100" r="90" stroke="#555" fill="none" stroke-width="2"></circle>
+  <line id="hand" x1="100" y1="100" x2="100" y2="20" stroke="#0ff" stroke-width="2"></line>
+  <circle id="rp" cx="100" cy="20" r="5" fill="#f00" style="display:none"></circle>
+</svg>
+<div id="controls">
+  <button id="decide">Я решил сейчас</button>
+  <label><input type="checkbox" id="showrp"> показывать RP</label>
+</div>
+<div id="log"></div>
+<script>
+var period=2000;
+var hand=document.getElementById('hand');
+var rpDot=document.getElementById('rp');
+var decideBtn=document.getElementById('decide');
+var showBox=document.getElementById('showrp');
+var logEl=document.getElementById('log');
+var mode='hide';
+var rpTime=0,cycleStart=0;var logs=[];
+function newCycle(){cycleStart=performance.now();rpTime=cycleStart+Math.random()*period;}
+function animate(){var t=performance.now();var angle=((t-cycleStart)%period)/period*2*Math.PI;var x=100+80*Math.sin(angle);var y=100-80*Math.cos(angle);hand.setAttribute('x2',x);hand.setAttribute('y2',y);if(t-cycleStart>period) newCycle();if(showBox.checked){var rpAngle=((rpTime-cycleStart)%period)/period*2*Math.PI;var rx=100+80*Math.sin(rpAngle);var ry=100-80*Math.cos(rpAngle);rpDot.setAttribute('cx',rx);rpDot.setAttribute('cy',ry);rpDot.style.display='block';} else {rpDot.style.display='none';}requestAnimationFrame(animate);}newCycle();requestAnimationFrame(animate);
+function record(){var now=performance.now();var dt=now-rpTime;logs.unshift('Δt: '+Math.round(dt)+' мс');logs=logs.slice(0,3);logEl.textContent=logs.join('\n');newCycle();}
+decideBtn.addEventListener('click',record);
+showBox.addEventListener('change',function(){mode=this.checked?'show':'hide';});
+window.__initScene=function(){};
+window.__applyParams=function(q){mode=q.mode==='show'?'show':'hide';showBox.checked=mode==='show';};
+window.__getShareParams=function(){return {mode:mode};};
+</script>
+<script src="../assets/js/scene-frame.js"></script>
+</body>
+</html>

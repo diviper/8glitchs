@@ -889,3 +889,5 @@ button, input, select {
 @keyframes spin { to { transform:rotate(360deg); } }
 .no-effects video { filter:none; }
 .no-effects .overlay { display:none; }
+.lex{ border-bottom:1px dashed rgba(255,255,255,.5); cursor:help }
+.lex-pop{ position:absolute; z-index:10000; max-width:320px; padding:10px 12px; border:1px solid rgba(255,255,255,.15); border-radius:10px; background:rgba(0,0,0,.85); backdrop-filter:blur(6px) }

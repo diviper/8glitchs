@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>Банах–Тарский</title>
+<style>
+body{background:#000;color:#fff;font-family:sans-serif;text-align:center;margin:0;padding:20px;}
+#controls{margin-bottom:10px;}
+svg{width:400px;height:200px;}
+.dot{fill:#0ff;transition:transform 1s,opacity 1s;}
+.msg{margin-top:10px;opacity:.8;}
+</style>
+</head>
+<body>
+<div id="controls">
+<label><input type="checkbox" id="choice"> Аксиома выбора</label>
+</div>
+<svg viewBox="0 0 400 200" id="vis"></svg>
+<div class="msg" id="msg"></div>
+<script>
+var choiceToggle=document.getElementById('choice');
+var svg=document.getElementById('vis');
+var msg=document.getElementById('msg');
+var currentChoice='off';
+var baseDots=[];
+function rnd(r){return Math.random()*r*2-r;}
+function createDots(){
+  for(var i=0;i<40;i++){
+    var x=100+rnd(60);var y=100+rnd(60);
+    var d=document.createElementNS('http://www.w3.org/2000/svg','circle');
+    d.setAttribute('cx',x);d.setAttribute('cy',y);d.setAttribute('r',3);
+    d.setAttribute('class','dot base');
+    svg.appendChild(d);baseDots.push(d);
+  }
+}
+function showSingle(){
+  svg.innerHTML='<circle cx="100" cy="100" r="70" stroke="#888" fill="none"></circle>';
+  baseDots=[];createDots();
+  msg.textContent='объём сохраняется';
+}
+function showDouble(){
+  svg.innerHTML='<circle cx="100" cy="100" r="70" stroke="#888" fill="none"></circle><circle cx="300" cy="100" r="70" stroke="#888" fill="none"></circle>';
+  baseDots=[];createDots();
+  baseDots.forEach(function(d,i){
+    var clone=d.cloneNode(true);svg.appendChild(clone);
+    setTimeout(function(){clone.setAttribute('cx',+clone.getAttribute('cx')+200);},10);
+  });
+  msg.textContent='';
+}
+choiceToggle.addEventListener('change',function(){currentChoice=this.checked?'on':'off';update();});
+function update(){ if(currentChoice==='on'){ showDouble(); } else { showSingle(); } }
+window.__initScene=function(){ update(); };
+window.__applyParams=function(q){ if(q.choice==='on'){ choiceToggle.checked=true; currentChoice='on'; } else { choiceToggle.checked=false; currentChoice='off'; } update(); };
+window.__getShareParams=function(){ return { choice: currentChoice }; };
+</script>
+<script src="../assets/js/scene-frame.js"></script>
+</body>
+</html>
