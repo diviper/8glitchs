@@ -832,15 +832,17 @@ button, input, select {
 .scene-frame .series,
 .scene-frame .series-header,
 .scene-frame .series-title,
+.scene-frame .series-bar,
 .scene-frame [data-series],
 .scene-frame .bug-title,
-.scene-frame .bug-number,
+.scene-frame .bug-header,
 .scene-frame h1.bug,
-.scene-frame .legacy-bug,
+.scene-frame .bug-number,
 .scene-frame .progress,
 .scene-frame .progress-bar,
 .scene-frame .progress-fill,
-.scene-frame .bug-header,
+.scene-frame .promise-section,
+.scene-frame .legacy-bug,
 .scene-frame .next-bug { display:none !important; }
 
 /* Mobile adaptation */

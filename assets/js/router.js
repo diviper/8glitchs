@@ -251,7 +251,22 @@
               + '<div class="actions-right"><button class="btn-link" data-share>Поделиться</button></div>'
               + '</div>'
               + '<div class="scene-frame"></div>';
-            contentEl.querySelector('.scene-frame').innerHTML = html;
+            var frame = contentEl.querySelector('.scene-frame');
+            frame.innerHTML = html;
+            [
+              '.series',
+              '.series-bar',
+              '[data-series]',
+              '.bug-title',
+              '.bug-header',
+              'h1.bug',
+              '.bug-number',
+              '.progress',
+              '.progress-bar',
+              '.promise-section'
+            ].forEach(function (sel) {
+              frame.querySelectorAll(sel).forEach(function (el) { el.remove(); });
+            });
             if (typeof window.__initScene === 'function') { window.__initScene(); }
             if (typeof window.__applyParams === 'function') { window.__applyParams(params); }
           } catch (e) {
