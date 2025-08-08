@@ -18,6 +18,7 @@
   var sidebar = document.querySelector('.sidebar');
   var sidebarToggle = document.getElementById('sidebar-toggle');
   var sidebarOverlay = document.getElementById('sidebar-overlay');
+  var mobileBreakpoint = 768;
   var navIndex = -1;
 
   function showToast(msg) {
@@ -33,22 +34,37 @@
   }
   window.showToast = showToast;
 
+  function isMobile() {
+    return window.innerWidth < mobileBreakpoint;
+  }
+
   function openSidebar() {
-    if (sidebar) sidebar.classList.add('open');
+    if (!sidebar || !isMobile()) return;
+    sidebar.classList.add('open');
     if (sidebarOverlay) sidebarOverlay.classList.add('show');
   }
 
   function closeSidebar() {
-    if (sidebar) sidebar.classList.remove('open');
+    if (!sidebar || !isMobile()) return;
+    sidebar.classList.remove('open');
     if (sidebarOverlay) sidebarOverlay.classList.remove('show');
   }
 
   if (sidebarToggle) {
-    sidebarToggle.addEventListener('click', openSidebar);
+    sidebarToggle.addEventListener('click', function () {
+      if (sidebar.classList.contains('open')) {
+        closeSidebar();
+      } else {
+        openSidebar();
+      }
+    });
   }
   if (sidebarOverlay) {
     sidebarOverlay.addEventListener('click', closeSidebar);
   }
+  window.addEventListener('resize', function () {
+    if (!isMobile()) closeSidebar();
+  });
   function moveSelection(dir) {
     var items = listEl.querySelectorAll('.gl-item');
     if (!items.length) return;
