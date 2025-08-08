@@ -21,14 +21,10 @@
     return m ? src.slice(m[0].length) : src;
   }
 
-  window.renderMarkdown = async function (markdown, target) {
+  window.renderMarkdown = async function (markdown, container) {
     await ready;
     var html = marked.parse(stripFrontMatter(markdown));
     var safe = DOMPurify.sanitize(html, { ADD_ATTR: ['target', 'rel'] });
-    var container = target;
-    if (container && !container.classList.contains('md-body')) {
-      container = container.querySelector('.md-body') || container;
-    }
     container.innerHTML = safe;
     container.querySelectorAll('a[target="_blank"]').forEach(function (a) {
       a.setAttribute('rel', 'noopener noreferrer');
