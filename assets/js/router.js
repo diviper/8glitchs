@@ -22,6 +22,8 @@
   var lexToggle = document.getElementById('lexicon-toggle');
   var mobileBreakpoint = 820;
   var navIndex = -1;
+  var lastSlug = null;
+  var scrollHandler = null;
 
   function updateFocused() {
     var items = listEl.querySelectorAll('.gl-item');
@@ -34,27 +36,66 @@
     }
   }
 
-  function highlightText(el, text, query) {
-    if (!query) {
-      el.textContent = text;
-      return;
-    }
-    var lower = text.toLowerCase();
-    var q = query.toLowerCase();
-    var start = 0;
-    var idx;
-    while ((idx = lower.indexOf(q, start)) !== -1) {
-      if (idx > start) {
-        el.appendChild(document.createTextNode(text.slice(start, idx))); 
+  function isDistOne(a, b) {
+    if (a === b) return true;
+    var la = a.length, lb = b.length;
+    if (Math.abs(la - lb) > 1) return false;
+    var i = 0, j = 0, mism = 0;
+    while (i < la && j < lb) {
+      if (a[i] === b[j]) { i++; j++; }
+      else {
+        mism++;
+        if (mism > 1) return false;
+        if (la > lb) i++;
+        else if (lb > la) j++;
+        else { i++; j++; }
       }
+    }
+    if (i < la || j < lb) mism++;
+    return mism <= 1;
+  }
+
+  function findApproxIndex(text, word) {
+    var len = word.length;
+    for (var i = 0; i <= text.length - len; i++) {
+      var sub = text.slice(i, i + len);
+      if (isDistOne(sub, word)) return i;
+    }
+    return -1;
+  }
+
+  function highlightText(el, text, query) {
+    var words = (query || '').toLowerCase().split(/\s+/).filter(Boolean);
+    if (!words.length) { el.textContent = text; return; }
+    var lower = text.toLowerCase();
+    var ranges = [];
+    words.forEach(function (w) {
+      var idx = lower.indexOf(w);
+      if (idx === -1) idx = findApproxIndex(lower, w);
+      if (idx !== -1) ranges.push([idx, idx + w.length]);
+    });
+    if (!ranges.length) { el.textContent = text; return; }
+    ranges.sort(function (a, b) { return a[0] - b[0]; });
+    var pos = 0;
+    ranges.forEach(function (r) {
+      if (r[0] > pos) el.appendChild(document.createTextNode(text.slice(pos, r[0])));
       var mark = document.createElement('mark');
-      mark.textContent = text.slice(idx, idx + q.length);
+      mark.textContent = text.slice(r[0], r[1]);
       el.appendChild(mark);
-      start = idx + q.length;
+      pos = r[1];
+    });
+    if (pos < text.length) el.appendChild(document.createTextNode(text.slice(pos)));
+  }
+
+  function fuzzyMatch(str, word) {
+    var lower = str.toLowerCase();
+    var w = word.toLowerCase();
+    if (lower.indexOf(w) !== -1) return true;
+    var tokens = lower.split(/[^a-zа-я0-9ё]+/);
+    for (var i = 0; i < tokens.length; i++) {
+      if (isDistOne(tokens[i], w)) return true;
     }
-    if (start < text.length) {
-      el.appendChild(document.createTextNode(text.slice(start)));
-    }
+    return false;
   }
 
   function debounce(fn, ms) {
@@ -81,15 +122,31 @@
   function showToast(msg) {
     var t = document.createElement('div');
     t.className = 'toast';
-    t.textContent = msg;
+    t.setAttribute('role', 'status');
+    var span = document.createElement('span');
+    span.textContent = msg;
+    var btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'toast-close';
+    btn.textContent = '\u00d7';
+    btn.addEventListener('click', remove);
+    t.appendChild(span);
+    t.appendChild(btn);
     document.body.appendChild(t);
     setTimeout(function () { t.classList.add('show'); }, 10);
-    setTimeout(function () {
+    var to = setTimeout(remove, 2000);
+    function remove() {
+      clearTimeout(to);
       t.classList.remove('show');
       setTimeout(function () { t.remove(); }, 300);
-    }, 2000);
+    }
   }
   window.showToast = showToast;
+
+  function saveScroll(slug) {
+    if (!slug) return;
+    try { sessionStorage.setItem('scroll:' + slug, String(window.scrollY)); } catch (e) {}
+  }
 
   function isMobile() {
     return window.innerWidth < mobileBreakpoint;
@@ -168,6 +225,11 @@
 
   document.addEventListener('keydown', function (e) {
     if (e.key === 'Escape') {
+      if (sidebar.classList.contains('is-open')) {
+        e.preventDefault();
+        history.back();
+        return;
+      }
       if (searchInput.value || categorySelect.value) {
         e.preventDefault();
         searchInput.value = '';
@@ -175,8 +237,6 @@
         navIndex = -1;
         renderList(currentSlug());
         updateHashQuery();
-      } else {
-        if(sidebar.classList.contains('is-open')){ history.back(); }
       }
     } else if ((e.ctrlKey || e.metaKey) && (e.key === 'k' || e.key === 'K')) {
       e.preventDefault();
@@ -210,7 +270,31 @@
 
   function getManifest() {
     if (!manifestPromise) {
-      manifestPromise = fetch('content/glitches.json').then(function (r) { return r.json(); });
+      manifestPromise = (async function () {
+        var ver = (window.APP_VERSION || '0');
+        var key = 'manifest:' + ver;
+        try {
+          var cached = localStorage.getItem(key);
+          if (cached) return JSON.parse(cached);
+        } catch (e) {}
+        var data = await fetch('content/glitches.json', { cache: 'no-store' }).then(function (r) { return r.json(); });
+        await Promise.all(data.map(async function (g) {
+          try {
+            var txt = await fetch(g.paths.card, { cache: 'no-store' }).then(function (r) { return r.text(); });
+            var m = txt.match(/^---\s*([\s\S]*?)\n---/);
+            if (m) {
+              var tagsMatch = m[1].match(/tags:\s*\[(.*?)\]/);
+              if (tagsMatch) {
+                g.tags = tagsMatch[1].split(',').map(function (s) {
+                  return s.trim().replace(/^['"]|['"]$/g, '');
+                });
+              }
+            }
+          } catch (e) { g.tags = []; }
+        }));
+        try { localStorage.setItem(key, JSON.stringify(data)); } catch (e) {}
+        return data;
+      })();
     }
     return manifestPromise;
   }
@@ -235,17 +319,30 @@
   async function renderList(activeSlug) {
     var glitches = await getManifest();
     var rawSearch = (searchInput.value || '').trim();
-    var search = rawSearch.toLowerCase();
+    var words = rawSearch.toLowerCase().split(/\s+/).filter(Boolean);
     var category = categorySelect.value;
     listEl.innerHTML = '';
-    glitches.filter(function (g) {
-      return (!category || g.category === category) && g.title.toLowerCase().includes(search);
-    }).forEach(function (g) {
+    var results = glitches.map(function (g) {
+      var score = 0;
+      words.forEach(function (w) {
+        if (fuzzyMatch(g.title, w)) score += 3;
+        if (fuzzyMatch(g.category, w)) score += 1;
+        if (g.tags && g.tags.some(function (t) { return fuzzyMatch(t, w); })) score += 2;
+      });
+      return { g: g, score: score };
+    }).filter(function (item) {
+      return (!category || item.g.category === category) && (!words.length || item.score > 0);
+    });
+    results.sort(function (a, b) { return b.score - a.score; });
+    results.forEach(function (item) {
+      var g = item.g;
       var a = document.createElement('a');
       a.className = 'gl-item';
       a.href = '#/glitch/' + g.slug + getFilterQuery();
       a.dataset.slug = g.slug;
       a.setAttribute('tabindex', '0');
+      a.setAttribute('role', 'option');
+      a.setAttribute('aria-selected', 'false');
       var title = document.createElement('span');
       highlightText(title, g.title, rawSearch);
       a.appendChild(title);
@@ -287,6 +384,7 @@
     listEl.querySelectorAll('.gl-item').forEach(function (el, i) {
       var isActive = el.dataset.slug === slug;
       el.classList.toggle('active', isActive);
+      el.setAttribute('aria-selected', isActive ? 'true' : 'false');
       if (isActive) idx = i;
     });
     navIndex = idx;
@@ -294,6 +392,11 @@
   }
 
   async function load() {
+    if (scrollHandler) {
+      window.removeEventListener('scroll', scrollHandler);
+      scrollHandler = null;
+    }
+    saveScroll(lastSlug);
     var rawHash = location.hash.slice(1);
     if (!rawHash) {
       location.hash = '#/overview';
@@ -331,6 +434,7 @@
             '<span class="cat cat-' + catSlug + '"></span>' +
             '<h1>' + item.title + '</h1>' +
             '<div class="actions">' +
+              '<button class="btn-link" data-back style="display:none">Назад к позиции</button>' +
               (item.status === 'sceneExists' && item.paths && item.paths.scene ? '<a class="btn-link" href="#/scene/' + item.slug + '">Открыть сцену</a>' : '') +
               '<button class="btn-link" data-share>Поделиться</button>' +
               '<button class="btn-link" data-done>Пометить пройдено</button>' +
@@ -340,6 +444,7 @@
         var target = contentEl.querySelector('.md-body');
         var shareBtn = contentEl.querySelector('[data-share]');
         var doneBtn = contentEl.querySelector('[data-done]');
+        var backBtn = contentEl.querySelector('[data-back]');
         var md;
         try {
           var resp = await fetch(item.paths.card, { cache: 'no-store' });
@@ -386,6 +491,20 @@
             headings.forEach(function (h) { io.observe(h); });
           }
 
+          var storedPos = null;
+          try { storedPos = sessionStorage.getItem('scroll:' + slug); } catch (e) {}
+          if (!anchor) { window.__shareAnchor = null; }
+          var restored = false;
+          if (!anchor && storedPos !== null) {
+            window.scrollTo(0, parseInt(storedPos, 10));
+            restored = true;
+          }
+          if (storedPos !== null && !restored && backBtn) {
+            backBtn.style.display = 'inline-block';
+            backBtn.addEventListener('click', function () {
+              window.scrollTo({ top: parseInt(storedPos, 10), behavior: 'smooth' });
+            });
+          }
           if (anchor) {
             var elA = document.getElementById(anchor);
             if (elA) {
@@ -397,17 +516,13 @@
           document.title = 'Glitch Registry — ' + item.title;
 
           shareBtn.addEventListener('click', function () {
-            var shareHash = '#/scene/' + slug;
-            if (typeof window.__getShareParams === 'function') {
-              var sp = window.__getShareParams();
-              var qs = typeof sp === 'string' ? sp : new URLSearchParams(sp).toString();
-              if (qs) shareHash += '?' + qs;
-            }
+            var anchorPart = window.__shareAnchor ? '#' + window.__shareAnchor : '';
+            var shareHash = '#/glitch/' + slug + anchorPart;
             var url = location.origin + location.pathname + shareHash;
             if (navigator.share) {
               navigator.share({ url: url }).catch(function () {});
             } else if (navigator.clipboard && navigator.clipboard.writeText) {
-              navigator.clipboard.writeText(url);
+              navigator.clipboard.writeText(url).then(function () { showToast('Ссылка скопирована'); });
             } else {
               prompt('Ссылка:', url);
             }
@@ -420,6 +535,10 @@
             showToast('Сохранено');
             renderList(slug);
           });
+
+          scrollHandler = debounce(function(){ saveScroll(slug); }, 200);
+          window.addEventListener('scroll', scrollHandler);
+          lastSlug = slug;
 
           if (typeof window.setLastVisited === 'function') {
             window.setLastVisited({ type: 'glitch', slug: slug });
@@ -488,7 +607,7 @@
             if (navigator.share) {
               navigator.share({ url: url }).catch(function () {});
             } else if (navigator.clipboard && navigator.clipboard.writeText) {
-              navigator.clipboard.writeText(url);
+              navigator.clipboard.writeText(url).then(function () { showToast('Ссылка скопирована'); });
             } else {
               prompt('Ссылка:', url);
             }

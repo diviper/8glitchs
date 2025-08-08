@@ -49,6 +49,7 @@
       btn.textContent = '#';
       btn.addEventListener('click', function (e) {
         e.preventDefault();
+        window.__shareAnchor = id;
         var hash = location.hash;
         var second = hash.indexOf('#', 1);
         var base = second === -1 ? hash : hash.slice(0, second);
