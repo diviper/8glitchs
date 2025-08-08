@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>Симуляционный аргумент</title>
+<style>
+body{background:#000;color:#fff;font-family:sans-serif;margin:0;padding:20px;text-align:center;}
+label{display:block;margin:10px auto;max-width:300px;}
+input[type=range]{width:100%;}
+#result{margin-top:20px;}
+</style>
+</head>
+<body>
+<label>N_sims: <span id="Nval"></span><input type="range" id="N" min="1" max="100" value="10"></label>
+<label>cost: <span id="Cval"></span><input type="range" id="C" min="1" max="100" value="50"></label>
+<label>fraction_run: <span id="Fval"></span><input type="range" id="F" min="0" max="1" step="0.01" value="0.5"></label>
+<div id="result"></div>
+<script>
+var N=document.getElementById('N');
+var C=document.getElementById('C');
+var F=document.getElementById('F');
+var Nval=document.getElementById('Nval');
+var Cval=document.getElementById('Cval');
+var Fval=document.getElementById('Fval');
+var res=document.getElementById('result');
+function fmt(v){return parseFloat(v).toFixed(2);}
+function update(){Nval.textContent=N.value;Cval.textContent=C.value;Fval.textContent=fmt(F.value);var prior=(F.value*N.value)/(1+F.value*N.value);res.textContent='prior ≈ '+fmt(prior)+' — упрощённо.';}
+N.addEventListener('input',update);
+C.addEventListener('input',update);
+F.addEventListener('input',update);
+var params={N_sims:N.value,cost:C.value,fraction_run:F.value};
+window.__initScene=function(){update();};
+window.__applyParams=function(q){if(q.N_sims){N.value=q.N_sims;}if(q.cost){C.value=q.cost;}if(q.fraction_run){F.value=q.fraction_run;}update();};
+window.__getShareParams=function(){return {N_sims:N.value,cost:C.value,fraction_run:F.value};};
+</script>
+<script src="../assets/js/scene-frame.js"></script>
+</body>
+</html>

@@ -64,11 +64,16 @@
       });
       h.appendChild(btn);
     });
-    if (window.lexiconReady) {
-      try { await window.lexiconReady; } catch (e) {}
+    if (!window.__lexiconPromise) {
+      window.__lexiconPromise = fetch('assets/data/lexicon.json')
+        .then(function (r) { return r.json(); })
+        .catch(function () { return {}; });
     }
-    if (window.attachLexicon && window.LEXICON) {
-      attachLexicon(container, window.LEXICON);
-    }
+    try {
+      var dict = await window.__lexiconPromise;
+      if (window.attachLexicon) {
+        attachLexicon(container, dict);
+      }
+    } catch (e) {}
   };
 })();
