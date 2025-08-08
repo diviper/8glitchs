@@ -18,6 +18,18 @@
   var sidebarOverlay = document.getElementById('sidebar-overlay');
   var navIndex = -1;
 
+  function showToast(msg) {
+    var t = document.createElement('div');
+    t.className = 'toast';
+    t.textContent = msg;
+    document.body.appendChild(t);
+    setTimeout(function () { t.classList.add('show'); }, 10);
+    setTimeout(function () {
+      t.classList.remove('show');
+      setTimeout(function () { t.remove(); }, 300);
+    }, 2000);
+  }
+
   function openSidebar() {
     if (sidebar) sidebar.classList.add('open');
     if (sidebarOverlay) sidebarOverlay.classList.add('show');
@@ -180,7 +192,7 @@
           actions.className = 'actions';
           if (item.status === 'sceneExists' && item.paths.scene) {
             var sceneLink = document.createElement('a');
-            sceneLink.className = 'btn-link';
+            sceneLink.className = 'btn-link btn-primary';
             sceneLink.href = '#/scene/' + slug + getFilterQuery();
             sceneLink.textContent = 'Открыть сцену';
             actions.appendChild(sceneLink);
@@ -201,6 +213,27 @@
           body.className = 'md-body';
           contentEl.appendChild(body);
           await window.renderMarkdown(md, body);
+
+          var toc = document.createElement('div');
+          var headings = body.querySelectorAll('h3');
+          headings.forEach(function (h, i) {
+            var id = h.textContent.toLowerCase().replace(/\s+/g, '-').replace(/[^\w\-а-яё]/gi, '');
+            if (!id) id = 'sec-' + i;
+            h.id = id;
+            var link = document.createElement('a');
+            link.href = '#' + id;
+            link.textContent = h.textContent;
+            link.addEventListener('click', function (e) {
+              e.preventDefault();
+              document.getElementById(id).scrollIntoView({ behavior: 'smooth' });
+            });
+            toc.appendChild(link);
+          });
+          if (headings.length) {
+            toc.className = 'toc';
+            contentEl.insertBefore(toc, body);
+          }
+
           document.title = 'Glitch Registry — ' + item.title;
 
           shareBtn.addEventListener('click', function () {
@@ -223,8 +256,14 @@
             if (typeof window.markDone === 'function') {
               window.markDone(slug);
             }
+            doneBtn.textContent = 'Пройдено';
+            showToast('Сохранено');
             renderList(slug);
           });
+
+          try {
+            localStorage.setItem('lastVisited', JSON.stringify({ type: 'glitch', slug: slug }));
+          } catch (e) {}
         } catch (e) {
           contentEl.innerHTML = '<div class="empty">Не нашлось</div>';
         }
@@ -235,6 +274,9 @@
       var itemScene = glitches.find(function (g) { return g.slug === slug; });
       if (itemScene) {
         document.title = 'Glitch Registry — ' + itemScene.title;
+        try {
+          localStorage.setItem('lastVisited', JSON.stringify({ type: 'scene', slug: slug }));
+        } catch (e) {}
         if (itemScene.status === 'cardOnly' || !itemScene.paths.scene) {
           contentEl.innerHTML = '<div class="scene-head">'
             + '<div class="actions-left"><a class="btn-link" href="#/glitch/' + slug + '">← К карточке</a></div>'
@@ -300,29 +342,54 @@
         var mdOverview = await fetch('content/overview.md').then(function (r) { return r.text(); });
         contentEl.innerHTML = '';
 
-        var stats = document.createElement('div');
-        stats.className = 'overview-stats';
-        var totalDiv = document.createElement('div');
-        totalDiv.textContent = 'Всего глитчей: ' + glitches.length;
-        stats.appendChild(totalDiv);
+        var grid = document.createElement('div');
+        grid.className = 'tiles';
+
+        var last = null;
+        try { last = JSON.parse(localStorage.getItem('lastVisited')); } catch (e) {}
+        if (last) {
+          var lastItem = glitches.find(function (g) { return g.slug === last.slug; });
+          if (lastItem) {
+            var cont = document.createElement('div');
+            cont.className = 'tile continue';
+            var contBtn = document.createElement('button');
+            contBtn.className = 'btn-link btn-primary';
+            contBtn.textContent = 'Вернуться к ' + lastItem.title;
+            contBtn.addEventListener('click', function () {
+              location.hash = '#/' + last.type + '/' + last.slug;
+            });
+            cont.appendChild(contBtn);
+            grid.appendChild(cont);
+          }
+        }
 
         var catCounts = glitches.reduce(function (acc, g) {
           acc[g.category] = (acc[g.category] || 0) + 1;
           return acc;
         }, {});
-        var catsDiv = document.createElement('div');
-        catsDiv.textContent = Object.keys(catCounts).map(function (c) {
-          return c + ': ' + catCounts[c];
-        }).join(' • ');
-        stats.appendChild(catsDiv);
+        Object.keys(catCounts).forEach(function (c) {
+          var tile = document.createElement('div');
+          tile.className = 'tile';
+          var h = document.createElement('div');
+          h.textContent = c;
+          tile.appendChild(h);
+          var count = document.createElement('div');
+          count.textContent = catCounts[c];
+          tile.appendChild(count);
+          var btn = document.createElement('button');
+          btn.className = 'btn-link';
+          btn.textContent = 'Показать';
+          btn.addEventListener('click', function () {
+            categorySelect.value = c;
+            renderList(null);
+            updateHashQuery();
+            openSidebar();
+          });
+          tile.appendChild(btn);
+          grid.appendChild(tile);
+        });
 
-        var done = (typeof window.getProgress === 'function') ? window.getProgress() : [];
-        var progressDiv = document.createElement('div');
-        var pct = glitches.length ? Math.round(done.length / glitches.length * 100) : 0;
-        progressDiv.textContent = 'Пройдено: ' + pct + '%';
-        stats.appendChild(progressDiv);
-
-        contentEl.appendChild(stats);
+        contentEl.appendChild(grid);
 
         var bodyOverview = document.createElement('div');
         bodyOverview.className = 'md-body';
