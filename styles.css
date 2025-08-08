@@ -784,7 +784,8 @@ button, input, select {
 /* Sidebar */
 .gl-item { display:flex; align-items:center; gap:8px; padding:6px 8px; border-radius:8px; text-decoration:none; }
 .gl-item:hover { background:rgba(255,255,255,.05); }
-.gl-item.active { background:rgba(255,255,255,.09); outline:1px solid rgba(255,255,255,.12); }
+.gl-item.active { background:rgba(255,255,255,.06); border-radius:8px; }
+.gl-item .check { margin-left:auto; opacity:.85; }
 .badge { font-size:11px; padding:1px 6px; border:1px solid rgba(255,255,255,.15); border-radius:999px; opacity:.85; }
 .badge.scene { border-color:#57ffae44; }
 .badge.card  { border-color:#88aaff44; }
@@ -798,6 +799,13 @@ button, input, select {
 .scene-head h1{margin:6px 0 8px;font-size:clamp(22px,2.6vw,30px)}
 .scene-frame{max-width:1080px;margin:0 auto;padding:0 20px}
 .cat { display:inline-block; padding:2px 8px; border:1px solid rgba(255,255,255,.15); border-radius:8px; font-size:12px; opacity:.85; }
+.cat-quant{border-color:#56e0ff80}
+.cat-time{border-color:#ffd58080}
+.cat-cosmos{border-color:#9bb3ff80}
+.cat-id{border-color:#ffa0ff80}
+.cat-info{border-color:#a0ffcc80}
+.cat-logic{border-color:#ffd7a880}
+.cat-observer{border-color:#b0ffc680}
 
 .md-body { max-width:820px; margin:0 auto; padding:16px 20px; line-height:1.65; }
 .md-body h2, .md-body h3 { margin:1.2em 0 .4em; font-size:clamp(18px,2vw,22px); }

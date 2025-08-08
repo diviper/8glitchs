@@ -39,8 +39,8 @@ MIT
 
 ## Скриншоты
 
-![glitch view](https://raw.githubusercontent.com/diviper/8glitchs/main/docs/glitch.svg)
-![scene view](https://raw.githubusercontent.com/diviper/8glitchs/main/docs/scene.svg)
+![glitch view](https://raw.githubusercontent.com/diviper/8glitchs/3841247b83a55794d5cd3736cb682a304b744412/screenshots/card.png)
+![scene view](https://placehold.co/600x400?text=Scene%20View)
 
 ## Как добавить карточку/сцену
 

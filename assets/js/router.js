@@ -57,6 +57,12 @@
       statusBadge.className = 'badge ' + (g.status === 'sceneExists' ? 'scene' : 'card');
       statusBadge.textContent = g.status === 'sceneExists' ? 'scene' : 'card';
       a.appendChild(statusBadge);
+      if (typeof window.isDone === 'function' && window.isDone(g.slug)) {
+        var doneIcon = document.createElement('span');
+        doneIcon.className = 'check';
+        doneIcon.textContent = '✔';
+        a.appendChild(doneIcon);
+      }
       if (g.slug === activeSlug) a.classList.add('active');
       listEl.appendChild(a);
     });
@@ -125,6 +131,11 @@
           shareBtn.textContent = 'Поделиться';
           shareBtn.setAttribute('data-share', '');
           actions.appendChild(shareBtn);
+          var doneBtn = document.createElement('button');
+          doneBtn.className = 'btn-link';
+          doneBtn.textContent = 'Пометить пройдено';
+          doneBtn.setAttribute('data-done', '');
+          actions.appendChild(doneBtn);
           head.appendChild(actions);
           contentEl.appendChild(head);
           var body = document.createElement('div');
@@ -134,18 +145,26 @@
           document.title = 'Glitch Registry — ' + item.title;
 
           shareBtn.addEventListener('click', function () {
-            var shareHash = '#/glitch/' + slug;
+            var shareHash = '#/scene/' + slug;
             if (typeof window.__getShareParams === 'function') {
               var sp = window.__getShareParams();
               var qs = typeof sp === 'string' ? sp : new URLSearchParams(sp).toString();
               if (qs) shareHash += '?' + qs;
             }
             var url = location.origin + location.pathname + shareHash;
-            if (navigator.clipboard && navigator.clipboard.writeText) {
+            if (navigator.share) {
+              navigator.share({ url: url }).catch(function () {});
+            } else if (navigator.clipboard && navigator.clipboard.writeText) {
               navigator.clipboard.writeText(url);
             } else {
               prompt('Ссылка:', url);
             }
+          });
+          doneBtn.addEventListener('click', function () {
+            if (typeof window.markDone === 'function') {
+              window.markDone(slug);
+            }
+            renderList(slug);
           });
         } catch (e) {
           contentEl.innerHTML = '<div class="empty">Не нашлось</div>';
@@ -190,7 +209,9 @@
               if (qs) shareHash += '?' + qs;
             }
             var url = location.origin + location.pathname + shareHash;
-            if (navigator.clipboard && navigator.clipboard.writeText) {
+            if (navigator.share) {
+              navigator.share({ url: url }).catch(function () {});
+            } else if (navigator.clipboard && navigator.clipboard.writeText) {
               navigator.clipboard.writeText(url);
             } else {
               prompt('Ссылка:', url);

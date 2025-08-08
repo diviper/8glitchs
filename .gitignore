@@ -38,3 +38,7 @@ out/
 .cache/
 .temp/
 
+# Media
+docs/*.png
+assets/**/*.png
+
