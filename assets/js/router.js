@@ -18,7 +18,9 @@
   var sidebar = document.querySelector('.sidebar');
   var sidebarToggle = document.getElementById('sidebar-toggle');
   var sidebarOverlay = document.getElementById('sidebar-overlay');
-  var mobileBreakpoint = 768;
+  var randomBtn = document.getElementById('random-btn');
+  var lexToggle = document.getElementById('lexicon-toggle');
+  var mobileBreakpoint = 820;
   var navIndex = -1;
 
   function updateFocused() {
@@ -28,6 +30,7 @@
     });
     if (navIndex >= 0 && items[navIndex]) {
       items[navIndex].scrollIntoView({ block: 'nearest' });
+      items[navIndex].focus();
     }
   }
 
@@ -54,6 +57,27 @@
     }
   }
 
+  function debounce(fn, ms) {
+    var t;
+    return function () {
+      var args = arguments;
+      clearTimeout(t);
+      t = setTimeout(function () { fn.apply(null, args); }, ms);
+    };
+  }
+
+  function saveCat() {
+    try {
+      var val = categorySelect.value;
+      var slug = catSlugMap[val] || '';
+      if (slug) {
+        localStorage.setItem('ui:cat', slug);
+      } else {
+        localStorage.removeItem('ui:cat');
+      }
+    } catch (e) {}
+  }
+
   function showToast(msg) {
     var t = document.createElement('div');
     t.className = 'toast';
@@ -72,21 +96,21 @@
   }
 
   function openSidebar() {
-    if (!sidebar || !isMobile() || sidebar.classList.contains('open')) return;
-    sidebar.classList.add('open');
+    if (!sidebar || !isMobile() || sidebar.classList.contains('is-open')) return;
+    sidebar.classList.add('is-open');
     if (sidebarOverlay) sidebarOverlay.classList.add('show');
     history.pushState({sb: true}, '');
   }
 
   function closeSidebar() {
     if (!sidebar) return;
-    sidebar.classList.remove('open');
+    sidebar.classList.remove('is-open');
     if (sidebarOverlay) sidebarOverlay.classList.remove('show');
   }
 
   if (sidebarToggle) {
     sidebarToggle.addEventListener('click', function () {
-      if (sidebar.classList.contains('open')) {
+      if (sidebar.classList.contains('is-open')) {
         history.back();
       } else {
         openSidebar();
@@ -100,8 +124,38 @@
     if (!isMobile()) closeSidebar();
   });
   window.addEventListener('popstate', function(){
-    if (sidebar.classList.contains('open')) closeSidebar();
+    if (sidebar.classList.contains('is-open')) closeSidebar();
   });
+
+  if (randomBtn) {
+    randomBtn.addEventListener('click', async function () {
+      var glitches = await getManifest();
+      var cards = glitches.filter(function (g) { return g.status === 'cardOnly'; });
+      var pool = cards.length ? cards.concat(glitches) : glitches;
+      var pick = pool[Math.floor(Math.random() * pool.length)];
+      if (pick) {
+        location.hash = '#/glitch/' + pick.slug;
+      }
+    });
+  }
+
+  if (lexToggle) {
+    function syncLex() {
+      if (window.isLexiconEnabled && window.isLexiconEnabled()) {
+        lexToggle.classList.add('active');
+      } else {
+        lexToggle.classList.remove('active');
+      }
+    }
+    lexToggle.addEventListener('click', function () {
+      if (window.toggleLexicon) {
+        var en = !(window.isLexiconEnabled && window.isLexiconEnabled());
+        window.toggleLexicon(en);
+        syncLex();
+      }
+    });
+    syncLex();
+  }
   function moveSelection(dir) {
     var items = listEl.querySelectorAll('.gl-item');
     if (!items.length) return;
@@ -122,7 +176,7 @@
         renderList(currentSlug());
         updateHashQuery();
       } else {
-        if(sidebar.classList.contains('open')){ history.back(); }
+        if(sidebar.classList.contains('is-open')){ history.back(); }
       }
     } else if ((e.ctrlKey || e.metaKey) && (e.key === 'k' || e.key === 'K')) {
       e.preventDefault();
@@ -164,7 +218,10 @@
   function getFilterQuery() {
     var qs = new URLSearchParams();
     if (searchInput.value) qs.set('q', searchInput.value);
-    if (categorySelect.value) qs.set('cat', categorySelect.value);
+    if (categorySelect.value) {
+      var c = catSlugMap[categorySelect.value] || categorySelect.value;
+      qs.set('cat', c);
+    }
     var s = qs.toString();
     return s ? '?' + s : '';
   }
@@ -188,6 +245,7 @@
       a.className = 'gl-item';
       a.href = '#/glitch/' + g.slug + getFilterQuery();
       a.dataset.slug = g.slug;
+      a.setAttribute('tabindex', '0');
       var title = document.createElement('span');
       highlightText(title, g.title, rawSearch);
       a.appendChild(title);
@@ -212,12 +270,16 @@
 
   function applyFilters(params) {
     searchInput.value = params.q || '';
-    var cat = params.cat || '';
+    var cat = params.cat;
+    if (!cat) {
+      try { cat = localStorage.getItem('ui:cat') || ''; } catch (e) { cat = ''; }
+    }
     if (slugCatMap[cat]) {
       categorySelect.value = slugCatMap[cat];
     } else {
-      categorySelect.value = cat;
+      categorySelect.value = cat || '';
     }
+    saveCat();
   }
 
   function highlightActive(slug) {
@@ -251,6 +313,7 @@
     }
     var params = Object.fromEntries(new URLSearchParams(query));
     applyFilters(params);
+    updateHashQuery();
     var parts = rawHash.split('/').filter(Boolean);
     var slug = parts[1];
     await renderList(slug);
@@ -292,7 +355,7 @@
           .forEach(function (n) { n.remove(); });
 
           var headings = target.querySelectorAll('h3');
-          if (headings.length) {
+          if (headings.length >= 2) {
             var toc = document.createElement('div');
             toc.className = 'toc';
             headings.forEach(function (h) {
@@ -362,10 +425,10 @@
             window.setLastVisited({ type: 'glitch', slug: slug });
           }
         } else {
-          contentEl.innerHTML = '<div class="empty">Не нашлось</div>';
+          contentEl.innerHTML = '<div class="callout warn">Глитч не найден. <a href="#/overview">На обзор</a>.</div>';
         }
       } else {
-        contentEl.innerHTML = '<div class="empty">Не нашлось</div>';
+        contentEl.innerHTML = '<div class="callout warn">Глитч не найден. <a href="#/overview">На обзор</a>.</div>';
       }
     } else if (parts[0] === 'scene' && slug) {
       var itemScene = glitches.find(function (g) { return g.slug === slug; });
@@ -380,7 +443,7 @@
             + '<h1>' + itemScene.title + '</h1>'
             + '<div class="actions-right"><button class="btn-link" data-share>Поделиться</button></div>'
             + '</div>'
-            + '<div class="callout warn">Сцена в разработке. Открой карточку — там краткий смысл и ссылки.</div>';
+            + '<div class="callout warn">Сцена в разработке.</div>';
         } else {
           try {
             var html = await fetch(itemScene.paths.scene).then(function (r) { return r.text(); });
@@ -432,7 +495,7 @@
           });
         }
       } else {
-        contentEl.innerHTML = '<div class="empty">Не нашлось</div>';
+        contentEl.innerHTML = '<div class="callout warn">Глитч не найден. <a href="#/overview">На обзор</a>.</div>';
       }
     } else if (parts[0] === 'overview') {
       try {
@@ -490,6 +553,7 @@
           tile.appendChild(count);
           tile.addEventListener('click', function () {
             categorySelect.value = c;
+            saveCat();
             renderList(null);
             history.replaceState(null, '', '#/overview?cat=' + slugCat);
             highlightTile(slugCat);
@@ -510,6 +574,7 @@
         if (activeSlug) {
           highlightTile(activeSlug);
           openSidebar();
+          history.replaceState(null, '', '#/overview?cat=' + activeSlug);
         }
 
         var resetTile = document.createElement('div');
@@ -541,7 +606,7 @@
       highlightActive(null);
       return;
     } else {
-      contentEl.innerHTML = '<div class="empty">Не нашлось</div>';
+      contentEl.innerHTML = '<div class="callout warn">Глитч не найден. <a href="#/overview">На обзор</a>.</div>';
     }
 
     highlightActive(slug);
@@ -555,13 +620,15 @@
     return (p[0] === 'glitch' || p[0] === 'scene') ? p[1] : null;
   }
 
-  searchInput.addEventListener('input', function () {
+  var searchHandler = debounce(function () {
     navIndex = -1;
     renderList(currentSlug());
     updateHashQuery();
-  });
+  }, 300);
+  searchInput.addEventListener('input', searchHandler);
   categorySelect.addEventListener('change', function () {
     navIndex = -1;
+    saveCat();
     renderList(currentSlug());
     updateHashQuery();
   });

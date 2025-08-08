@@ -23,6 +23,9 @@ async function main() {
 
   const seen = new Set();
   let ok = true;
+  const missingFiles = [];
+  const badCategories = [];
+  const ALLOWED_CATS = ['Квант','Время','Космос','Идентичность','Информация','Логика','Наблюдатель'];
   for (const item of data) {
     if (seen.has(item.slug)) {
       console.error('Duplicate slug:', item.slug);
@@ -31,7 +34,7 @@ async function main() {
     seen.add(item.slug);
 
     if (!(await exists(item.paths.card))) {
-      console.error('Missing card:', item.paths.card);
+      missingFiles.push(item.paths.card);
       ok = false;
     } else if (!hasValidFrontMatter(item.paths.card)) {
       console.error('Invalid front matter:', item.paths.card);
@@ -39,9 +42,13 @@ async function main() {
     }
     if (item.status === 'sceneExists') {
       if (!item.paths.scene || !(await exists(item.paths.scene))) {
-        console.error('Missing scene:', item.paths.scene);
+        missingFiles.push(item.paths.scene || '(no scene path for ' + item.slug + ')');
         ok = false;
       }
+    }
+    if (!ALLOWED_CATS.includes(item.category)) {
+      badCategories.push(item.slug);
+      ok = false;
     }
   }
 
@@ -53,6 +60,8 @@ async function main() {
     ok = false;
   }
 
+  console.log('missingFiles:', JSON.stringify(missingFiles));
+  console.log('badCategories:', JSON.stringify(badCategories));
   if (!ok) {
     process.exit(1);
   } else {
