@@ -824,8 +824,19 @@ button, input, select {
 
 .btn-link { display:inline-block; padding:8px 12px; border:1px solid rgba(255,255,255,.18); border-radius:10px; text-decoration:none; }
 .btn-link:hover { background:rgba(255,255,255,.06); }
+.btn-primary { background:rgba(255,255,255,.08); border-color:rgba(255,255,255,.3); }
+.btn-primary:hover { background:rgba(255,255,255,.15); }
 
-.callout { border:1px solid rgba(255,255,255,.12); border-radius:12px; padding:12px 14px; margin:12px 0; background:rgba(255,255,255,.03); }
+.toc { border:1px solid rgba(255,255,255,.12); border-radius:10px; padding:10px 12px; margin:12px 0; display:flex; flex-direction:column; gap:4px; }
+.tiles { display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:16px; margin:16px 0; }
+.tile { border:1px solid rgba(255,255,255,.12); border-radius:12px; padding:16px 18px; backdrop-filter:blur(4px); }
+.tile.continue { grid-column:1/-1; text-align:center; }
+.tile button { margin-top:8px; }
+
+.toast { position:fixed; bottom:20px; right:20px; background:rgba(0,0,0,.8); padding:8px 14px; border-radius:8px; opacity:0; transition:opacity .3s; }
+.toast.show { opacity:1; }
+
+.callout { border:1px solid rgba(255,255,255,.12); border-radius:12px; padding:16px 18px; margin:16px 0; background:rgba(255,255,255,.03); }
 .callout.warn { border-color:#ff7b7b33; background:rgba(255,0,0,.06); }
 
 /* скрыть «БАГ #n», «серии», старый прогресс в сценах */
