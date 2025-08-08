@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Redirecting...</title>
+  <script>
+    (function () {
+      var path = window.location.pathname;
+      var hash = window.location.hash;
+      if (!hash) {
+        var scene = path.match(/\/scenes\/glitch-([^\/]+)\.html$/);
+        if (scene) {
+          hash = '#/scene/' + scene[1];
+        } else {
+          var glitch = path.match(/\/glitch\/([^\/]+)$/);
+          if (glitch) {
+            hash = '#/glitch/' + glitch[1];
+          } else {
+            var legacy = path.match(/\/([^\/]+)\.html$/);
+            if (legacy && !['index', '404'].includes(legacy[1])) {
+              hash = '#/glitch/' + legacy[1];
+            }
+          }
+        }
+      }
+
+      var parts = path.split('/');
+      var depth = parts.length - 3;
+      if (depth < 0) depth = 0;
+      var prefix = '';
+      for (var i = 0; i < depth; i++) {
+        prefix += '../';
+      }
+      var target = prefix + 'index.html';
+      if (hash) {
+        target += hash;
+      }
+      window.location.replace(target);
+    })();
+  </script>
+</head>
+<body></body>
+</html>
