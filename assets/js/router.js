@@ -13,6 +13,29 @@
     'Логика': 'logic',
     'Наблюдатель': 'observer'
   };
+  var sidebar = document.querySelector('.sidebar');
+  var sidebarToggle = document.getElementById('sidebar-toggle');
+  var sidebarOverlay = document.getElementById('sidebar-overlay');
+
+  function openSidebar() {
+    if (sidebar) sidebar.classList.add('open');
+    if (sidebarOverlay) sidebarOverlay.classList.add('show');
+  }
+
+  function closeSidebar() {
+    if (sidebar) sidebar.classList.remove('open');
+    if (sidebarOverlay) sidebarOverlay.classList.remove('show');
+  }
+
+  if (sidebarToggle) {
+    sidebarToggle.addEventListener('click', openSidebar);
+  }
+  if (sidebarOverlay) {
+    sidebarOverlay.addEventListener('click', closeSidebar);
+  }
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') closeSidebar();
+  });
 
   function getManifest() {
     if (!manifestPromise) {
@@ -282,7 +305,10 @@
     updateHashQuery();
   });
 
-  window.addEventListener('hashchange', load);
+  window.addEventListener('hashchange', function () {
+    closeSidebar();
+    load();
+  });
   window.addEventListener('DOMContentLoaded', function () {
     if (!location.hash) {
       location.hash = '#/overview';
