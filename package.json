@@ -6,7 +6,8 @@
   "scripts": {
     "test": "jest",
     "lint:html": "htmlhint \"**/*.html\"",
-    "lint:md": "markdownlint '**/*.md' --ignore node_modules --ignore legacy"
+    "lint:md": "markdownlint '**/*.md' --ignore node_modules --ignore legacy",
+    "check:manifest": "node scripts/check-manifest.mjs"
   },
   "keywords": [],
   "author": "",
