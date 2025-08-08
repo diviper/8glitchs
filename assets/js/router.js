@@ -21,6 +21,39 @@
   var mobileBreakpoint = 768;
   var navIndex = -1;
 
+  function updateFocused() {
+    var items = listEl.querySelectorAll('.gl-item');
+    items.forEach(function (el, i) {
+      el.classList.toggle('focused', i === navIndex);
+    });
+    if (navIndex >= 0 && items[navIndex]) {
+      items[navIndex].scrollIntoView({ block: 'nearest' });
+    }
+  }
+
+  function highlightText(el, text, query) {
+    if (!query) {
+      el.textContent = text;
+      return;
+    }
+    var lower = text.toLowerCase();
+    var q = query.toLowerCase();
+    var start = 0;
+    var idx;
+    while ((idx = lower.indexOf(q, start)) !== -1) {
+      if (idx > start) {
+        el.appendChild(document.createTextNode(text.slice(start, idx))); 
+      }
+      var mark = document.createElement('mark');
+      mark.textContent = text.slice(idx, idx + q.length);
+      el.appendChild(mark);
+      start = idx + q.length;
+    }
+    if (start < text.length) {
+      el.appendChild(document.createTextNode(text.slice(start)));
+    }
+  }
+
   function showToast(msg) {
     var t = document.createElement('div');
     t.className = 'toast';
@@ -72,15 +105,22 @@
     if (newIndex < 0) newIndex = items.length - 1;
     if (newIndex >= items.length) newIndex = 0;
     navIndex = newIndex;
-    items.forEach(function (el, i) {
-      el.classList.toggle('active', i === navIndex);
-    });
-    items[navIndex].scrollIntoView({ block: 'nearest' });
+    updateFocused();
   }
 
   document.addEventListener('keydown', function (e) {
-    if (e.key === 'Escape') closeSidebar();
-    if (e.ctrlKey && (e.key === 'k' || e.key === 'K')) {
+    if (e.key === 'Escape') {
+      if (searchInput.value || categorySelect.value) {
+        e.preventDefault();
+        searchInput.value = '';
+        categorySelect.value = '';
+        navIndex = -1;
+        renderList(currentSlug());
+        updateHashQuery();
+      } else {
+        closeSidebar();
+      }
+    } else if ((e.ctrlKey || e.metaKey) && (e.key === 'k' || e.key === 'K')) {
       e.preventDefault();
       searchInput.focus();
     } else if (e.key === 'ArrowDown' && e.target.tagName !== 'SELECT') {
@@ -89,6 +129,15 @@
     } else if (e.key === 'ArrowUp' && e.target.tagName !== 'SELECT') {
       e.preventDefault();
       moveSelection(-1);
+    } else if (e.key === 'Home' && e.target.tagName !== 'SELECT') {
+      e.preventDefault();
+      navIndex = 0;
+      updateFocused();
+    } else if (e.key === 'End' && e.target.tagName !== 'SELECT') {
+      e.preventDefault();
+      var items = listEl.querySelectorAll('.gl-item');
+      navIndex = items.length - 1;
+      updateFocused();
     } else if (e.key === 'Enter') {
       var items = listEl.querySelectorAll('.gl-item');
       if (navIndex >= 0 && items[navIndex]) {
@@ -122,7 +171,8 @@
 
   async function renderList(activeSlug) {
     var glitches = await getManifest();
-    var search = (searchInput.value || '').toLowerCase();
+    var rawSearch = (searchInput.value || '').trim();
+    var search = rawSearch.toLowerCase();
     var category = categorySelect.value;
     listEl.innerHTML = '';
     glitches.filter(function (g) {
@@ -133,7 +183,7 @@
       a.href = '#/glitch/' + g.slug + getFilterQuery();
       a.dataset.slug = g.slug;
       var title = document.createElement('span');
-      title.textContent = g.title;
+      highlightText(title, g.title, rawSearch);
       a.appendChild(title);
       var catBadge = document.createElement('span');
       catBadge.className = 'badge';
@@ -172,6 +222,7 @@
       if (isActive) idx = i;
     });
     navIndex = idx;
+    updateFocused();
   }
 
   async function load() {
