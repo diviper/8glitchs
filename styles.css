@@ -790,7 +790,7 @@ button, input, select {
 /* Sidebar */
 .gl-item { display:flex; align-items:center; gap:8px; padding:6px 8px; border-radius:8px; text-decoration:none; }
 .gl-item:hover { background:rgba(255,255,255,.05); }
-.gl-item.active { background:rgba(255,255,255,.08); border-radius:8px; }
+.gl-item.active, .gl-item.focused { background:rgba(255,255,255,.08); border-radius:8px; }
 .gl-item .check { margin-left:auto; opacity:.85; }
 .badge { font-size:11px; padding:1px 6px; border:1px solid rgba(255,255,255,.15); border-radius:999px; opacity:.85; }
 .badge.scene { border-color:#57ffae44; }
