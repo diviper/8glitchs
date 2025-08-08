@@ -225,6 +225,31 @@
       try {
         var mdOverview = await fetch('content/overview.md').then(function (r) { return r.text(); });
         contentEl.innerHTML = '';
+
+        var stats = document.createElement('div');
+        stats.className = 'overview-stats';
+        var totalDiv = document.createElement('div');
+        totalDiv.textContent = 'Всего глитчей: ' + glitches.length;
+        stats.appendChild(totalDiv);
+
+        var catCounts = glitches.reduce(function (acc, g) {
+          acc[g.category] = (acc[g.category] || 0) + 1;
+          return acc;
+        }, {});
+        var catsDiv = document.createElement('div');
+        catsDiv.textContent = Object.keys(catCounts).map(function (c) {
+          return c + ': ' + catCounts[c];
+        }).join(' • ');
+        stats.appendChild(catsDiv);
+
+        var done = (typeof window.getProgress === 'function') ? window.getProgress() : [];
+        var progressDiv = document.createElement('div');
+        var pct = glitches.length ? Math.round(done.length / glitches.length * 100) : 0;
+        progressDiv.textContent = 'Пройдено: ' + pct + '%';
+        stats.appendChild(progressDiv);
+
+        contentEl.appendChild(stats);
+
         var bodyOverview = document.createElement('div');
         bodyOverview.className = 'md-body';
         contentEl.appendChild(bodyOverview);
