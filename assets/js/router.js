@@ -243,6 +243,19 @@
           body.className = 'md-body';
           contentEl.appendChild(body);
           await window.renderMarkdown(md, body);
+          body.querySelectorAll('.hero,.legacy,.btns,.bug-series,.series-banner,.project-banner')
+            .forEach(function (n) { n.remove(); });
+          var first = body.querySelector('h3');
+          if (first) {
+            var txt = (first.textContent || '').trim().toLowerCase();
+            var legacyH = ['глюки', 'визуализации', 'о проекте'];
+            if (legacyH.some(function (t) { return txt.includes(t); })) {
+              while (body.firstChild && body.firstChild !== first) {
+                body.removeChild(body.firstChild);
+              }
+              first.remove();
+            }
+          }
 
           var headings = body.querySelectorAll('h3');
           if (headings.length) {
@@ -406,7 +419,7 @@
             cont.className = 'tile continue';
             var contBtn = document.createElement('button');
             contBtn.className = 'btn-link btn-primary';
-            contBtn.textContent = 'Вернуться к ' + lastItem.title;
+            contBtn.textContent = 'Продолжить → ' + lastItem.title;
             contBtn.addEventListener('click', function () {
               location.hash = '#/' + last.type + '/' + last.slug;
             });
