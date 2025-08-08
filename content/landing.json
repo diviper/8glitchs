@@ -1,0 +1,7 @@
+{
+  "videoMp4": "https://cdn.example.com/glitch-intro.mp4",
+  "audioMp3": "https://cdn.example.com/glitch-theme.mp3",
+  "poster":   "https://cdn.example.com/poster.jpg",
+  "title": "Glitch Registry",
+  "tagline": "Парадоксы реальности. Сначала красиво — потом глубоко."
+}
