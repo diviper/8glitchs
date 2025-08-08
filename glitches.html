@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Квантовые Парадоксы</title>
+    <title>Glitch Registry — Реестр глитчей</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -174,23 +174,20 @@
 <body>
     <nav class="navbar navbar-expand-lg fixed-top">
         <div class="container">
-            <a class="navbar-brand" href="index.html">8 Парадоксов</a>
+            <a class="navbar-brand" href="index.html">Glitch Registry</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item">
-                        <a class="nav-link" href="index.html">Главная</a>
+                        <a class="nav-link active" href="glitches.html">Реестр</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link active" href="glitches.html">Парадоксы</a>
+                        <a class="nav-link" href="scenes/glitch-quantum-tunneling.html">Сцены</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="projects.html">Проекты</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="about.html">О нас</a>
+                        <a class="nav-link" href="reality_bugs_mindmap.html">Обзор</a>
                     </li>
                 </ul>
             </div>
@@ -198,17 +195,14 @@
     </nav>
 
     <div class="container glitch-container">
-        <h1 class="main-title">Квантовые Парадоксы</h1>
+        <h1 class="main-title">Реестр глитчей</h1>
         
         <div class="row">
             <div class="col-md-4">
                 <div class="glitch-card" id="tunnel">
                     <i class="fas fa-atom glitch-icon"></i>
                     <h2 class="glitch-title">Парадокс Туннелирования</h2>
-                    <p class="glitch-description">
-                        Частица может пройти сквозь барьер, который по классической физике непреодолим.
-                        Как будто мяч проходит сквозь стену!
-                    </p>
+                    <p class="glitch-description">Частица имеет ненулевой шанс пройти барьер, хотя классически — нет.</p>
                     <div class="glitch-details">
                         <h3>Что происходит?</h3>
                         <ul class="paradox-list">
@@ -226,17 +220,14 @@
                 <div class="glitch-card" id="nonlocality">
                     <i class="fas fa-project-diagram glitch-icon"></i>
                     <h2 class="glitch-title">Парадокс ЭПР</h2>
-                    <p class="glitch-description">
-                        Две частицы могут быть связаны так, что измерение одной мгновенно влияет на другую,
-                        даже если они находятся на разных концах Вселенной!
-                    </p>
+                    <p class="glitch-description">Запутанные частицы дают сильные корреляции; передать информацию быстрее света нельзя.</p>
                     <div class="glitch-details">
                         <h3>Как это работает?</h3>
                         <ul class="paradox-list">
                             <li>Частицы создаются в запутанном состоянии</li>
                             <li>Разлетаются в разные стороны</li>
-                            <li>Измерение одной определяет состояние другой</li>
-                            <li>Связь мгновенная, быстрее света!</li>
+                            <li>Измерения показывают согласованные результаты</li>
+                            <li>Сигнал передать нельзя — только корреляции</li>
                         </ul>
                         <canvas class="demo-canvas" id="nonlocalityCanvas"></canvas>
                     </div>
@@ -247,17 +238,14 @@
                 <div class="glitch-card" id="observer">
                     <i class="fas fa-eye glitch-icon"></i>
                     <h2 class="glitch-title">Парадокс Наблюдателя</h2>
-                    <p class="glitch-description">
-                        Простое наблюдение за частицей меняет её поведение.
-                        Как будто Луна существует только когда мы на неё смотрим!
-                    </p>
+                    <p class="glitch-description">Измерение взаимодействует с системой; декогеренция делает исход классическим.</p>
                     <div class="glitch-details">
                         <h3>В чём парадокс?</h3>
                         <ul class="paradox-list">
-                            <li>До измерения - волновая функция</li>
-                            <li>При измерении - коллапс в частицу</li>
-                            <li>Наблюдение влияет на реальность</li>
-                            <li>Сознание влияет на материю?</li>
+                            <li>До измерения — суперпозиция</li>
+                            <li>Измерение взаимодействует с системой</li>
+                            <li>Среда вызывает декогеренцию</li>
+                            <li>Исход выглядит классическим</li>
                         </ul>
                         <canvas class="demo-canvas" id="observerCanvas"></canvas>
                     </div>
@@ -265,6 +253,11 @@
             </div>
         </div>
     </div>
+
+    <footer class="text-center text-light py-3 mt-5">
+        <a href="projects.html" class="text-light me-3">Проекты</a>
+        <a href="about.html" class="text-light">О нас</a>
+    </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="assets/js/glitches.js"></script>
