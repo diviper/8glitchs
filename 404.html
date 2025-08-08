@@ -6,7 +6,9 @@
   <script>
     (function () {
       var path = window.location.pathname;
-      var hash = window.location.hash;
+      var hash = window.location.hash || '';
+
+      // derive hash from path if direct link without # is opened
       if (!hash) {
         var scene = path.match(/\/scenes\/glitch-([^\/]+)\.html$/);
         if (scene) {
@@ -24,18 +26,12 @@
         }
       }
 
+      // climb back to repo root and redirect to index with preserved hash
       var parts = path.split('/');
       var depth = parts.length - 3;
-      if (depth < 0) depth = 0;
       var prefix = '';
-      for (var i = 0; i < depth; i++) {
-        prefix += '../';
-      }
-      var target = prefix + 'index.html';
-      if (hash) {
-        target += hash;
-      }
-      window.location.replace(target);
+      for (var i = 0; i < depth; i++) { prefix += '../'; }
+      window.location.replace(prefix + 'index.html' + hash);
     })();
   </script>
 </head>
