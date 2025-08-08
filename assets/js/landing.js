@@ -6,6 +6,7 @@
   var tagEl = document.getElementById('landing-tagline');
   var enterBtn = document.getElementById('enter-btn');
   var muteBtn = document.getElementById('mute-btn');
+  var skipBtn = document.getElementById('skip-btn');
   var skipCb = document.getElementById('skip-checkbox');
   var canvas = document.getElementById('fallback');
   var audio;
@@ -135,6 +136,7 @@
 
   muteBtn.addEventListener('click', toggleMute);
   enterBtn.addEventListener('click', enter);
+  skipBtn.addEventListener('click', enter);
   skipCb.addEventListener('change', function () {
     if (skipCb.checked) {
       localStorage.setItem('landing.skip', '1');

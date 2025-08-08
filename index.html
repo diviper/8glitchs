@@ -8,7 +8,7 @@
   <script>
     (function () {
       var params = new URLSearchParams(location.search);
-      if (!params.has('hub')) {
+      if (params.get('hub') !== '1') {
         try {
           var skip = localStorage.getItem('landing.skip') === '1';
           var last = parseInt(localStorage.getItem('landing.lastSeenAt'), 10) || 0;
