@@ -790,7 +790,7 @@ button, input, select {
 /* Sidebar */
 .gl-item { display:flex; align-items:center; gap:8px; padding:6px 8px; border-radius:8px; text-decoration:none; }
 .gl-item:hover { background:rgba(255,255,255,.05); }
-.gl-item.active { background:rgba(255,255,255,.06); border-radius:8px; }
+.gl-item.active { background:rgba(255,255,255,.08); border-radius:8px; }
 .gl-item .check { margin-left:auto; opacity:.85; }
 .badge { font-size:11px; padding:1px 6px; border:1px solid rgba(255,255,255,.15); border-radius:999px; opacity:.85; }
 .badge.scene { border-color:#57ffae44; }
@@ -815,7 +815,7 @@ button, input, select {
 .cat-observer{border-color:#b0ffc680}
 
 .md-body { max-width:820px; margin:0 auto; padding:16px 20px; line-height:1.65; }
-.md-body h2, .md-body h3 { margin:1.2em 0 .4em; font-size:clamp(18px,2vw,22px); }
+.md-body h2, .md-body h3 { margin:1.2em 0 .4em; font-size:clamp(18px,2vw,22px); scroll-margin-top:80px; }
 .lex{border-bottom:1px dotted rgba(255,255,255,.4);cursor:help}
 .lex:hover{opacity:.9}
 
@@ -836,7 +836,7 @@ button, input, select {
 .tile.continue { grid-column:1/-1; text-align:center; }
 .tile button { margin-top:8px; }
 
-.toast { position:fixed; bottom:20px; right:20px; background:rgba(0,0,0,.8); padding:8px 14px; border-radius:8px; opacity:0; transition:opacity .3s; }
+.toast { position:fixed; bottom:20px; right:20px; background:rgba(0,0,0,.8); padding:8px 14px; border-radius:8px; opacity:0; transition:opacity .3s; z-index:20; }
 .toast.show { opacity:1; }
 
 .callout { border:1px solid rgba(255,255,255,.12); border-radius:12px; padding:16px 18px; margin:16px 0; background:rgba(255,255,255,.03); }
