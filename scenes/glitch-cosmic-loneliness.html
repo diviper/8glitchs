@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Глитчи Юниверси - Космическое Одиночество</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="styles.css" rel="stylesheet">
+    <style>
+        .glitch-page {
+            background: linear-gradient(135deg, var(--dark-bg) 0%, var(--light-bg) 100%);
+            min-height: 100vh;
+            padding: 2rem 0;
+        }
+
+        .glitch-content {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .glitch-title {
+            font-size: 3rem;
+            margin-bottom: 2rem;
+            position: relative;
+            display: inline-block;
+        }
+
+        .glitch-title::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: var(--accent-color);
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+
+        .glitch-title:hover::after {
+            transform: scaleX(1);
+        }
+
+        .glitch-section {
+            margin-bottom: 3rem;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+
+        .glitch-section.animate-fade-in {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .glitch-number {
+            font-size: 5rem;
+            font-weight: bold;
+            color: var(--accent-color);
+            opacity: 0.2;
+            position: absolute;
+            right: 2rem;
+            top: 2rem;
+            z-index: -1;
+        }
+
+        .cosmic-simulation {
+            position: relative;
+            width: 100%;
+            height: 400px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 2rem 0;
+        }
+
+        .star {
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+            animation: twinkle 2s infinite;
+        }
+
+        .galaxy {
+            position: absolute;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(0,0,0,0) 70%);
+            transform: rotate(0deg);
+            animation: rotate 20s linear infinite;
+        }
+
+        .search-signal {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: var(--accent-color);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        .simulation-controls {
+            display: flex;
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+
+        .simulation-stats {
+            display: flex;
+            justify-content: space-between;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            margin-top: 1rem;
+        }
+
+        .navigation-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 2rem;
+        }
+
+        .navigation-buttons a {
+            padding: 0.5rem 1.5rem;
+            border-radius: 25px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .navigation-buttons a:hover {
+            transform: translateY(-2px);
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.2; }
+            50% { opacity: 1; }
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 1; }
+            100% { transform: scale(50); opacity: 0; }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container">
+            <a class="navbar-brand glitch-text" href="index.html">Глитчи Юниверси</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html#glitches">Глитчи</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html#visualizations">Визуализации</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html#about">О проекте</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <main class="glitch-page">
+        <div class="container">
+            <div class="glitch-content">
+                <h1 class="glitch-title glitch-text" data-text="Космическое одиночество">Космическое одиночество</h1>
+                <div class="glitch-number">08</div>
+
+                <div class="glitch-section">
+                    <h2>Введение</h2>
+                    <p>Парадокс Ферми, или "Великое молчание", ставит вопрос: если во Вселенной существует множество звезд и планет, почему мы не наблюдаем признаков существования других цивилизаций? Возможно, мы действительно одиноки в космосе.</p>
+                </div>
+
+                <div class="glitch-section">
+                    <h2>Интерактивная симуляция</h2>
+                    <div class="cosmic-simulation" id="cosmic-simulation">
+                        <!-- Звезды и галактики будут добавлены через JavaScript -->
+                    </div>
+                    <div class="simulation-controls">
+                        <button class="btn btn-primary" id="start-search">Начать поиск</button>
+                        <button class="btn btn-primary" id="send-signal">Отправить сигнал</button>
+                        <button class="btn btn-secondary" id="reset-simulation">Сбросить</button>
+                    </div>
+                    <div class="simulation-stats">
+                        <div>Просмотрено звезд: <span id="stars-scanned">0</span></div>
+                        <div>Расстояние поиска: <span id="search-distance">0</span> световых лет</div>
+                    </div>
+                </div>
+
+                <div class="glitch-section">
+                    <h2>Возможные объяснения</h2>
+                    <ul>
+                        <li>Великий фильтр - гипотетический барьер, препятствующий развитию цивилизаций</li>
+                        <li>Редкость условий для возникновения жизни</li>
+                        <li>Короткое время существования технологических цивилизаций</li>
+                        <li>Сознательное уклонение от контакта</li>
+                    </ul>
+                </div>
+
+                <div class="navigation-buttons">
+                    <a href="reality_bug_07_quantum_entanglement.html" class="btn btn-outline-primary">← Квантовая запутанность</a>
+                    <a href="index.html" class="btn btn-outline-secondary">На главную</a>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer mt-auto py-3">
+        <div class="container text-center">
+            <span class="text-muted">© 2024 Глитчи Юниверси. Все права защищены.</span>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="scripts.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const simulation = document.getElementById('cosmic-simulation');
+            const startSearchBtn = document.getElementById('start-search');
+            const sendSignalBtn = document.getElementById('send-signal');
+            const resetBtn = document.getElementById('reset-simulation');
+            const starsScanned = document.getElementById('stars-scanned');
+            const searchDistance = document.getElementById('search-distance');
+            
+            let isSearching = false;
+            let totalStars = 0;
+            let currentDistance = 0;
+            let searchInterval;
+
+            function createStar() {
+                const star = document.createElement('div');
+                star.className = 'star';
+                star.style.width = Math.random() * 3 + 'px';
+                star.style.height = star.style.width;
+                star.style.left = Math.random() * 100 + '%';
+                star.style.top = Math.random() * 100 + '%';
+                star.style.animationDelay = Math.random() * 2 + 's';
+                simulation.appendChild(star);
+                return star;
+            }
+
+            function createGalaxy() {
+                const galaxy = document.createElement('div');
+                galaxy.className = 'galaxy';
+                const size = Math.random() * 100 + 50;
+                galaxy.style.width = size + 'px';
+                galaxy.style.height = size + 'px';
+                galaxy.style.left = Math.random() * (100 - size/10) + '%';
+                galaxy.style.top = Math.random() * (100 - size/10) + '%';
+                simulation.appendChild(galaxy);
+                return galaxy;
+            }
+
+            function createSearchSignal() {
+                const signal = document.createElement('div');
+                signal.className = 'search-signal';
+                signal.style.left = Math.random() * 100 + '%';
+                signal.style.top = Math.random() * 100 + '%';
+                simulation.appendChild(signal);
+                setTimeout(() => signal.remove(), 2000);
+            }
+
+            function startSearch() {
+                if (!isSearching) {
+                    isSearching = true;
+                    searchInterval = setInterval(() => {
+                        createSearchSignal();
+                        totalStars++;
+                        currentDistance += 10;
+                        updateStats();
+                    }, 1000);
+                }
+            }
+
+            function updateStats() {
+                starsScanned.textContent = totalStars;
+                searchDistance.textContent = currentDistance;
+            }
+
+            function resetSimulation() {
+                isSearching = false;
+                clearInterval(searchInterval);
+                simulation.innerHTML = '';
+                totalStars = 0;
+                currentDistance = 0;
+                updateStats();
+                
+                // Создаем начальные звезды и галактики
+                for (let i = 0; i < 100; i++) {
+                    createStar();
+                }
+                for (let i = 0; i < 5; i++) {
+                    createGalaxy();
+                }
+            }
+
+            startSearchBtn.addEventListener('click', startSearch);
+            sendSignalBtn.addEventListener('click', createSearchSignal);
+            resetBtn.addEventListener('click', resetSimulation);
+
+            // Инициализация симуляции
+            resetSimulation();
+        });
+    </script>
+</body>
+</html>

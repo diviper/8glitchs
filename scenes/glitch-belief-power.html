@@ -1,0 +1,1325 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>БАГ #6: Сила Веры</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0c0c0c 0%, #1a1a2e 50%, #16213e 100%);
+            color: #ffffff;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .series-header {
+            text-align: center;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: rgba(139, 0, 255, 0.1);
+            border: 2px solid #8b00ff;
+            border-radius: 15px;
+        }
+        
+        .series-title {
+            font-size: 1.2em;
+            color: #8b00ff;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            margin-top: 10px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            width: 75%;
+            height: 100%;
+            background: linear-gradient(90deg, #8b00ff, #ff1493);
+            animation: progressPulse 2s ease-in-out infinite alternate;
+        }
+        
+        @keyframes progressPulse {
+            from { opacity: 0.7; }
+            to { opacity: 1; }
+        }
+        
+        .bug-number {
+            font-size: 4em;
+            font-weight: bold;
+            background: linear-gradient(45deg, #00ff80, #0080ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-align: center;
+            margin-bottom: 20px;
+            animation: mindGlitch 6s ease-in-out infinite;
+        }
+        
+        @keyframes mindGlitch {
+            0%, 75%, 100% { transform: translate(0); filter: hue-rotate(0deg); }
+            5% { transform: translate(-1px, 2px); filter: hue-rotate(90deg); }
+            10% { transform: translate(2px, -1px); filter: hue-rotate(180deg); }
+            15% { transform: translate(-2px, -2px); filter: hue-rotate(270deg); }
+            20% { transform: translate(1px, 1px); filter: hue-rotate(360deg); }
+        }
+        
+        .main-title {
+            font-size: 2.5em;
+            text-align: center;
+            margin-bottom: 30px;
+            background: linear-gradient(45deg, #00ff80, #0080ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .hook {
+            font-size: 1.4em;
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border-left: 4px solid #00ff80;
+            border-radius: 10px;
+            font-style: italic;
+        }
+        
+        .shocking-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+        
+        .stat-card {
+            background: rgba(0, 255, 128, 0.1);
+            border: 2px solid #00ff80;
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
+            animation: healingPulse 3s ease-in-out infinite alternate;
+        }
+        
+        @keyframes healingPulse {
+            from { box-shadow: 0 0 20px rgba(0, 255, 128, 0.3); }
+            to { box-shadow: 0 0 40px rgba(0, 255, 128, 0.6); }
+        }
+        
+        .stat-number {
+            font-size: 3em;
+            font-weight: bold;
+            background: linear-gradient(45deg, #00ff80, #0080ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+        }
+        
+        .stat-label {
+            font-size: 1em;
+            color: #00ff80;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .stat-desc {
+            font-size: 0.9em;
+            opacity: 0.8;
+        }
+        
+        .scientist-story {
+            background: rgba(0, 128, 255, 0.1);
+            border: 2px solid #0080ff;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+            position: relative;
+        }
+        
+        .scientist-avatar {
+            position: absolute;
+            top: -20px;
+            left: 20px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: #0080ff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5em;
+            border: 3px solid #fff;
+        }
+        
+        .scientist-name {
+            font-size: 1.4em;
+            color: #0080ff;
+            margin-bottom: 10px;
+            margin-left: 70px;
+            font-weight: bold;
+        }
+        
+        .diary-entry {
+            background: rgba(255, 255, 255, 0.05);
+            border-left: 4px solid #0080ff;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 5px;
+            font-style: italic;
+            position: relative;
+        }
+        
+        .diary-date {
+            position: absolute;
+            top: -10px;
+            right: 10px;
+            background: #0080ff;
+            padding: 5px 10px;
+            border-radius: 10px;
+            font-size: 0.8em;
+            font-weight: bold;
+        }
+        
+        .secret-note {
+            background: rgba(0, 255, 128, 0.1);
+            border: 2px dashed #00ff80;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 15px 0;
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+        
+        .discovery-timeline {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .timeline-title {
+            font-size: 1.8em;
+            color: #00ff80;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+        
+        .timeline-item {
+            display: flex;
+            margin-bottom: 25px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 10px;
+            border-left: 4px solid;
+            position: relative;
+        }
+        
+        .timeline-item.beecher { border-left-color: #00ff80; }
+        .timeline-item.ader { border-left-color: #0080ff; }
+        .timeline-item.lipton { border-left-color: #ff6b6b; }
+        .timeline-item.modern { border-left-color: #8b00ff; }
+        
+        .timeline-year {
+            font-size: 1.3em;
+            font-weight: bold;
+            margin-right: 20px;
+            min-width: 80px;
+            color: #00ff80;
+        }
+        
+        .timeline-content h4 {
+            color: #0080ff;
+            margin-bottom: 8px;
+            font-size: 1.2em;
+        }
+        
+        .experiment-section {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 40px;
+            border: 2px solid #00ff80;
+        }
+        
+        .section-title {
+            font-size: 1.8em;
+            margin-bottom: 20px;
+            color: #00ff80;
+            text-align: center;
+        }
+        
+        .tabs {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .tab {
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: white;
+        }
+        
+        .tab.active {
+            background: linear-gradient(45deg, #00ff80, #0080ff);
+            color: #000;
+        }
+        
+        .experiment-container {
+            display: none;
+            margin-bottom: 20px;
+        }
+        
+        .experiment-container.active {
+            display: block;
+        }
+        
+        /* ЭКСПЕРИМЕНТ 1: СИМУЛЯТОР ПЛАЦЕБО */
+        .placebo-simulator {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            height: 500px;
+            margin: 0 auto;
+            background: linear-gradient(135deg, rgba(0, 255, 128, 0.1), rgba(0, 128, 255, 0.1));
+            border: 2px solid #00ff80;
+            border-radius: 15px;
+            overflow: hidden;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+        }
+        
+        .patient-side {
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border-right: 2px solid #00ff80;
+        }
+        
+        .patient-avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: radial-gradient(circle, #ff6b6b, #cc0000);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3em;
+            margin-bottom: 20px;
+            transition: all 1s ease;
+        }
+        
+        .patient-avatar.healing {
+            background: radial-gradient(circle, #00ff80, #008040);
+            animation: healingGlow 2s ease-in-out infinite alternate;
+        }
+        
+        @keyframes healingGlow {
+            from { box-shadow: 0 0 20px #00ff80; }
+            to { box-shadow: 0 0 40px #00ff80; }
+        }
+        
+        .health-bar {
+            width: 200px;
+            height: 20px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+        
+        .health-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #ff0000, #ffff00, #00ff00);
+            width: 30%;
+            transition: width 2s ease;
+        }
+        
+        .belief-meter {
+            width: 200px;
+            margin-bottom: 20px;
+        }
+        
+        .belief-label {
+            text-align: center;
+            margin-bottom: 5px;
+            color: #00ff80;
+        }
+        
+        .belief-slider {
+            width: 100%;
+            height: 5px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 5px;
+            outline: none;
+            -webkit-appearance: none;
+        }
+        
+        .belief-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 15px;
+            height: 15px;
+            background: #00ff80;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+        
+        .pill-container {
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .pill {
+            width: 60px;
+            height: 60px;
+            border-radius: 30px;
+            margin-bottom: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+        
+        .pill.real {
+            background: linear-gradient(45deg, #0080ff, #0040ff);
+            box-shadow: 0 0 20px #0080ff;
+        }
+        
+        .pill.placebo {
+            background: linear-gradient(45deg, #ffffff, #cccccc);
+            color: #000;
+            box-shadow: 0 0 20px #ffffff;
+        }
+        
+        .pill:hover {
+            transform: scale(1.1);
+        }
+        
+        .pill-label {
+            text-align: center;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        /* ЭКСПЕРИМЕНТ 2: ТЕСТ УБЕЖДЕНИЙ */
+        .belief-test {
+            position: relative;
+            width: 100%;
+            max-width: 700px;
+            height: 400px;
+            margin: 0 auto;
+            background: radial-gradient(circle, rgba(139, 0, 255, 0.2), rgba(0, 0, 0, 0.9));
+            border: 2px solid #8b00ff;
+            border-radius: 15px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .belief-question {
+            font-size: 1.5em;
+            text-align: center;
+            margin-bottom: 30px;
+            max-width: 500px;
+        }
+        
+        .belief-options {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        
+        .belief-option {
+            padding: 15px 25px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid #8b00ff;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .belief-option:hover {
+            background: rgba(139, 0, 255, 0.3);
+            transform: translateY(-3px);
+        }
+        
+        .belief-result {
+            margin-top: 30px;
+            text-align: center;
+            font-size: 1.2em;
+            max-width: 500px;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+        
+        .belief-result.visible {
+            opacity: 1;
+        }
+        
+        /* ЭКСПЕРИМЕНТ 3: ДНК ВИЗУАЛИЗАЦИЯ */
+        .dna-visualizer {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            height: 450px;
+            margin: 0 auto;
+            background: radial-gradient(circle, rgba(255, 107, 107, 0.1), rgba(0, 0, 0, 0.9));
+            border: 2px solid #ff6b6b;
+            border-radius: 15px;
+            overflow: hidden;
+        }
+        
+        .dna-strand {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            width: 300px;
+            height: 400px;
+        }
+        
+        .dna-base {
+            position: absolute;
+            width: 20px;
+            height: 6px;
+            background: #ff6b6b;
+            border-radius: 3px;
+            transition: all 0.5s ease;
+        }
+        
+        .dna-base.active {
+            background: #00ff80;
+            box-shadow: 0 0 10px #00ff80;
+        }
+        
+        .thought-bubble {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(255, 255, 255, 0.9);
+            color: #000;
+            padding: 15px;
+            border-radius: 15px;
+            font-size: 1.1em;
+            max-width: 200px;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+        
+        .thought-bubble.visible {
+            opacity: 1;
+        }
+        
+        .gene-activity {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid #ff6b6b;
+        }
+        
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 30px;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            padding: 15px 30px;
+            font-size: 1.1em;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(45deg, #00ff80, #0080ff);
+            color: #000;
+        }
+        
+        .btn-secondary {
+            background: linear-gradient(45deg, #8b00ff, #ff6b6b);
+            color: white;
+        }
+        
+        .btn-danger {
+            background: linear-gradient(45deg, #ff0000, #cc0000);
+            color: white;
+        }
+        
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        .status {
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            text-align: center;
+            font-size: 1.1em;
+            font-weight: bold;
+            min-height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .explanation {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .explanation h3 {
+            color: #00ff80;
+            margin-bottom: 15px;
+            font-size: 1.4em;
+        }
+        
+        .nocebo-warning {
+            background: rgba(255, 0, 0, 0.1);
+            border: 2px solid #ff0000;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+        }
+        
+        .nocebo-title {
+            color: #ff0000;
+            font-size: 1.4em;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        
+        .research-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+        
+        .research-card {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 4px solid #00ff80;
+        }
+        
+        .research-card h4 {
+            color: #00ff80;
+            margin-bottom: 10px;
+        }
+        
+        .theory-connection {
+            background: rgba(139, 0, 255, 0.1);
+            border: 2px solid #8b00ff;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+        }
+        
+        .big-questions {
+            background: rgba(0, 255, 128, 0.1);
+            border: 2px solid #00ff80;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+        }
+        
+        .practical-meaning {
+            background: rgba(0, 128, 255, 0.1);
+            border: 2px solid #0080ff;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+        }
+        
+        .next-bug {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            margin-top: 40px;
+        }
+        
+        .rick-quote {
+            background: rgba(0, 255, 0, 0.1);
+            border-left: 4px solid #00ff00;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+            font-style: italic;
+        }
+        
+        .highlight {
+            background: linear-gradient(45deg, #ffff00, #ff8800);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="series-header">
+            <div class="series-title">🌌 СЕРИЯ "БАГИ РЕАЛЬНОСТИ" 🌌</div>
+            <div class="progress-bar">
+                <div class="progress-fill"></div>
+            </div>
+            <div style="margin-top: 10px; font-size: 0.9em;">6 из 8 багов</div>
+        </div>
+        
+        <div class="bug-number">БАГ #6</div>
+        
+        <h1 class="main-title">СИЛА ВЕРЫ</h1>
+        
+        <div class="hook">
+            "Мысли буквально перепрограммируют ДНК. Плацебо работает лучше многих лекарств!"
+        </div>
+        
+        <div class="shocking-stats">
+            <div class="stat-card">
+                <div class="stat-number">60%</div>
+                <div class="stat-label">Эффективность плацебо</div>
+                <div class="stat-desc">При депрессии плацебо помогает в 60% случаев</div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-number">30%</div>
+                <div class="stat-label">Плацебо-хирургия</div>
+                <div class="stat-desc">Даже "ложные" операции дают 30% улучшений</div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-number">200%</div>
+                <div class="stat-label">Усиление эффекта</div>
+                <div class="stat-desc">Дорогие плацебо работают в 2 раза лучше дешёвых</div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-number">26%</div>
+                <div class="stat-label">Ноцебо-смерти</div>
+                <div class="stat-desc">Негативные ожидания увеличивают смертность на 26%</div>
+            </div>
+        </div>
+        
+        <div class="scientist-story">
+            <div class="scientist-avatar">⚕️</div>
+            <div class="scientist-name">Генри Бичер, 1944 год</div>
+            <p>Американский анестезиолог, который <strong>случайно открыл</strong> силу плацебо во время Второй мировой войны. Его открытие перевернуло медицину.</p>
+            
+            <div class="diary-entry">
+                <div class="diary-date">Полевой госпиталь, Италия</div>
+                "У нас кончился морфин. Медсестра по ошибке ввела солдату физраствор, сказав что это сильное обезболивающее. Солдат перестал кричать от боли! Как это возможно? Неужели разум может контролировать боль сильнее морфина?"
+            </div>
+            
+            <div class="secret-note">
+                <strong>💡 Момент озарения:</strong> Бичер заметил, что солдаты, верящие в лечение, выздоравливали быстрее даже при тяжёлых ранениях. "Вера - это лекарство!" - записал он в дневнике.
+            </div>
+        </div>
+        
+        <div class="discovery-timeline">
+            <div class="timeline-title">🧬 РЕВОЛЮЦИЯ В ПОНИМАНИИ СОЗНАНИЯ</div>
+            
+            <div class="timeline-item beecher">
+                <div class="timeline-year">1955</div>
+                <div class="timeline-content">
+                    <h4>Плацебо-революция Бичера</h4>
+                    <p>Публикует исследование "Могучее плацебо", доказывая: 35% пациентов выздоравливают только от веры в лечение. Медицина в шоке!</p>
+                </div>
+            </div>
+            
+            <div class="timeline-item ader">
+                <div class="timeline-year">1975</div>
+                <div class="timeline-content">
+                    <h4>Психонейроиммунология Адера</h4>
+                    <p>Роберт Адер доказывает: мысли напрямую влияют на иммунную систему. Стресс подавляет иммунитет, а позитивные мысли его усиливают!</p>
+                </div>
+            </div>
+            
+            <div class="timeline-item lipton">
+                <div class="timeline-year">1998</div>
+                <div class="timeline-content">
+                    <h4>Эпигенетика Липтона</h4>
+                    <p>Брюс Липтон шокирует мир: мысли и эмоции буквально включают и выключают гены! ДНК - не приговор, а программа, которую можно переписать!</p>
+                </div>
+            </div>
+            
+            <div class="timeline-item modern">
+                <div class="timeline-year">2010</div>
+                <div class="timeline-content">
+                    <h4>Нейропластичность мозга</h4>
+                    <p>Доказано: медитация физически изменяет структуру мозга за 8 недель. Мысли буквально перестраивают нейронные сети!</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="scientist-story">
+            <div class="scientist-avatar">🧬</div>
+            <div class="scientist-name">Брюс Липтон, 1998 год</div>
+            <p>Биолог-клеточник, который <strong>рискнул карьерой</strong>, заявив: гены не контролируют жизнь, их контролируют мысли и эмоции! Его исследования породили новую науку - эпигенетику.</p>
+            
+            <div class="diary-entry">
+                <div class="diary-date">Лабораторный журнал</div>
+                "Невероятно! Одни и те же стволовые клетки в разной среде становятся костью, мышцей или жиром. Окружение контролирует гены! Если это работает в пробирке, то и мысли человека могут перепрограммировать его ДНК!"
+            </div>
+            
+            <div class="secret-note">
+                <strong>🔬 Прорыв в науке:</strong> Липтон доказал, что сознание влияет на гены через химические сигналы. "Мы не жертвы наследственности, мы хозяева своей биологии!"
+            </div>
+        </div>
+        
+        <div class="experiment-section">
+            <h2 class="section-title">🔬 ИСПЫТАЙ СИЛУ СВОИХ МЫСЛЕЙ</h2>
+            
+            <div class="tabs">
+                <button class="tab active" onclick="showExperiment('placebo')">💊 Симулятор Плацебо</button>
+                <button class="tab" onclick="showExperiment('belief')">🧠 Тест Убеждений</button>
+                <button class="tab" onclick="showExperiment('dna')">🧬 ДНК Визуализация</button>
+            </div>
+            
+            <!-- ЭКСПЕРИМЕНТ 1: СИМУЛЯТОР ПЛАЦЕБО -->
+            <div class="experiment-container active" id="placebo">
+                <div class="placebo-simulator">
+                    <div class="patient-side">
+                        <h3 style="color: #00ff80;">ПАЦИЕНТ</h3>
+                        <div class="patient-avatar" id="patientAvatar">😷</div>
+                        
+                        <div class="health-bar">
+                            <div class="health-fill" id="healthFill"></div>
+                        </div>
+                        
+                        <div class="belief-meter">
+                            <div class="belief-label">Сила веры: <span id="beliefValue">50%</span></div>
+                            <input type="range" class="belief-slider" id="beliefSlider" min="0" max="100" value="50">
+                        </div>
+                        
+                        <div id="patientState">Болен</div>
+                    </div>
+                    
+                    <div class="pill-container">
+                        <h3 style="color: #0080ff;">ЛЕЧЕНИЕ</h3>
+                        
+                        <div class="pill real" id="realPill" onclick="takePill('real')">
+                            💊
+                        </div>
+                        <div class="pill-label">Настоящее лекарство</div>
+                        
+                        <div class="pill placebo" id="placeboPill" onclick="takePill('placebo')">
+                            🍬
+                        </div>
+                        <div class="pill-label">Плацебо (сахар)</div>
+                    </div>
+                </div>
+                
+                <div class="controls">
+                    <button class="btn btn-primary" onclick="randomizePlacebo()">🎲 СЛУЧАЙНЫЙ ТЕСТ</button>
+                    <button class="btn btn-secondary" onclick="resetPatient()">🔄 НОВЫЙ ПАЦИЕНТ</button>
+                </div>
+            </div>
+            
+            <!-- ЭКСПЕРИМЕНТ 2: ТЕСТ УБЕЖДЕНИЙ -->
+            <div class="experiment-container" id="belief">
+                <div class="belief-test">
+                    <div class="belief-question" id="beliefQuestion">
+                        Насколько сильно ты веришь в силу позитивного мышления?
+                    </div>
+                    
+                    <div class="belief-options">
+                        <div class="belief-option" onclick="answerBelief(1)">Скептически</div>
+                        <div class="belief-option" onclick="answerBelief(2)">Умеренно</div>
+                        <div class="belief-option" onclick="answerBelief(3)">Сильно</div>
+                        <div class="belief-option" onclick="answerBelief(4)">Абсолютно</div>
+                    </div>
+                    
+                    <div class="belief-result" id="beliefResult"></div>
+                </div>
+                
+                <div class="controls">
+                    <button class="btn btn-primary" onclick="nextBeliefQuestion()">🔄 СЛЕДУЮЩИЙ ВОПРОС</button>
+                    <button class="btn btn-secondary" onclick="analyzeBeliefs()">📊 АНАЛИЗ РЕЗУЛЬТАТОВ</button>
+                </div>
+            </div>
+            
+            <!-- ЭКСПЕРИМЕНТ 3: ДНК ВИЗУАЛИЗАЦИЯ -->
+            <div class="experiment-container" id="dna">
+                <div class="dna-visualizer">
+                    <div class="dna-strand" id="dnaStrand"></div>
+                    
+                    <div class="thought-bubble" id="thoughtBubble">
+                        Я здоров и силён!
+                    </div>
+                    
+                    <div class="gene-activity">
+                        <div>Активных генов: <span id="activeGenes">45</span>/100</div>
+                        <div>Иммунитет: <span id="immuneLevel">Normal</span></div>
+                        <div>Стресс: <span id="stressLevel">Low</span></div>
+                    </div>
+                </div>
+                
+                <div class="controls">
+                    <button class="btn btn-primary" onclick="positiveThinking()">😊 ПОЗИТИВНЫЕ МЫСЛИ</button>
+                    <button class="btn btn-secondary" onclick="stressThinking()">😰 СТРЕССОВЫЕ МЫСЛИ</button>
+                    <button class="btn btn-danger" onclick="resetDNA()">🔄 СБРОС ДНК</button>
+                </div>
+            </div>
+            
+            <div class="status" id="status">
+                Исследуй, как твоя вера и мысли влияют на физическое здоровье!
+            </div>
+        </div>
+        
+        <div class="nocebo-warning">
+            <div class="nocebo-title">⚠️ ТЁМНАЯ СТОРОНА: НОЦЕБО-ЭФФЕКТ</div>
+            <p>Если плацебо лечит силой веры, то <strong>ноцебо убивает силой страха</strong>:</p>
+            <br>
+            <div class="research-grid">
+                <div class="research-card">
+                    <h4>Проклятие Вуду</h4>
+                    <p>Люди, поверившие в проклятие, умирают от страха в течение дней. Врачи не находят физических причин смерти.</p>
+                </div>
+                
+                <div class="research-card">
+                    <h4>Диагноз-убийца</h4>
+                    <p>Пациенты, которым сказали "вам осталось 6 месяцев", умирают точно в срок, даже если диагноз был ошибочным.</p>
+                </div>
+                
+                <div class="research-card">
+                    <h4>Побочные эффекты</h4>
+                    <p>Если пациенту сказать о возможных побочных эффектах плацебо, он их испытает в 30% случаев!</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="explanation">
+            <h3>🤯 ЧТО ТЫ ТОЛЬКО ЧТО ОТКРЫЛ?</h3>
+            <p><strong>ПЛАЦЕБО-ЭФФЕКТ:</strong> Вера в лечение активирует собственные лечебные механизмы организма. Мозг выделяет эндорфины, дофамин и другие целебные вещества.</p>
+            <br>
+            <p><strong>ЭПИГЕНЕТИКА:</strong> Мысли и эмоции буквально включают и выключают гены через химические сигналы. ДНК - не приговор, а программа!</p>
+            <br>
+            <p><strong>ПСИХОНЕЙРОИММУНОЛОГИЯ:</strong> Нервная система напрямую связана с иммунной. Стресс подавляет иммунитет, позитив его усиливает.</p>
+        </div>
+        
+        <div class="rick-quote">
+            "Морти, твой мозг - это биологический 3D-принтер реальности! Что ты думаешь, то твоё тело и печатает! Хочешь быть здоровым? Думай как здоровый!" - Рик Санчез
+        </div>
+        
+        <div class="theory-connection">
+            <h3>🧬 СВЯЗЬ С ТЕОРИЯМИ СУЩЕСТВОВАНИЯ</h3>
+            <p><strong>🔮 Сознание-творец:</strong> Плацебо доказывает, что сознание буквально изменяет материю на уровне биологии и химии мозга.</p>
+            <br>
+            <p><strong>💾 Информационная Вселенная:</strong> Мысли - это информация, которая перепрограммирует "биологический компьютер" тела.</p>
+            <br>
+            <p><strong>🌊 Квантовые поля:</strong> Возможно, сознание влияет на квантовые процессы в микротрубочках нейронов, изменяя химию мозга.</p>
+            <br>
+            <p><strong>📡 Нелокальность:</strong> Эффект плацебо может работать через квантовую связь между сознанием и телом.</p>
+        </div>
+        
+        <div class="big-questions">
+            <h3>❓ ГЛАВНЫЕ ВОПРОСЫ</h3>
+            <p><strong>🧠 Где граница между разумом и телом?</strong> Плацебо показывает, что эта граница размыта или вообще не существует.</p>
+            <br>
+            <p><strong>💊 Этично ли использовать плацебо?</strong> Если оно лечит, то почему врачи не назначают его чаще?</p>
+            <br>
+            <p><strong>🧬 Можем ли мы контролировать ДНК?</strong> Эпигенетика показывает - можем! Но до какой степени?</p>
+            <br>
+            <p><strong>🌟 Каковы пределы силы мысли?</strong> Может ли сознание лечить рак, восстанавливать зрение, продлевать жизнь?</p>
+        </div>
+        
+        <div class="practical-meaning">
+            <h3>💡 ПРАКТИЧЕСКИЙ СМЫСЛ ДЛЯ ЖИЗНИ</h3>
+            <p><strong>🧘 Сила позитивного мышления:</strong> Не просто мотивация, а научно доказанный способ улучшения здоровья и иммунитета.</p>
+            <br>
+            <p><strong>⚕️ Ответственность за здоровье:</strong> Ты можешь влиять на своё здоровье не только лекарствами, но и мыслями.</p>
+            <br>
+            <p><strong>🎯 Визуализация работает:</strong> Представление здоровья и успеха буквально программирует тело на их достижение.</p>
+            <br>
+            <p><strong>⚠️ Осторожность с негативом:</strong> Негативные мысли и ожидания могут буквально вредить здоровью через ноцебо-эффект.</p>
+        </div>
+        
+        <div class="next-bug">
+            <h3>🔜 СЛЕДУЮЩИЙ БАГ</h3>
+            <p><strong>БАГ #7: СТРЕЛА ВРЕМЕНИ</strong></p>
+            <p>"Почему время течёт только вперёд?"</p>
+            <p><em>Спойлер: Время может быть иллюзией...</em></p>
+        </div>
+    </div>
+    
+    <script>
+        let currentExperiment = 'placebo';
+        let patientHealth = 30;
+        let beliefStrength = 50;
+        let beliefScore = 0;
+        let questionCount = 0;
+        let activeGeneCount = 45;
+        
+        const beliefQuestions = [
+            "Насколько сильно ты веришь в силу позитивного мышления?",
+            "Может ли вера в выздоровление ускорить лечение?", 
+            "Влияют ли мысли на физическое здоровье?",
+            "Способна ли медитация изменить структуру мозга?",
+            "Могут ли эмоции влиять на иммунную систему?"
+        ];
+        
+        function showExperiment(type) {
+            // Убираем активные классы
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.experiment-container').forEach(exp => exp.classList.remove('active'));
+            
+            // Добавляем активные классы
+            event.target.classList.add('active');
+            document.getElementById(type).classList.add('active');
+            
+            currentExperiment = type;
+            
+            if (type === 'dna') {
+                createDNAStrand();
+            }
+            
+            updateStatus();
+        }
+        
+        function updateBeliefMeter() {
+            beliefStrength = document.getElementById('beliefSlider').value;
+            document.getElementById('beliefValue').textContent = beliefStrength + '%';
+        }
+        
+        function takePill(type) {
+            const avatar = document.getElementById('patientAvatar');
+            const healthFill = document.getElementById('healthFill');
+            const patientState = document.getElementById('patientState');
+            const status = document.getElementById('status');
+            
+            let effectiveness;
+            
+            if (type === 'real') {
+                // Настоящее лекарство: 80% базовая эффективность
+                effectiveness = 80;
+                status.innerHTML = `💊 <strong>НАСТОЯЩЕЕ ЛЕКАРСТВО</strong><br>Эффективность: 80% + сила веры`;
+            } else {
+                // Плацебо: эффективность зависит только от веры
+                effectiveness = beliefStrength * 0.6; // Максимум 60% при 100% вере
+                status.innerHTML = `🍬 <strong>ПЛАЦЕБО</strong><br>Эффективность зависит только от силы веры: ${Math.round(effectiveness)}%`;
+            }
+            
+            // Добавляем эффект веры к любому лечению
+            const totalEffectiveness = Math.min(100, effectiveness + (beliefStrength * 0.2));
+            
+            // Анимация лечения
+            avatar.classList.add('healing');
+            
+            setTimeout(() => {
+                patientHealth = Math.min(100, patientHealth + totalEffectiveness);
+                healthFill.style.width = patientHealth + '%';
+                
+                if (patientHealth > 70) {
+                    avatar.textContent = '😊';
+                    patientState.textContent = 'Здоров!';
+                    patientState.style.color = '#00ff80';
+                } else if (patientHealth > 40) {
+                    avatar.textContent = '🙂';
+                    patientState.textContent = 'Лучше';
+                    patientState.style.color = '#ffff00';
+                } else {
+                    avatar.textContent = '😷';
+                    patientState.textContent = 'Болен';
+                    patientState.style.color = '#ff6b6b';
+                }
+            }, 1000);
+        }
+        
+        function randomizePlacebo() {
+            // Случайная сила веры
+            const randomBelief = Math.floor(Math.random() * 100);
+            document.getElementById('beliefSlider').value = randomBelief;
+            updateBeliefMeter();
+            
+            // Случайное лечение
+            const treatments = ['real', 'placebo'];
+            const randomTreatment = treatments[Math.floor(Math.random() * treatments.length)];
+            
+            setTimeout(() => {
+                takePill(randomTreatment);
+            }, 500);
+        }
+        
+        function resetPatient() {
+            patientHealth = 30;
+            beliefStrength = 50;
+            
+            document.getElementById('beliefSlider').value = 50;
+            updateBeliefMeter();
+            
+            const avatar = document.getElementById('patientAvatar');
+            const healthFill = document.getElementById('healthFill');
+            const patientState = document.getElementById('patientState');
+            
+            avatar.classList.remove('healing');
+            avatar.textContent = '😷';
+            healthFill.style.width = '30%';
+            patientState.textContent = 'Болен';
+            patientState.style.color = '#ff6b6b';
+            
+            updateStatus();
+        }
+        
+        function answerBelief(score) {
+            beliefScore += score;
+            questionCount++;
+            
+            const resultDiv = document.getElementById('beliefResult');
+            
+            if (questionCount === 1) {
+                const responses = [
+                    "Скептицизм - это здорово, но исследования показывают реальный эффект!",
+                    "Умеренная вера уже даёт результаты в медицинских исследованиях.",
+                    "Сильная вера активирует мощные лечебные механизмы организма!",
+                    "Абсолютная вера может творить чудеса через плацебо-эффект!"
+                ];
+                
+                resultDiv.textContent = responses[score - 1];
+                resultDiv.classList.add('visible');
+            }
+        }
+        
+        function nextBeliefQuestion() {
+            if (questionCount < beliefQuestions.length) {
+                document.getElementById('beliefQuestion').textContent = beliefQuestions[questionCount];
+                document.getElementById('beliefResult').classList.remove('visible');
+            } else {
+                analyzeBeliefs();
+            }
+        }
+        
+        function analyzeBeliefs() {
+            const averageScore = beliefScore / questionCount;
+            const resultDiv = document.getElementById('beliefResult');
+            
+            let analysis;
+            if (averageScore >= 3.5) {
+                analysis = "🌟 ВЫСОКИЙ ПОТЕНЦИАЛ! Твоя вера в силу мысли открывает мощные возможности для самоисцеления и роста!";
+            } else if (averageScore >= 2.5) {
+                analysis = "⚖️ СБАЛАНСИРОВАННЫЙ ПОДХОД. Ты открыт к возможностям, но сохраняешь здоровый скептицизм.";
+            } else {
+                analysis = "🔬 НАУЧНЫЙ СКЕПТИК. Это хорошо! Но помни: плацебо работает даже у скептиков, если они не знают, что это плацебо.";
+            }
+            
+            resultDiv.innerHTML = `<strong>ТВОЙ РЕЗУЛЬТАТ:</strong><br>${analysis}`;
+            resultDiv.classList.add('visible');
+        }
+        
+        function createDNAStrand() {
+            const strand = document.getElementById('dnaStrand');
+            strand.innerHTML = '';
+            
+            for (let i = 0; i < 40; i++) {
+                const base = document.createElement('div');
+                base.className = 'dna-base';
+                base.style.left = (i % 2 === 0 ? '50px' : '230px');
+                base.style.top = (i * 10) + 'px';
+                base.style.transform = `rotate(${i * 9}deg)`;
+                strand.appendChild(base);
+            }
+        }
+        
+        function positiveThinking() {
+            const thoughtBubble = document.getElementById('thoughtBubble');
+            const positiveThoughts = [
+                "Я здоров и силён!",
+                "Моё тело исцеляется!",
+                "Я полон энергии!",
+                "Каждая клетка излучает здоровье!"
+            ];
+            
+            thoughtBubble.textContent = positiveThoughts[Math.floor(Math.random() * positiveThoughts.length)];
+            thoughtBubble.classList.add('visible');
+            
+            // Активируем гены
+            const bases = document.querySelectorAll('.dna-base');
+            activeGeneCount = Math.min(85, activeGeneCount + 15);
+            
+            for (let i = 0; i < activeGeneCount; i++) {
+                setTimeout(() => {
+                    if (bases[i]) bases[i].classList.add('active');
+                }, i * 50);
+            }
+            
+            updateGeneActivity('positive');
+        }
+        
+        function stressThinking() {
+            const thoughtBubble = document.getElementById('thoughtBubble');
+            const stressThoughts = [
+                "Я болею...",
+                "Ничего не получается",
+                "Всё плохо",
+                "Я слабый..."
+            ];
+            
+            thoughtBubble.textContent = stressThoughts[Math.floor(Math.random() * stressThoughts.length)];
+            thoughtBubble.classList.add('visible');
+            
+            // Деактивируем гены
+            const bases = document.querySelectorAll('.dna-base');
+            activeGeneCount = Math.max(20, activeGeneCount - 15);
+            
+            bases.forEach((base, index) => {
+                if (index >= activeGeneCount) {
+                    base.classList.remove('active');
+                }
+            });
+            
+            updateGeneActivity('negative');
+        }
+        
+        function updateGeneActivity(type) {
+            document.getElementById('activeGenes').textContent = activeGeneCount;
+            
+            const immuneLevel = document.getElementById('immuneLevel');
+            const stressLevel = document.getElementById('stressLevel');
+            
+            if (type === 'positive') {
+                immuneLevel.textContent = activeGeneCount > 70 ? 'High' : activeGeneCount > 50 ? 'Normal' : 'Low';
+                immuneLevel.style.color = activeGeneCount > 70 ? '#00ff80' : activeGeneCount > 50 ? '#ffff00' : '#ff6b6b';
+                
+                stressLevel.textContent = 'Low';
+                stressLevel.style.color = '#00ff80';
+            } else {
+                immuneLevel.textContent = activeGeneCount > 70 ? 'High' : activeGeneCount > 50 ? 'Normal' : 'Low';
+                immuneLevel.style.color = activeGeneCount > 70 ? '#00ff80' : activeGeneCount > 50 ? '#ffff00' : '#ff6b6b';
+                
+                stressLevel.textContent = 'High';
+                stressLevel.style.color = '#ff6b6b';
+            }
+            
+            updateStatus();
+        }
+        
+        function resetDNA() {
+            activeGeneCount = 45;
+            const bases = document.querySelectorAll('.dna-base');
+            
+            bases.forEach((base, index) => {
+                if (index < activeGeneCount) {
+                    base.classList.add('active');
+                } else {
+                    base.classList.remove('active');
+                }
+            });
+            
+            document.getElementById('thoughtBubble').classList.remove('visible');
+            updateGeneActivity('neutral');
+        }
+        
+        function updateStatus() {
+            const status = document.getElementById('status');
+            
+            switch(currentExperiment) {
+                case 'placebo':
+                    status.textContent = 'Попробуй разные уровни веры и виды лечения! Сила плацебо зависит от убежденности пациента.';
+                    break;
+                    
+                case 'belief':
+                    status.textContent = 'Ответь на вопросы честно и узнай свой потенциал веры в силу мысли!';
+                    break;
+                    
+                case 'dna':
+                    status.innerHTML = `
+                        🧬 <strong>ЭПИГЕНЕТИКА В ДЕЙСТВИИ</strong><br>
+                        Активных генов: ${activeGeneCount}/100 | Позитивные мысли активируют гены здоровья!
+                    `;
+                    break;
+            }
+        }
+        
+        // Привязываем события
+        document.getElementById('beliefSlider').addEventListener('input', updateBeliefMeter);
+        
+        // Инициализация
+        createDNAStrand();
+        updateBeliefMeter();
+        updateStatus();
+        
+        // Параллакс эффект
+        window.addEventListener('scroll', () => {
+            const scrolled = window.pageYOffset;
+            const rate = scrolled * -0.5;
+            
+            const bugNumber = document.querySelector('.bug-number');
+            if (bugNumber) {
+                bugNumber.style.transform = `translateY(${rate}px)`;
+            }
+        });
+        
+        // Анимация появления элементов
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+        
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+        
+        document.querySelectorAll('.explanation, .theory-connection, .big-questions, .practical-meaning').forEach(el => {
+            el.style.opacity = '0';
+            el.style.transform = 'translateY(30px)';
+            el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+            observer.observe(el);
+        });
+    </script>
+</body>
+</html>

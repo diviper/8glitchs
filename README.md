@@ -1,58 +1,46 @@
-# Глитчи Реальности
+# Glitch Registry
 
-Интерактивная визуализация квантовых эффектов и парадоксов реальности.
+Открытый реестр глитчей реальности: интерактивные сцены и карточки.
 
-## Описание
+## Структура
 
-Проект представляет собой набор интерактивных визуализаций, демонстрирующих различные квантовые эффекты и парадоксы реальности:
+- `scenes/` — интерактивы
+- `content/glitches/` — карточки глитчей
+- `legacy/` — архив старых страниц
+- `assets/` — статические ресурсы
 
-- Квантовое туннелирование
-- Нелокальность
-- Эффект наблюдателя
-- Квантовая запутанность
-- Квантовая декогеренция
-- Квантовая суперпозиция
-- Квантовая телепортация
+## Сцены
 
-## Структура проекта
+- [observer-problem](scenes/glitch-observer-problem.html)
+- [nonlocality](scenes/glitch-nonlocality.html)
+- [quantum-tunneling](scenes/glitch-quantum-tunneling.html)
+- [invisible-universe](scenes/glitch-invisible-universe.html)
+- [consciousness-problem](scenes/glitch-consciousness-problem.html)
+- [quantum-teleportation](scenes/glitch-quantum-teleportation.html)
+- [fine-tuning](scenes/glitch-fine-tuning.html)
+- [quantum-superposition](scenes/glitch-quantum-superposition.html)
+- [belief-power](scenes/glitch-belief-power.html)
+- [quantum-decoherence](scenes/glitch-quantum-decoherence.html)
+- [arrow-of-time](scenes/glitch-arrow-of-time.html)
+- [quantum-entanglement](scenes/glitch-quantum-entanglement.html)
+- [cosmic-loneliness](scenes/glitch-cosmic-loneliness.html)
+- [dark-matter-visualization](scenes/glitch-dark-matter-visualization.html)
+- [entanglement-visualization](scenes/glitch-entanglement-visualization.html)
 
-- `assets/` - статические ресурсы (изображения, шрифты)
-- `content/` - контентные файлы
-- `*.html` - HTML страницы с визуализациями
-- `styles.css` - основные стили
-- `scripts.js` - общие скрипты
-- `assets/js/glitches.js` - JavaScript для визуализаций
-- `assets/js/double-slit.js` - визуализация эксперимента с двумя щелями
-- `assets/js/progress.js` - отображение прогресса загрузки
-
-## Технологии
-
-- HTML5
-- CSS3
-- JavaScript (ES6+)
-- Canvas API
+Старые версии страниц находятся в каталоге `legacy/`.
 
 ## Запуск
 
-Просто откройте `index.html` в современном веб-браузере.
+Откройте `index.html` в современном браузере.
 
-## Тесты
-
-В каталоге `tests/` расположен тест `progress.test.js`, который проверяет логику отображения прогресса пользователя. Для запуска необходим Node.js. Выполните команды:
+## Линт и тесты
 
 ```bash
-npm install
-npm test
-```
-
-## Проверка HTML
-
-Для валидации разметки используется `htmlhint`. Запустите:
-
-```bash
+npm run lint:md
 npm run lint:html
+npm test
 ```
 
 ## Лицензия
 
-MIT 
+MIT
