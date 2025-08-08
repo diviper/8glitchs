@@ -21,44 +21,6 @@
     return m ? src.slice(m[0].length) : src;
   }
 
-  function applyLexicon(root) {
-    if (!window.LEXICON) return;
-    var terms = Object.keys(window.LEXICON).sort(function (a, b) { return b.length - a.length; });
-    var skipTags = ['A', 'CODE', 'PRE', 'ABBR'];
-    var walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, null, false);
-    var nodes = [];
-    while (walker.nextNode()) {
-      var n = walker.currentNode;
-      if (!n.nodeValue.trim()) continue;
-      var skip = false;
-      var p = n.parentNode;
-      while (p && p !== root) {
-        if (skipTags.indexOf(p.tagName) !== -1) { skip = true; break; }
-        p = p.parentNode;
-      }
-      if (!skip) nodes.push(n);
-    }
-    function esc(str) { return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }
-    var boundary = 'A-Za-zА-Яа-яЁё';
-    nodes.forEach(function (node) {
-      var text = node.nodeValue;
-      var replaced = false;
-      terms.forEach(function (term) {
-        var re = new RegExp('(^|[^' + boundary + '])(' + esc(term) + ')(?=[^' + boundary + ']|$)', 'gi');
-        text = text.replace(re, function (match, p1, p2) {
-          replaced = true;
-          var key = term.toLowerCase();
-          return p1 + '<abbr class="lex" title="' + window.LEXICON[key] + '">' + p2 + '</abbr>';
-        });
-      });
-      if (replaced) {
-        var span = document.createElement('span');
-        span.innerHTML = text;
-        node.parentNode.replaceChild(span, node);
-      }
-    });
-  }
-
   function slugify(str) {
     var map = {
       'а':'a','б':'b','в':'v','г':'g','д':'d','е':'e','ё':'e','ж':'zh','з':'z','и':'i','й':'y','к':'k','л':'l','м':'m','н':'n','о':'o','п':'p','р':'r','с':'s','т':'t','у':'u','ф':'f','х':'h','ц':'c','ч':'ch','ш':'sh','щ':'sch','ь':'','ы':'y','ъ':'','э':'e','ю':'yu','я':'ya'
@@ -102,6 +64,11 @@
       });
       h.appendChild(btn);
     });
-    applyLexicon(container);
+    if (window.lexiconReady) {
+      try { await window.lexiconReady; } catch (e) {}
+    }
+    if (window.attachLexicon && window.LEXICON) {
+      attachLexicon(container, window.LEXICON);
+    }
   };
 })();
