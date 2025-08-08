@@ -25,11 +25,15 @@
     await ready;
     var html = marked.parse(stripFrontMatter(markdown));
     var safe = DOMPurify.sanitize(html, { ADD_ATTR: ['target', 'rel'] });
-    target.innerHTML = safe;
-    target.querySelectorAll('a[target="_blank"]').forEach(function (a) {
+    var container = target;
+    if (container && !container.classList.contains('md-body')) {
+      container = container.querySelector('.md-body') || container;
+    }
+    container.innerHTML = safe;
+    container.querySelectorAll('a[target="_blank"]').forEach(function (a) {
       a.setAttribute('rel', 'noopener noreferrer');
     });
-    target.querySelectorAll('h3').forEach(function (h) {
+    container.querySelectorAll('h3').forEach(function (h) {
       var id = h.textContent.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
       h.id = id;
       var a = document.createElement('a');

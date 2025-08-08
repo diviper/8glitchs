@@ -4,6 +4,15 @@
   var searchInput = document.getElementById('search');
   var categorySelect = document.getElementById('category-filter');
   var manifestPromise;
+  var catSlugMap = {
+    'Квант': 'quant',
+    'Время': 'time',
+    'Космос': 'cosmos',
+    'Идентичность': 'id',
+    'Информация': 'info',
+    'Логика': 'logic',
+    'Наблюдатель': 'observer'
+  };
 
   function getManifest() {
     if (!manifestPromise) {
@@ -12,7 +21,20 @@
     return manifestPromise;
   }
 
-  async function renderList() {
+  function getFilterQuery() {
+    var qs = new URLSearchParams();
+    if (searchInput.value) qs.set('q', searchInput.value);
+    if (categorySelect.value) qs.set('cat', categorySelect.value);
+    var s = qs.toString();
+    return s ? '?' + s : '';
+  }
+
+  function updateHashQuery() {
+    var base = location.hash.split('?')[0];
+    location.hash = base + getFilterQuery();
+  }
+
+  async function renderList(activeSlug) {
     var glitches = await getManifest();
     var search = (searchInput.value || '').toLowerCase();
     var category = categorySelect.value;
@@ -20,96 +42,174 @@
     glitches.filter(function (g) {
       return (!category || g.category === category) && g.title.toLowerCase().includes(search);
     }).forEach(function (g) {
-      var li = document.createElement('li');
       var a = document.createElement('a');
-      a.href = '#/glitch/' + g.slug;
-      a.textContent = g.title;
-      li.appendChild(a);
-      var meta = document.createElement('span');
-      meta.textContent = ' [' + g.category + '] ' + (g.status === 'sceneExists' ? '🎬' : '📄');
-      li.appendChild(meta);
-      if (window.isDone && window.isDone(g.slug)) {
-        var done = document.createElement('span');
-        done.textContent = ' ✔';
-        li.appendChild(done);
-      }
-      listEl.appendChild(li);
+      a.className = 'gl-item';
+      a.href = '#/glitch/' + g.slug + getFilterQuery();
+      a.dataset.slug = g.slug;
+      var title = document.createElement('span');
+      title.textContent = g.title;
+      a.appendChild(title);
+      var catBadge = document.createElement('span');
+      catBadge.className = 'badge';
+      catBadge.textContent = g.category;
+      a.appendChild(catBadge);
+      var statusBadge = document.createElement('span');
+      statusBadge.className = 'badge ' + (g.status === 'sceneExists' ? 'scene' : 'card');
+      statusBadge.textContent = g.status === 'sceneExists' ? 'scene' : 'card';
+      a.appendChild(statusBadge);
+      if (g.slug === activeSlug) a.classList.add('active');
+      listEl.appendChild(a);
+    });
+  }
+
+  function applyFilters(params) {
+    searchInput.value = params.q || '';
+    categorySelect.value = params.cat || '';
+  }
+
+  function highlightActive(slug) {
+    listEl.querySelectorAll('.gl-item').forEach(function (el) {
+      el.classList.toggle('active', el.dataset.slug === slug);
     });
   }
 
   async function load() {
-    if (!contentEl) return;
-    var glitches = await getManifest();
-    var hash = location.hash.slice(1);
-    var queryIndex = hash.indexOf('?');
+    var rawHash = location.hash.slice(1);
+    if (!rawHash) {
+      location.hash = '#/overview';
+      return;
+    }
+    var qIndex = rawHash.indexOf('?');
     var query = '';
-    if (queryIndex !== -1) {
-      query = hash.slice(queryIndex + 1);
-      hash = hash.slice(0, queryIndex);
+    if (qIndex !== -1) {
+      query = rawHash.slice(qIndex + 1);
+      rawHash = rawHash.slice(0, qIndex);
     }
     var params = Object.fromEntries(new URLSearchParams(query));
-    var parts = hash.split('/').filter(Boolean);
+    applyFilters(params);
+    var parts = rawHash.split('/').filter(Boolean);
+    var slug = parts[1];
+    await renderList(slug);
 
-    if (parts[0] === 'glitch' && parts[1]) {
-      var slug = parts[1];
+    if (!contentEl) return;
+    contentEl.innerHTML = '<div class="empty">Загрузка…</div>';
+    var glitches = await getManifest();
+
+    if (parts[0] === 'glitch' && slug) {
       var item = glitches.find(function (g) { return g.slug === slug; });
       if (item) {
         try {
           var md = await fetch(item.paths.card).then(function (r) { return r.text(); });
-          await window.renderMarkdown(md, contentEl);
-          var controls = document.createElement('div');
+          contentEl.innerHTML = '';
+          var head = document.createElement('div');
+          head.className = 'card-head';
+          var catEl = document.createElement('span');
+          var catSlug = catSlugMap[item.category] || 'unknown';
+          catEl.className = 'cat cat-' + catSlug;
+          catEl.textContent = item.category;
+          head.appendChild(catEl);
+          var h1 = document.createElement('h1');
+          h1.textContent = item.title;
+          head.appendChild(h1);
+          var actions = document.createElement('div');
+          actions.className = 'actions';
           if (item.status === 'sceneExists' && item.paths.scene) {
             var sceneLink = document.createElement('a');
-            sceneLink.href = '#/scene/' + slug;
+            sceneLink.className = 'btn-link';
+            sceneLink.href = '#/scene/' + slug + getFilterQuery();
             sceneLink.textContent = 'Открыть сцену';
-            controls.appendChild(sceneLink);
+            actions.appendChild(sceneLink);
           }
-          var doneBtn = document.createElement('button');
-          doneBtn.textContent = 'Пометить пройдено';
-          doneBtn.addEventListener('click', function () {
-            if (window.markDone) { window.markDone(slug); }
-            renderList();
+          var shareBtn = document.createElement('button');
+          shareBtn.className = 'btn-link';
+          shareBtn.textContent = 'Поделиться';
+          shareBtn.setAttribute('data-share', '');
+          actions.appendChild(shareBtn);
+          head.appendChild(actions);
+          contentEl.appendChild(head);
+          var body = document.createElement('div');
+          body.className = 'md-body';
+          contentEl.appendChild(body);
+          await window.renderMarkdown(md, body);
+          document.title = 'Glitch Registry — ' + item.title;
+
+          shareBtn.addEventListener('click', function () {
+            var shareHash = '#/glitch/' + slug;
+            if (typeof window.__getShareParams === 'function') {
+              var sp = window.__getShareParams();
+              var qs = typeof sp === 'string' ? sp : new URLSearchParams(sp).toString();
+              if (qs) shareHash += '?' + qs;
+            }
+            var url = location.origin + location.pathname + shareHash;
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+              navigator.clipboard.writeText(url);
+            } else {
+              prompt('Ссылка:', url);
+            }
           });
-          controls.appendChild(doneBtn);
-          contentEl.prepend(controls);
         } catch (e) {
-          contentEl.textContent = 'Не найдено';
+          contentEl.innerHTML = '<div class="empty">Не нашлось</div>';
         }
       } else {
-        contentEl.textContent = 'Не найдено';
+        contentEl.innerHTML = '<div class="empty">Не нашлось</div>';
       }
-    } else if (parts[0] === 'scene' && parts[1]) {
-      var slugScene = parts[1];
-      var itemScene = glitches.find(function (g) { return g.slug === slugScene; });
+    } else if (parts[0] === 'scene' && slug) {
+      var itemScene = glitches.find(function (g) { return g.slug === slug; });
       if (itemScene && itemScene.paths.scene) {
         try {
           var html = await fetch(itemScene.paths.scene).then(function (r) { return r.text(); });
           contentEl.innerHTML = html;
+          document.title = 'Glitch Registry — ' + itemScene.title;
           if (typeof window.__initScene === 'function') { window.__initScene(); }
           if (typeof window.__applyParams === 'function') { window.__applyParams(params); }
         } catch (e) {
-          contentEl.textContent = 'Не найдено';
+          contentEl.innerHTML = '<div class="empty">Не нашлось</div>';
         }
       } else {
-        contentEl.textContent = 'Не найдено';
+        contentEl.innerHTML = '<div class="empty">Не нашлось</div>';
       }
     } else if (parts[0] === 'overview') {
       try {
         var mdOverview = await fetch('content/overview.md').then(function (r) { return r.text(); });
-        await window.renderMarkdown(mdOverview, contentEl);
+        contentEl.innerHTML = '';
+        var bodyOverview = document.createElement('div');
+        bodyOverview.className = 'md-body';
+        contentEl.appendChild(bodyOverview);
+        await window.renderMarkdown(mdOverview, bodyOverview);
+        document.title = 'Glitch Registry — Обзор';
       } catch (e) {
-        contentEl.textContent = 'Не найдено';
+        contentEl.innerHTML = '<div class="empty">Не нашлось</div>';
       }
+      highlightActive(null);
+      return;
     } else {
-      contentEl.innerHTML = '<p>Выберите глитч</p>';
+      contentEl.innerHTML = '<div class="empty">Не нашлось</div>';
     }
+
+    highlightActive(slug);
   }
 
-  searchInput.addEventListener('input', renderList);
-  categorySelect.addEventListener('change', renderList);
+  function currentSlug() {
+    var h = location.hash.slice(1).split('?')[0];
+    var p = h.split('/').filter(Boolean);
+    return (p[0] === 'glitch' || p[0] === 'scene') ? p[1] : null;
+  }
+
+  searchInput.addEventListener('input', function () {
+    renderList(currentSlug());
+    updateHashQuery();
+  });
+  categorySelect.addEventListener('change', function () {
+    renderList(currentSlug());
+    updateHashQuery();
+  });
+
   window.addEventListener('hashchange', load);
   window.addEventListener('DOMContentLoaded', function () {
-    renderList();
+    if (!location.hash) {
+      location.hash = '#/overview';
+    }
     load();
   });
 })();
+
