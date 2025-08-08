@@ -155,15 +155,47 @@
       }
     } else if (parts[0] === 'scene' && slug) {
       var itemScene = glitches.find(function (g) { return g.slug === slug; });
-      if (itemScene && itemScene.paths.scene) {
-        try {
-          var html = await fetch(itemScene.paths.scene).then(function (r) { return r.text(); });
-          contentEl.innerHTML = html;
-          document.title = 'Glitch Registry — ' + itemScene.title;
-          if (typeof window.__initScene === 'function') { window.__initScene(); }
-          if (typeof window.__applyParams === 'function') { window.__applyParams(params); }
-        } catch (e) {
-          contentEl.innerHTML = '<div class="empty">Не нашлось</div>';
+      if (itemScene) {
+        document.title = 'Glitch Registry — ' + itemScene.title;
+        if (itemScene.status === 'cardOnly' || !itemScene.paths.scene) {
+          contentEl.innerHTML = '<div class="scene-head">'
+            + '<div class="actions-left"><a class="btn-link" href="#/glitch/' + slug + '">← К карточке</a></div>'
+            + '<h1>' + itemScene.title + '</h1>'
+            + '<div class="actions-right"><button class="btn-link" data-share>Поделиться</button></div>'
+            + '</div>'
+            + '<div class="callout warn">Сцена в разработке. Открой карточку — там краткий смысл и ссылки.</div>';
+        } else {
+          try {
+            var html = await fetch(itemScene.paths.scene).then(function (r) { return r.text(); });
+            contentEl.innerHTML = '<div class="scene-head">'
+              + '<div class="actions-left"><a class="btn-link" href="#/glitch/' + slug + '">← К карточке</a></div>'
+              + '<h1>' + itemScene.title + '</h1>'
+              + '<div class="actions-right"><button class="btn-link" data-share>Поделиться</button></div>'
+              + '</div>'
+              + '<div class="scene-frame"></div>';
+            contentEl.querySelector('.scene-frame').innerHTML = html;
+            if (typeof window.__initScene === 'function') { window.__initScene(); }
+            if (typeof window.__applyParams === 'function') { window.__applyParams(params); }
+          } catch (e) {
+            contentEl.innerHTML = '<div class="empty">Не нашлось</div>';
+          }
+        }
+        var shareBtnScene = contentEl.querySelector('[data-share]');
+        if (shareBtnScene) {
+          shareBtnScene.addEventListener('click', function () {
+            var shareHash = '#/scene/' + slug;
+            if (typeof window.__getShareParams === 'function') {
+              var sp = window.__getShareParams();
+              var qs = typeof sp === 'string' ? sp : new URLSearchParams(sp).toString();
+              if (qs) shareHash += '?' + qs;
+            }
+            var url = location.origin + location.pathname + shareHash;
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+              navigator.clipboard.writeText(url);
+            } else {
+              prompt('Ссылка:', url);
+            }
+          });
         }
       } else {
         contentEl.innerHTML = '<div class="empty">Не нашлось</div>';

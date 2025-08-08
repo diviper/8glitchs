@@ -794,6 +794,9 @@ button, input, select {
 .card-head { max-width:820px; margin:0 auto 10px; padding:10px 20px 0; }
 .card-head h1 { margin:6px 0 8px; font-size:clamp(22px,2.6vw,30px); }
 .card-head .actions { display:flex; gap:8px; flex-wrap:wrap; }
+.scene-head{max-width:1080px;margin:0 auto 10px;padding:10px 20px 0;display:flex;align-items:center;gap:12px;justify-content:space-between}
+.scene-head h1{margin:6px 0 8px;font-size:clamp(22px,2.6vw,30px)}
+.scene-frame{max-width:1080px;margin:0 auto;padding:0 20px}
 .cat { display:inline-block; padding:2px 8px; border:1px solid rgba(255,255,255,.15); border-radius:8px; font-size:12px; opacity:.85; }
 
 .md-body { max-width:820px; margin:0 auto; padding:16px 20px; line-height:1.65; }
@@ -804,6 +807,21 @@ button, input, select {
 
 .callout { border:1px solid rgba(255,255,255,.12); border-radius:12px; padding:12px 14px; margin:12px 0; background:rgba(255,255,255,.03); }
 .callout.warn { border-color:#ff7b7b33; background:rgba(255,0,0,.06); }
+
+/* скрыть «БАГ #n», «серии», старый прогресс в сценах */
+.scene-frame .series,
+.scene-frame .series-header,
+.scene-frame .series-title,
+.scene-frame [data-series],
+.scene-frame .bug-title,
+.scene-frame .bug-number,
+.scene-frame h1.bug,
+.scene-frame .legacy-bug,
+.scene-frame .progress,
+.scene-frame .progress-bar,
+.scene-frame .progress-fill,
+.scene-frame .bug-header,
+.scene-frame .next-bug { display:none !important; }
 
 /* Mobile adaptation */
 @media (max-width: 900px) {
