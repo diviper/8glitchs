@@ -5,46 +5,32 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Glitch Hub</title>
   <link rel="stylesheet" href="styles.css">
-  <style>
-    body { margin: 0; font-family: sans-serif; }
-    nav { background: #111; color: #eee; padding: 10px; }
-    nav a { color: #0f0; margin-right: 1rem; text-decoration: none; }
-    .layout { display: flex; height: calc(100vh - 40px); }
-    #sidebar { width: 30%; border-right: 1px solid #333; padding: 1rem; overflow-y: auto; }
-    #content { flex: 1; padding: 1rem; overflow-y: auto; }
-    h3 .anchor { margin-right: 0.5rem; text-decoration: none; color: #0f0; }
-  </style>
 </head>
 <body>
 <nav>
-  <a href="#/glitch/banach-tarski">Реестр</a>
-  <a href="#/scene/arrow-of-time">Сцены</a>
+  <a href="#/glitch/observer-problem"><img src="https://raw.githubusercontent.com/diviper/8glitchs/main/docs/glitch.svg" alt="Реестр"/></a>
+  <a href="#/scene/observer-problem"><img src="https://raw.githubusercontent.com/diviper/8glitchs/main/docs/scene.svg" alt="Сцены"/></a>
   <a href="#/overview">Обзор</a>
 </nav>
 <div class="layout">
   <div id="sidebar">
+    <input id="search" type="text" placeholder="Поиск">
+    <select id="category-filter">
+      <option value="">Все категории</option>
+      <option value="Квант">Квант</option>
+      <option value="Время">Время</option>
+      <option value="Космос">Космос</option>
+      <option value="Идентичность">Идентичность</option>
+      <option value="Информация">Информация</option>
+      <option value="Логика">Логика</option>
+      <option value="Наблюдатель">Наблюдатель</option>
+    </select>
     <ul id="glitch-list"></ul>
   </div>
-  <div id="content"></div>
+  <div id="content" class="container"></div>
 </div>
-<script>
-const glitches=[
-  {slug:'banach-tarski',title:'Банах–Тарский'},
-  {slug:'free-will-illusion',title:'Иллюзия свободы воли'},
-  {slug:'simulation-argument',title:'Симуляционный аргумент'}
-];
-const list=document.getElementById('glitch-list');
-for(const g of glitches){
-  const li=document.createElement('li');
-  const a=document.createElement('a');
-  a.href='#/glitch/'+g.slug;
-  a.textContent=g.title;
-  li.appendChild(a);
-  list.appendChild(li);
-}
-</script>
 <script src="assets/js/md.js"></script>
-<script src="assets/js/router.js"></script>
 <script src="assets/js/progress.js"></script>
+<script src="assets/js/router.js"></script>
 </body>
 </html>

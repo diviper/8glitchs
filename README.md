@@ -38,9 +38,22 @@
 ```bash
 npm run lint:md
 npm run lint:html
+npm run check:manifest
 npm test
 ```
 
 ## Лицензия
 
 MIT
+
+## Скриншоты
+
+![glitch view](https://raw.githubusercontent.com/diviper/8glitchs/main/docs/glitch.svg)
+![scene view](https://raw.githubusercontent.com/diviper/8glitchs/main/docs/scene.svg)
+
+## Как добавить карточку/сцену
+
+1. Создайте Markdown `content/glitches/<slug>.md` по шаблону.
+2. При наличии интерактива добавьте `scenes/glitch-<slug>.html` с API `__initScene/__applyParams/__getShareParams`.
+3. Добавьте запись в `content/glitches.json` с путями и статусом.
+4. Запустите `npm run check:manifest` и линтеры перед PR.
