@@ -1,8 +1,10 @@
+---
 id: glitch-delayed-choice
 title: Задержанный выбор (Уилер)
-layer: Квант
+category: Квант
 tags: [измерение, интерференция, причинность]
 status: draft
+---
 
 ### TL;DR
 

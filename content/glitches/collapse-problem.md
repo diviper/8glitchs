@@ -1,8 +1,10 @@
+---
 id: glitch-collapse-problem
 title: Проблема коллапса
-layer: Квант
+category: Квант
 tags: [интерпретации, измерение]
 status: draft
+---
 
 ### TL;DR
 

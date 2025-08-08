@@ -1,8 +1,10 @@
+---
 id: glitch-landauer
 title: Принцип Ландауэра
-layer: Информация
+category: Информация
 tags: [бит, тепло, вычисления]
 status: draft
+---
 
 ### TL;DR
 

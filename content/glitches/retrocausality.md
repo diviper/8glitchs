@@ -1,8 +1,10 @@
+---
 id: glitch-retrocausality
 title: Ретро-причинность
-layer: Время
+category: Время
 tags: [причинность, будущее→прошлое]
 status: draft
+---
 
 ### TL;DR
 

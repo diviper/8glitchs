@@ -1,8 +1,10 @@
+---
 id: glitch-liar
 title: Парадокс лжеца
-layer: Логика
+category: Логика
 tags: [самоссылка, истина, логика]
 status: draft
+---
 
 ### TL;DR
 

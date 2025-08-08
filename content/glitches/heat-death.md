@@ -1,8 +1,10 @@
+---
 id: glitch-heat-death
 title: Тепловая смерть вселенной
-layer: Космос
+category: Космос
 tags: [энтропия, равновесие, конец]
 status: draft
+---
 
 ### TL;DR
 
