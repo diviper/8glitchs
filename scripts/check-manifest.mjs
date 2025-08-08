@@ -1,4 +1,4 @@
-import { promises as fs } from 'fs';
+import fs from 'fs';
 import path from 'path';
 
 const REQUIRED = [
@@ -15,7 +15,7 @@ const REQUIRED = [
 async function main() {
   let data;
   try {
-    data = JSON.parse(await fs.readFile('content/glitches.json', 'utf8'));
+    data = JSON.parse(await fs.promises.readFile('content/glitches.json', 'utf8'));
   } catch (err) {
     console.error('Invalid JSON:', err.message);
     process.exit(1);
@@ -32,6 +32,9 @@ async function main() {
 
     if (!(await exists(item.paths.card))) {
       console.error('Missing card:', item.paths.card);
+      ok = false;
+    } else if (!hasValidFrontMatter(item.paths.card)) {
+      console.error('Invalid front matter:', item.paths.card);
       ok = false;
     }
     if (item.status === 'sceneExists') {
@@ -59,11 +62,16 @@ async function main() {
 
 async function exists(p) {
   try {
-    await fs.access(path.resolve(p));
+    await fs.promises.access(path.resolve(p));
     return true;
   } catch {
     return false;
   }
+}
+
+function hasValidFrontMatter(p) {
+  const t = fs.readFileSync(p, 'utf8');
+  return /^---\s*[\s\S]*?\n---\s*/.test(t);
 }
 
 main();

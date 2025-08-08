@@ -14,14 +14,21 @@
     loadScript('https://cdn.jsdelivr.net/npm/dompurify@3.0.3/dist/purify.min.js')
   ]);
 
+  function stripFrontMatter(src) {
+    if (!src) return '';
+    src = src.replace(/^\uFEFF/, '');
+    var m = src.match(/^---\s*[\s\S]*?\n---\s*\n?/);
+    return m ? src.slice(m[0].length) : src;
+  }
+
   window.renderMarkdown = async function (markdown, target) {
     await ready;
-    if (markdown.startsWith('---')) {
-      markdown = markdown.replace(/^---[\s\S]*?\n---\n?/, '');
-    }
-    var html = marked.parse(markdown);
-    var safe = DOMPurify.sanitize(html);
+    var html = marked.parse(stripFrontMatter(markdown));
+    var safe = DOMPurify.sanitize(html, { ADD_ATTR: ['target', 'rel'] });
     target.innerHTML = safe;
+    target.querySelectorAll('a[target="_blank"]').forEach(function (a) {
+      a.setAttribute('rel', 'noopener noreferrer');
+    });
     target.querySelectorAll('h3').forEach(function (h) {
       var id = h.textContent.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
       h.id = id;
