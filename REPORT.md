@@ -4,7 +4,7 @@
 - Pinned marked.js version for consistent Markdown rendering.
 - Added global intro controls and home navigation without reload; audio starts muted by default and toggles with `M`.
 - Router now lazily loads the map and handles missing glitch cards with a warning callout and scene link.
-- Map loader tolerates offline mode, loading D3 only when visiting `#/map`.
+- Map loader tolerates offline mode, loading D3 only when visiting `#/map` and skipping network requests when offline.
 - Added data URL favicon to avoid 404s.
 
 ## Route matrix
@@ -25,7 +25,7 @@
 No missing manifest entries (`missingFiles: []` via `npm run check:manifest`).
 
 ## Console
-No errors after fixes; router syntax verified with `node --check`.
+No errors after fixes; router syntax verified with `node --check`. Offline map no longer logs `ERR_CONNECTION_FAILED` when network is absent.
 
 ## Perf
 Initial page loads core scripts only; D3 is fetched lazily in `#/map`.
