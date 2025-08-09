@@ -6,12 +6,12 @@
     var nodes = Array.from(root.childNodes);
     var wrap = document.createElement('div');
     wrap.className = 'scene-wrap';
+    var panel = document.createElement('div');
+    panel.className = 'scene-panel';
     var bg = document.createElement('canvas');
     bg.className = 'scene-bg';
     bg.id = 'sceneCanvas';
-    wrap.appendChild(bg);
-    var main = document.createElement('div');
-    main.className = 'scene-main';
+    panel.appendChild(bg);
     var head = document.createElement('div');
     head.className = 'scene-head';
     head.innerHTML = '<h1 class="title"></h1><span class="chip cat"></span><div class="chips tags"></div>';
@@ -39,17 +39,17 @@
       } catch(e){}
       tagBox.appendChild(s);
     });
-    main.appendChild(head);
+    panel.appendChild(head);
     var body = document.createElement('div');
     body.className = 'scene-body';
     nodes.forEach(function(n){ body.appendChild(n); });
-    if (!body.textContent.trim() && meta.intro) {
+    if (!body.textContent.trim()) {
       var p = document.createElement('p');
-      p.textContent = meta.intro;
+      p.textContent = meta.intro || 'Сцена временно недоступна.';
       body.appendChild(p);
     }
-    main.appendChild(body);
-    wrap.appendChild(main);
+    panel.appendChild(body);
+    wrap.appendChild(panel);
     root.innerHTML = '';
     root.appendChild(wrap);
     try { if (window.widgets && window.widgets.mountAll) window.widgets.mountAll(root); } catch(e){}

@@ -103,6 +103,7 @@
 
   function showIntro() {
     root?.classList.remove('hidden');
+    document.body.classList.add('lock');
     requestAnimationFrame(draw);
     requestIdleCallback?.(prefetch);
   }
@@ -120,6 +121,7 @@
 
   function hide() {
     root?.classList.add('hidden');
+    document.body.classList.remove('lock');
     try { masterGain?.gain.setTargetAtTime(0, ctx.currentTime, 0.05); } catch {}
     try { ctx?.close?.(); } catch {}
     cancelAnimationFrame(rafId);
@@ -184,8 +186,8 @@
 
   window.intro = {
     show: showIntro,
-    hide,
-    mute: window.audioBus.setMuted
+    hide: hide,
+    mute: function(on){ window.audioBus.setMuted(on); }
   };
   window.addEventListener('DOMContentLoaded', () => {
     bind();
