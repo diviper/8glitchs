@@ -445,14 +445,20 @@
         var shareBtn = contentEl.querySelector('[data-share]');
         var doneBtn = contentEl.querySelector('[data-done]');
         var backBtn = contentEl.querySelector('[data-back]');
+        var mdPath = item.paths && item.paths.card;
+        var sceneLink = item.paths && item.paths.scene ? '<a class="btn-link" href="#/scene/' + slug + '">Открыть сцену</a>' : '';
+        if (!mdPath) {
+          target.innerHTML = '<div class="callout warn">Карточка в разработке.<br>' + sceneLink + '</div>';
+          return;
+        }
         var md;
         try {
-          var resp = await fetch(item.paths.card, { cache: 'no-store' });
-          if (!resp.ok) throw new Error('MD not found: ' + item.paths.card + ' (' + resp.status + ')');
+          var resp = await fetch(mdPath, { cache: 'no-store' });
+          if (!resp.ok) throw new Error('MD not found: ' + mdPath + ' (' + resp.status + ')');
           md = await resp.text();
         } catch (e) {
-          console.error(e);
-          target.innerHTML = '<div class="callout warn">Не удалось загрузить карточку.</div>';
+          console.warn(e.message);
+          target.innerHTML = '<div class="callout warn">Не удалось загрузить карточку.<br>' + sceneLink + '</div>';
           return;
         }
         await window.renderMarkdown(md, target, { slug: slug, manifest: glitches });
@@ -544,7 +550,21 @@
             window.setLastVisited({ type: 'glitch', slug: slug });
           }
           }
-        } else if (parts[0] === 'scene' && slug) {
+      } else {
+        var fbPath = 'content/glitches/' + slug + '.md';
+        try {
+          var fbResp = await fetch(fbPath, { cache: 'no-store' });
+          if (!fbResp.ok) throw new Error('MD not found: ' + fbPath + ' (' + fbResp.status + ')');
+          var fbMd = await fbResp.text();
+          contentEl.innerHTML = '<div class="md-body"></div>';
+          var fbTarget = contentEl.querySelector('.md-body');
+          await window.renderMarkdown(fbMd, fbTarget, { slug: slug, manifest: glitches });
+        } catch (e) {
+          console.warn(e.message);
+          contentEl.innerHTML = '<div class="callout warn">Глитч не найден. <a href="#/overview">На обзор</a>.</div>';
+        }
+      }
+    } else if (parts[0] === 'scene' && slug) {
       var itemScene = glitches.find(function (g) { return g.slug === slug; });
       if (itemScene) {
         document.title = 'Glitch Registry — ' + itemScene.title;
