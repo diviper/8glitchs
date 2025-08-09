@@ -52,6 +52,23 @@
     }
     try { if (window.quiz && window.quiz.mountAll) window.quiz.mountAll(container); } catch (e) {}
     try { if (window.widgets && window.widgets.mountAll) window.widgets.mountAll(container); } catch (e) {}
+    container.querySelectorAll('.legacy-banner,.banner,.badges,.g-universe,.btns-legacy,[data-legacy]').forEach(function(n){ n.remove(); });
+    var head = document.createElement('div');
+    head.className = 'card-head';
+    var cat = opts && opts.item && opts.item.category ? opts.item.category : '';
+    var tags = (opts && opts.item && opts.item.tags) ? opts.item.tags : [];
+    head.innerHTML = '<a class="crumb" href="#/overview">← к реестру</a>' +
+                     '<h1>' + (opts && opts.title ? opts.title : '') + '</h1>' +
+                     '<span class="chips"><span class="chip chip-cat">' + cat + '</span>' +
+                     tags.map(function(t){ return '<span class="chip">' + t + '</span>'; }).join('') +
+                     '</span>' +
+                     '<button class="btn-link share">Поделиться</button>';
+    container.prepend(head);
+    head.querySelector('.share')?.addEventListener('click', async function(){
+      var url = location.href;
+      try { await navigator.share?.({ title: opts && opts.title ? opts.title : '', url: url }); } catch(e){}
+      try { await navigator.clipboard?.writeText(url); if (window.showToast) window.showToast('Ссылка скопирована'); } catch(e){}
+    });
     window.currentMarkdownContainer = container;
     container.querySelectorAll('a[target="_blank"]').forEach(function (a) {
       a.setAttribute('rel', 'noopener noreferrer');
