@@ -153,10 +153,15 @@
   }
 
   async function renderMapRoute() {
-    if (!window.d3) await loadScript('https://cdn.jsdelivr.net/npm/d3-force@3/dist/d3-force.min.js');
-    if (!window.renderMindMap) await loadScript('assets/js/map.js');
+    try {
+      if (!window.d3) await loadScript('https://cdn.jsdelivr.net/npm/d3-force@3/dist/d3-force.min.js');
+    } catch (e) {}
+    try {
+      if (!window.renderMindMap) await loadScript('assets/js/map.js');
+    } catch (e) {}
     if (window.renderMindMap) {
-      await window.renderMindMap();
+      try { await window.renderMindMap(); }
+      catch (e) { contentEl.innerHTML = '<div class="empty">Карта недоступна</div>'; }
     } else {
       contentEl.innerHTML = '<div class="empty">Карта недоступна</div>';
     }
@@ -502,7 +507,7 @@ async function handleRoute() {
           md = await resp.text();
         } catch (e) {
           console.warn(e.message);
-          target.innerHTML = '<div class="callout warn">Не удалось загрузить карточку.<br>' + sceneLink + '</div>';
+          target.innerHTML = '<div class="callout warn">Карточка не найдена. ' + sceneLink + '</div>';
           return;
         }
         await window.renderMarkdown(md, target, { slug: slug, manifest: glitches });
