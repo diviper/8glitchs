@@ -15,7 +15,6 @@ svg{width:400px;height:200px;}
 <div id="controls">
 <label><input type="checkbox" id="choice"> Аксиома выбора</label>
 <button id="reset">Reset</button>
-<button data-share>Копировать ссылку</button>
 </div>
 <svg viewBox="0 0 400 200" id="vis"></svg>
 <div class="msg" id="msg"></div>
@@ -54,7 +53,6 @@ document.getElementById('reset').addEventListener('click',function(){choiceToggl
 function update(){ if(currentChoice==='on'){ showDouble(); } else { showSingle(); } }
 window.__initScene=function(){ update(); };
 window.__applyParams=function(q){ if(q.choice==='on'){ choiceToggle.checked=true; currentChoice='on'; } else { choiceToggle.checked=false; currentChoice='off'; } update(); };
-window.__getShareParams=function(){ return { choice: currentChoice }; };
 </script>
 <script src="../assets/js/scene-frame.js"></script>
 </body>

@@ -37,7 +37,6 @@ mark {
 .chip{padding:2px 8px;border-radius:999px;font-size:12px;line-height:18px;background:#ffffff0f}
 .chip.cat{border:1px solid currentColor}
 .tags{display:flex;gap:6px;flex-wrap:wrap}
-.head .share{display:none!important}
 
 .container {
     max-width: 1200px;

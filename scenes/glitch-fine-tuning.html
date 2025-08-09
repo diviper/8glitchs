@@ -616,7 +616,6 @@
 <body>
     <div style="text-align:center;margin-top:10px;">
         <button id="reset">Reset</button>
-        <button data-share>Копировать ссылку</button>
     </div>
     <div class="container">
         <div class="series-header">
@@ -1148,9 +1147,6 @@
             if(q.e){document.getElementById('electromagnetic').value=q.e;}
             if(q.d){document.getElementById('darkEnergy').value=q.d;}
             updateConstants();
-        };
-        window.__getShareParams = function(){
-            return {g:constants.gravity,n:constants.nuclear,e:constants.electromagnetic,d:constants.darkEnergy};
         };
         window.__initScene = function(){};
         

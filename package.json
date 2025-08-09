@@ -10,7 +10,8 @@
     "check:manifest": "node scripts/check-manifest.mjs",
     "doctor:manifest": "node scripts/doctor-manifest.mjs --write --stubs",
     "check:cards": "node scripts/check-cards.mjs",
-    "check:links": "node scripts/check-links.mjs"
+    "check:links": "node scripts/check-links.mjs",
+    "audit:routes": "node scripts/audit-routes.mjs"
   },
   "keywords": [],
   "author": "",

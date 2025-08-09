@@ -1,12 +1,5 @@
-# REPORT
+# Route audit
 
-## Summary
-- Added `audit:routes` script validating manifest entries, paths, and required markdown sections.
-- Stabilized intro audio: single `AudioContext` starts on user gesture, fades out on hide, and toggles mute with `M`.
-- Router loads D3 lazily for `#/map` and falls back gracefully offline.
-- Removed all Share buttons; cards and scenes use unified header markup.
-
-## Route matrix
 Всего записей: 35. Проблемных: 0.
 
 | slug | category | card | scene | issues |
@@ -46,26 +39,3 @@
 | godel | Логика | OK | — | — |
 | liar | Логика | OK | — | — |
 | anthropic | Космос | OK | — | — |
-
-## Console audit
-- `node --check assets/js/router.js`
-- `npm run lint:md`
-- `npm run lint:html`
-- `npm run check:manifest`
-- `npm run doctor:manifest -- --write --stubs`
-- `npm run audit:routes`
-
-No errors reported.
-
-## Perf (first screen)
-D3 and map scripts load only when visiting `#/map`, keeping initial load light.
-
-## A11y
-Intro controls are focusable; hotkey `M` toggles audio mute.
-
-## Next steps
-1. Mobile polish for sidebar and scene layouts.
-2. Map: add panning/zooming and offline caching.
-3. Expand content stubs into full articles.
-4. Improve automated tests for audio and routing.
-5. Investigate service worker for assets.
