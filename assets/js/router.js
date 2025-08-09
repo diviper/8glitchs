@@ -455,7 +455,7 @@
           target.innerHTML = '<div class="callout warn">Не удалось загрузить карточку.</div>';
           return;
         }
-        await window.renderMarkdown(md, target);
+        await window.renderMarkdown(md, target, { slug: slug, manifest: glitches });
         target.querySelectorAll('.hero,.legacy,.series,.bug-series,.project-banner')
           .forEach(function (n) { n.remove(); });
 
@@ -549,6 +549,15 @@
       } else {
         contentEl.innerHTML = '<div class="callout warn">Глитч не найден. <a href="#/overview">На обзор</a>.</div>';
       }
+    } else if (parts[0] === 'map') {
+      document.title = 'Glitch Registry — Карта';
+      if (window.renderMap) {
+        await window.renderMap(contentEl, glitches);
+      } else {
+        contentEl.innerHTML = '<div class="empty">Карта недоступна</div>';
+      }
+      highlightActive(null);
+      return;
     } else if (parts[0] === 'scene' && slug) {
       var itemScene = glitches.find(function (g) { return g.slug === slug; });
       if (itemScene) {
