@@ -20,7 +20,6 @@ body{background:#000;color:#fff;font-family:sans-serif;text-align:center;margin:
   <button id="decide">Я решил сейчас</button>
   <label><input type="checkbox" id="showrp"> показывать RP</label>
   <button id="reset">Reset</button>
-  <button data-share>Копировать ссылку</button>
 </div>
 <div id="log"></div>
 <script>
@@ -40,7 +39,6 @@ showBox.addEventListener('change',function(){mode=this.checked?'show':'hide';app
 document.getElementById('reset').addEventListener('click',function(){mode='hide';showBox.checked=false;applyQuery({});});
 window.__initScene=function(){};
 window.__applyParams=function(q){mode=q.mode==='show'?'show':'hide';showBox.checked=mode==='show';};
-window.__getShareParams=function(){return {mode:mode};};
 </script>
 <script src="../assets/js/scene-frame.js"></script>
 </body>

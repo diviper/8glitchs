@@ -1,7 +1,6 @@
 let audioCtx = null;
 let masterGain = null;
 let muted = localStorage.getItem('intro:mute') === 'true';
-let started = false;
 
 function ensureAudio() {
   if (audioCtx && audioCtx.state !== 'closed') return;
@@ -28,9 +27,8 @@ function ensureAudio() {
 }
 
 function startAudio() {
-  if (started) return;
-  started = true;
   ensureAudio();
+  masterGain.gain.value = muted ? 0 : 0.05;
   if (audioCtx.state === 'suspended') audioCtx.resume();
 }
 
@@ -39,7 +37,6 @@ function stopAudio() {
   try {
     masterGain?.gain?.setTargetAtTime(0, audioCtx.currentTime, 0.05);
   } catch {}
-  audioCtx.close().catch(() => {});
 }
 
 function setMute(on) {
