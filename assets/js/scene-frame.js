@@ -1,15 +1,33 @@
 (function(){
-  function ensure(el, html){ if(!el){ el=document.createElement('div'); el.innerHTML=html; return el.firstElementChild; } return el; }
   window.renderSceneFrame = function(slug, meta){
     meta = meta || {};
     var root = document.querySelector('#scene-root') || document.body;
     root.querySelectorAll('.legacy-banner,.g-universe,.btns-legacy,[data-legacy]').forEach(function(n){ n.remove(); });
     var head = document.createElement('div');
-    head.className = 'scene-head';
-    head.innerHTML = '<a class="crumb" href="#/glitch/' + slug + '">← к карточке</a>' +
-      '<div class="chips"><span class="chip chip-cat">' + (meta.category || '') + '</span>' +
-      (meta.tags || []).map(function(t){ return '<span class="chip">' + t + '</span>'; }).join('') + '</div>' +
-      '<button class="btn-link share">Поделиться</button>';
+    head.className = 'head';
+    head.innerHTML = '<a class="crumb" href="#/overview" aria-label="К реестру">← к реестру</a>' +
+      '<h1 class="title"></h1>' +
+      '<div class="meta"><span class="chip cat"></span><span class="chips tags"></span></div>';
+    head.querySelector('.title').textContent = meta.title || '';
+    var catEl = head.querySelector('.chip.cat');
+    catEl.textContent = meta.category || '';
+    try { catEl.style.background = window.THEME.catColor(meta.category); } catch(e){}
+    var tags = Array.isArray(meta.tags) ? meta.tags : [];
+    var maxTags = 6;
+    var tagBox = head.querySelector('.tags');
+    tags.slice(0, maxTags).forEach(function(t){
+      var s = document.createElement('span');
+      s.className = 'chip tag';
+      s.textContent = t;
+      tagBox.appendChild(s);
+    });
+    if (tags.length > maxTags) {
+      var more = document.createElement('span');
+      more.className = 'chip tag';
+      more.textContent = '+' + (tags.length - maxTags);
+      more.title = tags.slice(maxTags).join(', ');
+      tagBox.appendChild(more);
+    }
     var wrap = document.createElement('div');
     wrap.className = 'scene-wrap';
     var box = document.createElement('div');
@@ -32,10 +50,5 @@
     }
     wrap.appendChild(box);
     root.innerHTML = ''; root.appendChild(head); root.appendChild(wrap);
-    head.querySelector('.share')?.addEventListener('click', async function(){
-      var url = location.href;
-      try { await navigator.share?.({ title: meta.title || '', url: url }); } catch(e){}
-      try { await navigator.clipboard?.writeText(url); window.showToast?.('Ссылка скопирована'); } catch(e){}
-    });
   };
 })();

@@ -12,18 +12,26 @@ const mode = args.includes('--fix') ? 'fix' : 'check';
 
 let changed = false;
 const report = [];
+const cats = ['Квант', 'Время', 'Космос', 'Информация', 'Логика', 'Идентичность'];
+const normMap = {
+  'Квантовые': 'Квант',
+  'Квантовая': 'Квант',
+  'Время/времени': 'Время',
+  'Времени': 'Время',
+  'Наблюдатель': 'Космос'
+};
 
 for (const item of glitches) {
   const slug = item.slug;
   const expected = `content/glitches/${slug}.md`;
-  let status = 'OK';
+  const statuses = [];
   if (!item.paths) item.paths = {};
   if (item.paths.card !== expected) {
-    status = 'NeedFix';
+    statuses.push('path');
     changed = true;
     if (mode === 'fix') {
       item.paths.card = expected;
-      status = 'Fixed';
+      statuses[statuses.length - 1] = 'path:fixed';
     }
   }
 
@@ -35,13 +43,28 @@ for (const item of glitches) {
     if (mode === 'fix') {
       const stub = `---\nid: glitch-${slug}\ntitle: ${item.title}\ncategory: ${item.category}\nstatus: draft\n---\n\n### TL;DR\nКоротко: 1–3 предложения без хайпа.\n\n### Научная опора\n1–2 предложения.\n\n### Парадокс\nГде ломается интуиция.\n\n### Дневник Дивайпера\nЛичная заметка.\n\n### Юнг\n1–2 строки.\n\n### Сенека\n1–2 строки.\n\n### Рик\n1 строка.\n\n### Сцена/механика\nЧто делает сцена.\n\n### Ссылки\n- источник\n`;
       await fs.writeFile(abs, stub);
-      status = status === 'Fixed' ? 'Fixed+Stub' : 'Stub';
+      statuses.push('stub');
     } else {
-      status = status === 'NeedFix' ? 'NeedFix+Missing' : 'Missing';
+      statuses.push('missing');
     }
   }
 
-  report.push(`${slug}: ${status}`);
+  if (!cats.includes(item.category)) {
+    const norm = normMap[item.category];
+    if (norm) {
+      changed = true;
+      if (mode === 'fix') {
+        statuses.push(`cat:${item.category}->${norm}`);
+        item.category = norm;
+      } else {
+        statuses.push(`cat?${item.category}->${norm}`);
+      }
+    } else {
+      statuses.push(`cat!${item.category}`);
+    }
+  }
+
+  report.push(`${slug}: ${statuses.join(', ') || 'OK'}`);
 }
 
 if (mode === 'fix' && changed) {

@@ -33,5 +33,5 @@
   {"slug":"banach-tarski","title":"Банах–Тарский","category":"Логика","status":"sceneExists","paths":{"card":"content/glitches/banach-tarski.md","scene":"scenes/glitch-banach-tarski.html"}},
   {"slug":"godel","title":"Неполнота Гёделя","category":"Логика","status":"cardOnly","paths":{"card":"content/glitches/godel.md","scene":null}},
   {"slug":"liar","title":"Парадокс лжеца","category":"Логика","status":"cardOnly","paths":{"card":"content/glitches/liar.md","scene":null}},
-  {"slug":"anthropic","title":"Антропный принцип","category":"Наблюдатель","status":"cardOnly","paths":{"card":"content/glitches/anthropic.md","scene":null},"quest":{"intro":"В заметках всё сводится к одному вопросу: почему мы здесь?","answer":"наблюдатель"}}
+  {"slug":"anthropic","title":"Антропный принцип","category":"Космос","status":"cardOnly","paths":{"card":"content/glitches/anthropic.md","scene":null},"quest":{"intro":"В заметках всё сводится к одному вопросу: почему мы здесь?","answer":"наблюдатель"}}
 ]
