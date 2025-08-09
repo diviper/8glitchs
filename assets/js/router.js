@@ -165,22 +165,13 @@
   }
   window.showToast = showToast;
 
-  function loadScript(src) {
-    return new Promise(function (res, rej) {
-      var s = document.createElement('script');
-      s.src = src && /^https?:/i.test(src) ? src : paths.toRepoURL(src);
-      s.async = true;
-      s.onload = res;
-      s.onerror = function () { rej(new Error('load fail ' + src)); };
-      document.head.appendChild(s);
-    });
-  }
 
   
   async function renderMapRoute(){
     try {
-      if (!window.d3) await loadScript('https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js');
-      if (!window.renderMindMap) await loadScript('assets/js/map.js');
+      if (!window.d3) await repoPaths.loadScript('https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js');
+      if (!window.d3?.select) throw new Error('no d3.select');
+      if (!window.renderMindMap) await repoPaths.loadScript('assets/js/map.js');
       if (window.renderMindMap) {
         window.renderMindMap();
       } else {
@@ -189,7 +180,7 @@
     } catch (e) {
       console.warn('[map] offline/fallback:', e);
       try {
-        if (!window.renderMindMapFallback) await loadScript('assets/js/map.js');
+        if (!window.renderMindMapFallback) await repoPaths.loadScript('assets/js/map.js');
         if (window.renderMindMapFallback) {
           window.renderMindMapFallback();
         } else {
@@ -295,17 +286,16 @@
   async function renderScene(slug, params) {
     var item = paths.getManifestItem && paths.getManifestItem(slug);
     var htmlPath = (item && item.paths && item.paths.scene) || ('scenes/glitch-' + slug + '.html');
-    contentEl.innerHTML = '<div id="scene-root"></div>';
+    contentEl.innerHTML = '<div id="scene-root" class="scene-frame"></div>';
     var root = document.getElementById('scene-root');
     try {
       var html = await paths.fetchText(htmlPath);
       html = html.replace(/<script[^>]*scene-frame.js[^>]*><\/script>/gi, '');
       var parser = new DOMParser();
       var doc = parser.parseFromString(html, 'text/html');
-      root.innerHTML = doc.body ? doc.body.innerHTML : html;
+      window.SceneFrame?.mount(root, doc.body ? doc.body.innerHTML : html);
       if (typeof window.__initScene === 'function') { try { window.__initScene(); } catch(e){} }
       if (typeof window.__applyParams === 'function') { try { window.__applyParams(params); } catch(e){} }
-      window.SceneFrame?.mount(slug, { title: item ? item.title : '', category: item ? item.category : '', tags: item && item.tags ? item.tags : [], intro: item && item.quest ? item.quest.intro : '' });
       if (typeof window.setLastVisited === 'function') {
         window.setLastVisited({ type: 'scene', slug: slug });
       }
