@@ -2,24 +2,69 @@
   const LS = {
     get k() { return { skip: 'intro:alwaysSkip', seen: 'intro:lastSeen', mute: 'intro:mute' }; }
   };
-  let ctx, audio, started = false, muted = false, rafId;
+  const ctx = new (window.AudioContext || window.webkitAudioContext)();
+  const master = ctx.createGain();
+  master.gain.value = 0.12;
+  master.connect(ctx.destination);
+
+  const noiseBuf = ctx.createBuffer(1, ctx.sampleRate * 2, ctx.sampleRate);
+  const data = noiseBuf.getChannelData(0);
+  for (let i = 0; i < data.length; i++) data[i] = (Math.random() * 2 - 1) * 0.02;
+  const noise = ctx.createBufferSource();
+  noise.buffer = noiseBuf;
+  noise.loop = true;
+  const lp = ctx.createBiquadFilter();
+  lp.type = 'lowpass';
+  lp.frequency.value = 800;
+  noise.connect(lp).connect(master);
+
+  const osc = ctx.createOscillator();
+  osc.type = 'sine';
+  osc.frequency.value = 110;
+  const env = ctx.createGain();
+  env.gain.value = 0.0;
+  osc.connect(env).connect(master);
+
+  let started = false, rafId;
+  let ctx2d;
   const bursts = [];
   let motion = 0;
   const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  function initAudio() {
-    if (audio) return;
-    try {
-      const AC = window.AudioContext || window.webkitAudioContext;
-      audio = new AC();
-      const osc = audio.createOscillator();
-      const gain = audio.createGain();
-      osc.type = 'sawtooth';
-      osc.frequency.value = 110;
-      gain.gain.value = 0.02;
-      osc.connect(gain).connect(audio.destination);
+  function startAudioOnGesture() {
+    if (ctx.state !== 'running') ctx.resume();
+    if (!started) {
+      noise.start();
       osc.start();
-    } catch (e) {}
+      started = true;
+    }
+    const now = ctx.currentTime;
+    env.gain.cancelScheduledValues(now);
+    env.gain.linearRampToValueAtTime(0.03, now + 0.8);
+  }
+
+  function stopAudio() {
+    const now = ctx.currentTime;
+    env.gain.cancelScheduledValues(now);
+    env.gain.linearRampToValueAtTime(0.0, now + 0.2);
+    master.gain.linearRampToValueAtTime(0.0, now + 0.25);
+    ctx.suspend().catch(() => {});
+  }
+
+  function setMuted(m, silent) {
+    localStorage.setItem(LS.k.mute, m ? '1' : '0');
+    if (m) {
+      master.gain.value = 0;
+    } else {
+      if (!silent) startAudioOnGesture();
+      else if (ctx.state !== 'running') ctx.resume();
+      master.gain.value = 0.12;
+    }
+  }
+
+  function applyMuteUI(btn) {
+    const isMuted = master.gain.value === 0;
+    btn && (btn.textContent = isMuted ? '🔇' : '🔊', btn.toggleAttribute('data-muted', isMuted));
   }
 
   function spawnBurst(x, y) {
@@ -29,10 +74,10 @@
   function draw(ts) {
     const c = document.getElementById('intro-canvas');
     if (!c) return;
-    if (!ctx) { c.width = innerWidth; c.height = innerHeight; ctx = c.getContext('2d'); }
+    if (!ctx2d) { c.width = innerWidth; c.height = innerHeight; ctx2d = c.getContext('2d'); }
     const w = c.width = innerWidth, h = c.height = innerHeight;
-    ctx.fillStyle = 'rgba(0,0,0,0.2)';
-    ctx.fillRect(0, 0, w, h);
+    ctx2d.fillStyle = 'rgba(0,0,0,0.2)';
+    ctx2d.fillRect(0, 0, w, h);
 
     const speed = prefersReduced ? (0.3 + 0.3 * Math.sin(ts * 0.001)) : Math.min(1, motion / 40);
     if (!prefersReduced) motion *= 0.9;
@@ -42,17 +87,17 @@
       const x = Math.random() * w;
       const y = Math.random() * h;
       const s = 1 + speed * 5;
-      ctx.fillStyle = `hsl(${Math.random() * 360} 90% 60% / ${0.2 + speed * 0.5})`;
-      ctx.fillRect(x, y, s, s);
+      ctx2d.fillStyle = `hsl(${Math.random() * 360} 90% 60% / ${0.2 + speed * 0.5})`;
+      ctx2d.fillRect(x, y, s, s);
     }
 
     for (let i = bursts.length - 1; i >= 0; i--) {
       const b = bursts[i];
       b.r += 2 + speed * 8;
       if (b.r > 200) { bursts.splice(i, 1); continue; }
-      ctx.strokeStyle = `hsl(${(ts * 0.05 + b.r) % 360} 80% 70% / ${1 - b.r / 200})`;
-      ctx.lineWidth = 2;
-      ctx.strokeRect(b.x - b.r / 2, b.y - b.r / 2, b.r, b.r);
+      ctx2d.strokeStyle = `hsl(${(ts * 0.05 + b.r) % 360} 80% 70% / ${1 - b.r / 200})`;
+      ctx2d.lineWidth = 2;
+      ctx2d.strokeRect(b.x - b.r / 2, b.y - b.r / 2, b.r, b.r);
     }
 
     rafId = requestAnimationFrame(draw);
@@ -83,6 +128,7 @@
   function hideToHub() {
     localStorage.setItem(LS.k.seen, Date.now().toString());
     cancelAnimationFrame(rafId);
+    stopAudio();
     document.getElementById('intro')?.setAttribute('hidden', '');
     location.hash = '#/overview';
   }
@@ -94,7 +140,7 @@
     const mute = document.getElementById('intro-mute');
     const canvas = document.getElementById('intro-canvas');
 
-    const gesture = () => { if (!started) { initAudio(); started = true; if (muted && audio) audio.suspend().catch(() => {}); } };
+    const gesture = () => { startAudioOnGesture(); };
     ['click', 'pointerdown', 'touchstart', 'keydown'].forEach(ev => {
       document.addEventListener(ev, gesture, { once: true, passive: true });
     });
@@ -125,17 +171,17 @@
       localStorage.setItem(LS.k.skip, e.target.checked ? '1' : '');
     });
 
-    mute?.addEventListener('click', () => {
-      muted = !muted;
-      localStorage.setItem(LS.k.mute, muted ? '1' : '');
-      mute.textContent = muted ? '🔇' : '🔊';
-      mute.toggleAttribute('data-muted', muted);
-      if (audio) (muted ? audio.suspend() : audio.resume()).catch(() => {});
+    function toggleMute() {
+      setMuted(master.gain.value > 0);
+      applyMuteUI(mute);
+    }
+    mute?.addEventListener('click', toggleMute);
+    document.addEventListener('keydown', e => {
+      if (e.key.toLowerCase() === 'm') toggleMute();
     });
 
-    muted = localStorage.getItem(LS.k.mute) === '1';
-    if (muted) mute?.setAttribute('data-muted', '');
-    mute && (mute.textContent = muted ? '🔇' : '🔊');
+    setMuted(localStorage.getItem(LS.k.mute) === '1', true);
+    applyMuteUI(mute);
     if (always && localStorage.getItem(LS.k.skip) === '1') always.checked = true;
   }
 
