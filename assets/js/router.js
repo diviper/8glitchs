@@ -34,20 +34,24 @@
     });
   }
 
-  function repoURL(rel) {
-    var clean = String(rel).replace(/^\/+/, '');
-    return new URL(clean, document.baseURI).href;
+  function toRepoURL(relPath) {
+    var base = document.baseURI || (location.origin + location.pathname.replace(/[^\/]*$/, ''));
+    try {
+      return new URL(String(relPath).replace(/^\/+/, ''), base).href;
+    } catch (e) {
+      console.warn('[router] toRepoURL fallback', relPath, e);
+      return String(relPath).replace(/^\/+/, '');
+    }
   }
-  window.repoURL = repoURL;
-
-  async function safeFetchText(rel) {
-    var clean = String(rel).replace(/^\/+/, '');
-    var url = repoURL(clean);
+  async function fetchText(relPath) {
+    var url = toRepoURL(relPath);
     var r = await fetch(url, { cache: 'no-store' });
-    if (!r.ok) throw new Error('MD not found: ' + clean + ' (' + r.status + ')');
+    if (!r.ok) throw new Error('MD not found: ' + relPath + ' (' + r.status + ')');
     return r.text();
   }
-  window.safeFetchText = safeFetchText;
+  window.repoURL = toRepoURL;
+  window.fetchText = fetchText;
+  window.safeFetchText = fetchText;
 
   function updateFocused() {
     var items = listEl.querySelectorAll('.gl-item');
@@ -200,7 +204,7 @@
     if (slug === 'intro') { contentEl.innerHTML = ''; window.intro?.show(); return; }
     if (slug === 'bugs') {
       try {
-        var showHtml = await safeFetchText('reality_bugs_mindmap.html');
+        var showHtml = await fetchText('reality_bugs_mindmap.html');
         contentEl.innerHTML = showHtml;
         setTitle('Show');
       } catch (e) {
@@ -214,17 +218,17 @@
   async function renderCard(slug, anchor) {
     var glitches = await loadManifest();
     var item = glitches.find(function (g) { return g.slug === slug; });
-    var mdPath = item && item.paths && item.paths.card ? item.paths.card : ('content/glitches/' + slug + '.md');
+    var mdRel = item && item.paths && item.paths.card ? item.paths.card : null;
     contentEl.innerHTML = '<div class="card-wrap"><div class="md-body"></div></div>';
     var target = contentEl.querySelector('.md-body');
     if (!target) return;
     try {
-      var md = await safeFetchText(mdPath);
+      var md = await fetchText(mdRel || ('content/glitches/' + slug + '.md'));
       await window.renderMarkdown(md, target, { slug: slug, item: item, manifest: glitches });
     } catch (e) {
       console.warn(e);
       target.innerHTML = '<div class="callout warn">Карточка временно недоступна.' +
-        (item && item.paths && item.paths.scene ? ' Сцена: <a class="btn-link" href="#/scene/' + slug + '">открыть</a>' : '') +
+        (item && item.paths && item.paths.scene ? ' <a class="btn-link" href="#/scene/' + slug + '">Открыть сцену</a>' : '') +
         '</div>';
       return;
     }
@@ -289,7 +293,7 @@
     var root = document.getElementById('scene-root');
     if (item && item.paths && item.paths.scene) {
       try {
-        var html = await safeFetchText(item.paths.scene);
+        var html = await fetchText(item.paths.scene);
         html = html.replace(/<script[^>]*scene-frame.js[^>]*><\/script>/gi, '');
         var parser = new DOMParser();
         var doc = parser.parseFromString(html, 'text/html');
@@ -441,10 +445,10 @@
           var cached = localStorage.getItem(key);
           if (cached) return JSON.parse(cached);
         } catch (e) {}
-        var data = await fetch(repoURL('content/glitches.json'), { cache: 'no-store' }).then(function (r) { return r.json(); });
+        var data = await fetch(toRepoURL('content/glitches.json'), { cache: 'no-store' }).then(function (r) { return r.json(); });
         await Promise.all(data.map(async function (g) {
           try {
-            var txt = await safeFetchText(g.paths.card);
+            var txt = await fetchText(g.paths.card);
             var m = txt.match(/^---\s*([\s\S]*?)\n---/);
             if (m) {
               var tagsMatch = m[1].match(/tags:\s*\[(.*?)\]/);
@@ -621,7 +625,7 @@ async function handleRoute() {
       return;
     } else if (route === 'overview' || !route) {
       try {
-        var mdOverview = await safeFetchText('content/overview.md');
+        var mdOverview = await fetchText('content/overview.md');
         contentEl.innerHTML = '';
 
         var grid = document.createElement('div');
