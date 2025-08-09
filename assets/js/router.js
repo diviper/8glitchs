@@ -520,7 +520,7 @@ async function handleRoute() {
           target.innerHTML = '<div class="callout warn">Карточка не найдена. ' + sceneLink + '</div>';
           return;
         }
-        await window.renderMarkdown(md, target, { slug: slug, manifest: glitches });
+        await window.renderMarkdown(md, target, { slug: slug, title: item.title, manifest: glitches, item: item });
         try { window.widgets?.mountAll(target); } catch (e) {}
         target.querySelectorAll('.hero,.legacy,.series,.bug-series,.project-banner')
           .forEach(function (n) { n.remove(); });
@@ -617,7 +617,7 @@ async function handleRoute() {
           var fbMd = await fbResp.text();
           contentEl.innerHTML = '<div class="md-body"></div>';
           var fbTarget = contentEl.querySelector('.md-body');
-          await window.renderMarkdown(fbMd, fbTarget, { slug: slug, manifest: glitches });
+          await window.renderMarkdown(fbMd, fbTarget, { slug: slug, title: item && item.title, manifest: glitches, item: item });
         } catch (e) {
           console.warn(e.message);
           contentEl.innerHTML = '<div class="callout warn">Глитч не найден. <a href="#/overview">На обзор</a>.</div>';

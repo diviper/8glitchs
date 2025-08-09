@@ -48,3 +48,5 @@ status: draft
 - SEP: Bell’s Theorem — подробный разбор.
 - Эксперименты без лазеек (loophole-free).
 - Квантовая информация: вводные конспекты.
+
+<button class="btn" data-quest-done>Завершить сцену</button>

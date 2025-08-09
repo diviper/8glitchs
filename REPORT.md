@@ -6,6 +6,9 @@
 - Router now lazily loads the map and handles missing glitch cards with a warning callout and scene link.
 - Map loader tolerates offline mode, loading D3 only when visiting `#/map` and skipping network requests when offline.
 - Added data URL favicon to avoid 404s.
+- Quest wrapper adds intro scenes with riddles and progress tracking.
+- Manifest doctor script checks card paths and stubs missing markdown files.
+- Sidebar hover jitter fixed by reserving border height.
 
 ## Route matrix
 | Route | Status | Load time (s) |
@@ -32,6 +35,12 @@ Initial page loads core scripts only; D3 is fetched lazily in `#/map`.
 
 ## A11y
 Home button always available; intro controls keyboard‑accessible; `M` toggles mute.
+
+## Quest stats
+Opened: 0 / 35, Done: 0 / 35.
+
+## Anti-jitter
+Sidebar items reserve a transparent border to avoid height jump on hover.
 
 ## Next steps
 1. Add more comprehensive unit tests for router behaviors.

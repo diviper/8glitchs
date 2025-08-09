@@ -34,8 +34,22 @@
     await ready;
     var html = marked.parse(stripFrontMatter(markdown));
     var safe = DOMPurify.sanitize(html, { ADD_ATTR: ['target', 'rel'] });
-    container.innerHTML = safe;
     if (opts && opts.slug) { container.dataset.slug = opts.slug; }
+    var cardHTML = safe;
+    try {
+      if (window.quest && opts && opts.slug && opts.title) {
+        window.quest.mount(container, cardHTML, {
+          slug: opts.slug,
+          title: opts.title,
+          intro: opts && opts.item && opts.item.quest ? opts.item.quest.intro : undefined,
+          riddleAnswer: opts && opts.item && opts.item.quest ? opts.item.quest.answer : undefined
+        });
+      } else {
+        container.innerHTML = cardHTML;
+      }
+    } catch (e) {
+      container.innerHTML = cardHTML;
+    }
     try { if (window.quiz && window.quiz.mountAll) window.quiz.mountAll(container); } catch (e) {}
     try { if (window.widgets && window.widgets.mountAll) window.widgets.mountAll(container); } catch (e) {}
     window.currentMarkdownContainer = container;
