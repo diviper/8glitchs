@@ -1,83 +1,44 @@
 Project Agent Guide — Glitch Registry (Парадоксы реальности)
-Внутренний регламент для меня и бота. Внешние контрибьюторы отключены.
-Бренд: Glitch Registry — подзаголовок Парадоксы реальности.
+Внутренний регламент. Внешние контрибьюторы отключены.
+Бренд: Glitch Registry — Парадоксы реальности.
 
-Миссия
-Курируемый архив парадоксов (квант, космос, логика, информация).
-Карточки (Markdown) + мини-сцены (HTML) + микро-виджеты (чистый JS).
-Точность важнее хайпа. Никаких социальных кнопок.
+1) Директории и нейминг
 
-Архитектура
-Статический сайт: index.html + assets/ + content/ + scenes/.
+/assets/js/      router.js, md.js, scene-frame.js, widgets.js, progress.js,
+                 intro.js, map.js, theme.js, paths.js, (опц.) night-mode.js, screen-shader.js
+/assets/css/     styles.css (или styles.css в корне)
+/content/        glitches.json, glitches/*.md, overview.md
+/scenes/         glitch-<slug>.html
+/legacy/         старые страницы (не используются)
+/404.html        SPA-редирект
+/index.html      хаб
+slug — латиница, нижний регистр, дефисы.
 
-Маршруты (hash):
+Карточка: content/glitches/<slug>.md
 
-#/overview — обзор (content/overview.md).
+Сцена: scenes/glitch-<slug>.html
 
-#/glitch/<slug> — карточка (content/glitches/<slug>.md, путь из манифеста).
+2) Роуты (hash)
+#/overview — обзор (content/overview.md)
 
-#/scene/<slug> — сцена (scenes/glitch-<slug>.html, из манифеста).
+#/glitch/<slug> — карточка (путь берём из манифеста)
 
-#/map — mind-map; D3 подгружается лениво.
+#/scene/<slug> — сцена (путь из манифеста)
 
-#/show/intro — полноэкранное интро (канвас + тихий WebAudio).
+#/map — mind-map (D3 лениво)
 
-Манифест: content/glitches.json — единственный источник истины для путей/категорий/тегов/статуса.
+#/show/intro — полноэкранное интро
 
-Ключевые скрипты:
-
-assets/js/router.js — парсинг hash, handleRoute() с единым try/catch, безопасные ветки overview|glitch|scene|map|show.
-
-assets/js/md.js — загрузка markdown (marked@pin + DOMPurify), widgets.mountAll(target) после рендера.
-
-assets/js/widgets.js — мини-демо: landauer|goodhart|zeno|arrow|chsh|twoslit.
-
-assets/js/intro.js — интро-оверлей (канвас-анимация, gain ≈ 0.05, mute M, window.intro.show/hide/mute).
-
-assets/js/progress.js — markDone/isDone/getProgress() (localStorage).
-
-assets/js/theme.js — бренд-токены (название, цвета категорий, хэлперы).
-
-assets/js/map.js — визуализация карты (фолбэк-список, если D3 нет).
-
-scripts/doctor-manifest.mjs — валидация/починка манифеста (--write, --stubs).
-
-Без коллизий имён: screen-shader.js и night-mode.js обёрнуты в IIFE и экспортируют initScreenShader/initNightMode. Инициализация один раз на DOMContentLoaded.
-
-Контент-модель (карточки)
-Файл: content/glitches/<slug>.md
-Перед телом — YAML:
+SPA-404 для GitHub Pages (обязательно):
 
 
-id: glitch-<slug>
-title: Заголовок
-category: Квант | Время | Космос | Информация | Логика | Идентичность | Наблюдатель
-tags: [тег_1, тег_2]
-status: draft | published
-Обязательные секции (H3):
-
-### TL;DR — 1–3 предложения.
-
-### Научная опора — что это и на каких работах/экспериментах стоит.
-
-### Парадокс — где ломается интуиция.
-
-### Дневник Дивайпера — заметка автора.
-
-### Юнг — 1–3 строки про архетип/психику.
-
-### Сенека — 1–3 строки «что в нашей власти».
-
-### Рик — ироничная ремарка.
-
-### Сцена/механика — как устроена интерактивная демонстрация.
-
-### Ссылки — 3–7 источников с короткими пояснениями.
-
-Правила копирайта: без сенсационщины; никаких «Faster-than-light». Внешние ссылки — rel="noopener noreferrer"; markdown чистится.
-
-Манифест
-Файл: content/glitches.json — массив объектов:
+<!doctype html><meta charset="utf-8">
+<script>
+  var base = location.pathname.split('/')[1]; // "8glitchs"
+  location.replace('/'+base+'/#/overview'+location.search);
+</script>
+3) Манифест (content/glitches.json)
+Схема:
 
 
 {
@@ -85,96 +46,240 @@ status: draft | published
   "title": "Суперпозиция",
   "category": "Квант",
   "tags": ["интерференция"],
-  "status": "sceneExists",           // or "cardOnly"
+  "status": "sceneExists",               // или "cardOnly"
   "paths": {
     "card": "content/glitches/quantum-superposition.md",
     "scene": "scenes/glitch-quantum-superposition.html"
   },
-  "quest": { "intro": "…", "riddle": "…", "answer": "…" }  // опционально
+  "quest": { "intro": "...", "riddle": "...", "answer": "..." } // опц.
 }
 Требования:
 
-Все заявленные slug уникальны и соответствуют файлам.
+Уникальные slug.
 
-paths.card/scene указывают на существующие файлы; иначе показываем callout.warn + “Открыть сцену”.
+paths.card/scene указывают на существующие файлы (или показываем callout.warn).
 
-Для сцен — status: "sceneExists".
+Категории (жёсткий список):
+Квант, Время, Космос, Информация, Логика, Идентичность.
+(Антропный принцип закреплён за Космос.)
 
-Роутинг (обязательные инварианты)
-handleRoute() — полный if/else if/else + один общий catch; без “dangling else”.
+4) Контент-модель .md (обязательно)
+Фронт-маттер YAML (в начале файла):
 
-Markdown грузим по пути из манифеста; фолбэк на content/glitches/<slug>.md — только если в манифесте нет paths.card.
 
-На ошибке загрузки — аккуратный .callout.warn (без пустых панелей).
+id: glitch-<slug>
+title: <Заголовок>
+category: <Квант|Время|Космос|Информация|Логика|Идентичность>
+tags: [тег1, тег2]
+status: draft | published
+Секции (H3):
 
-#/map:
+### TL;DR
 
-если !window.d3 → loadScript('https://cdn.jsdelivr.net/npm/d3-force@3/dist/d3-force.min.js');
+### Научная опора
 
-если !window.renderMindMap → loadScript('assets/js/map.js');
+### Парадокс
 
-офлайн-фолбэк: список категорий без ошибок.
+### Дневник Дивайпера
 
-Интро управляет стартовым потоком (#/show/intro), кнопка “Главная” всегда вызывает intro.show().
+### Юнг
 
-Доступность и UX
-Клавиатурная навигация в сайдбаре: role="listbox" / элементы role="option" + aria-selected.
+### Сенека
 
-Видимые :focus-visible.
+### Рик
 
-Нет кнопок Share (удалены и из сцен, и из карточек).
+### Сцена/механика
 
-Ховеры без “прыжков” — фиксированные высоты/паддинги, анимации только opacity/transform.
+### Ссылки
 
-Безопасность/перф
-marked@12.0.2 (pin); DOMPurify для HTML; внешние ссылки с rel=noopener.
+Безопасность markdown:
 
-Скрипты карты и тяжёлые вещи — лениво.
+marked@12.0.2 (pin) + DOMPurify.
 
-Без изображений/бинарников в интро/виджетах.
+Внешние ссылки: rel="noopener noreferrer".
 
-Скрипты и проверки
-Локальные проверки:
+Запрещено: <script> в .md, загрузка .md через <script>.
+
+5) Базовые утилиты путей (repo-aware, обязательно)
+assets/js/paths.js предоставляет единственную точку построения URL:
+
+
+(() => {
+  const base = (function() {
+    // базовая папка репозитория, например "/8glitchs/"
+    const seg = location.pathname.split('/')[1] || '';
+    return '/' + seg + '/';
+  })();
+
+  function toRepoURL(p) {
+    if (!p) throw new Error('toRepoURL: empty path');
+    const clean = String(p).replace(/^\/+/, '');
+    return new URL(base + clean, location.origin).toString();
+  }
+
+  async function fetchText(p, init) {
+    const url = toRepoURL(p);
+    const res = await fetch(url, init);
+    if (!res.ok) throw new Error(`fetchText ${p} ${res.status}`);
+    return res.text();
+  }
+
+  async function loadScript(url) {
+    return new Promise((ok, err) => {
+      const s = document.createElement('script');
+      s.src = url; s.async = true;
+      s.onload = ok; s.onerror = () => err(new Error('script load: '+url));
+      document.head.appendChild(s);
+    });
+  }
+
+  let _manifest;
+  async function getManifest() {
+    if (_manifest) return _manifest;
+    const txt = await fetchText('content/glitches.json');
+    _manifest = JSON.parse(txt);
+    return _manifest;
+  }
+  async function getManifestItem(slug) {
+    const list = await getManifest();
+    return list.find(x => x.slug === slug) || null;
+  }
+
+  window.repoPaths = { base, toRepoURL, fetchText, loadScript, getManifest, getManifestItem };
+})();
+Правило: никакого new URL(...) и конкатенаций путей — только через repoPaths.
+
+6) Роутер (assets/js/router.js)
+parseHash() → { route, slug }.
+
+handleRoute() — единый try/catch. Полные ветки:
+
+overview → рендер markdown content/overview.md.
+
+glitch/<slug> → путь только из манифеста (item.paths.card);
+если нет файла — показываем .callout.warn + кнопку «Открыть сцену» при наличии paths.scene.
+
+scene/<slug> → загружаем scene-frame + item.paths.scene.
+
+map → лениво грузит D3, фолбэк без ошибок.
+
+show/intro → window.intro.show().
+
+Проверка синтаксиса: node --check assets/js/router.js
+
+7) Markdown рендер (assets/js/md.js)
+Загружает текст через repoPaths.fetchText.
+
+Парсинг через marked@12.0.2, очистка DOMPurify.
+
+После вставки HTML вызывает widgets.mountAll(container).
+Любая ошибка виджета — молчаливо пропускается.
+
+8) Сцены (assets/js/scene-frame.js)
+Единый фрейм: full-bleed фон (canvas) + контейнер .scene-content.
+
+Кнопок Share нет.
+
+Никаких фикс-высот, вёрстка тянется на весь вьюпорт.
+
+9) Карта (assets/js/map.js)
+В роутере #/map:
+
+
+if (!window.d3) await repoPaths.loadScript('https://cdn.jsdelivr.net/npm/d3-force@3/dist/d3-force.min.js');
+if (!window.renderMindMap) await repoPaths.loadScript('assets/js/map.js');
+window.renderMindMap?.();
+Офлайн/ошибка — показываем список категорий, без ошибок в консоли.
+
+10) Интро-аудио (assets/js/intro.js)
+Экспорт:
+
+
+window.intro = { show(), hide(), mute(on) };
+Один AudioContext, старт только после жеста (клик «Войти»).
+
+Стартовый gain ≈ 0.05, верхняя граница ≤ 0.2.
+
+На hide() — плавное затухание, контекст не закрываем.
+
+Горячая клавиша M — mute/unmute.
+
+Настройки (localStorage): gr:intro:skip, gr:intro:muted, gr:intro:lastSeen (TTL 7 дней).
+
+11) Прогресс (assets/js/progress.js)
+API: markDone(slug), isDone(slug), getProgress().
+
+Запрещено массово фетчить все .md ради прогресса. Источник — localStorage.
+
+Любые данные карточки, если нужны, подгружаются лениво по manifest.paths.card.
+
+12) Виджеты (assets/js/widgets.js)
+Мини-демо: landauer, goodhart, zeno, arrow, chsh, twoslit.
+
+widgets.mountAll(root) безопасно игнорирует пустые контейнеры/ошибки.
+
+13) Тема (assets/js/theme.js)
+Бренд-имена, цвета категорий, хэлперы для чипов и шапок.
+
+Карточки и сцены используют единый заголовок (title + category chip + tags).
+
+Никаких Share-кнопок.
+
+14) Безопасность/перф
+marked@12.0.2 (pin), DOMPurify, внешние ссылки — rel="noopener noreferrer".
+
+D3 грузится только на #/map.
+
+Favicon — data:, чтобы не было 404.
+
+night-mode.js, screen-shader.js — IIFE + экспорт initNightMode/initScreenShader, инициализация в DOMContentLoaded один раз.
+
+15) Скрипты и проверки (обязательно)
 
 node --check assets/js/router.js
+node --check assets/js/scene-frame.js
 
 npm run lint:md
-
 npm run lint:html
-
 npm run check:manifest
+npm run doctor:manifest -- --write --stubs
+npm run audit:routes       # генерит REPORT.routes.md
+npm test                   # (когда появятся тесты)
+16) Аудит маршрутов (scripts/audit-routes.mjs)
+Проверяет:
 
-npm run doctor:manifest (--write, --stubs при необходимости)
+Уникальные slug, валидные категории.
 
-(опц.) npm run doctor:dead — отчёт по неиспользуемым ассетам; npm run prune:dead — интерактивное удаление.
+Наличие paths.card/scene и существование файлов.
 
-DoD для любых задач
+В .md — YAML с id,title,category,tags,status и все обязательные секции.
+Выводит: REPORT.routes.md (матрица маршрутов + список проблем).
+
+17) DoD (Definition of Done)
 Карточки/сцены открываются без 404.
 
-“Главная” открывает интро; звук тихий (gain ≈ 0.05), M — mute; при входе звук плавно гасится.
+#/map грузит D3 только при заходе, офлайн-фолбэк работает.
 
-#/map грузит D3 только при заходе; офлайн-фолбэк без ошибок.
+Интро: тихий звук, M — mute, затухание на выходе, нет InvalidStateError.
 
-В консоли нет already been declared, Missing catch or finally, Unexpected token else.
+В консоли нет: Invalid base URL, already been declared, Missing catch..., Unexpected token else.
 
-Виджеты монтируются после рендера markdown; ошибки виджетов не ломают страницу.
+Markdown рендерится, виджеты монтируются, ошибки виджетов не ломают страницу.
 
-Бренд/цвета категорий — через theme.js; шапки карточек и сцен визуально ровные.
+Единый заголовок для карточек/сцен, чипы категорий/тегов из theme.js.
 
-Нет кнопок Share и связанных обработчиков.
+Share-UI отсутствует.
 
-Типовые поломки → быстрые фиксы
-“Карточка не найдена”: проверь glitches.json → paths.card, запусти npm run doctor:manifest -- --write --stubs.
+REPORT.routes.md собран, проблем — 0.
 
-Чёрная половина сцены / пустой фон: проверь, что сцена встраивается через единый scene-frame, фон рендерится на canvas, контейнер full-bleed; без фикс-высот.
+18) Типовые поломки → быстрые фиксы
+404 по карточке: проверь glitches.json → paths.card, запусти
+npm run doctor:manifest -- --write --stubs.
 
-Jitter в сайдбаре: у кнопок чипов фикс-высоты/паддинги, hover только на opacity/transform.
+Invalid base URL / 404 при fetch: любой путь перевести на repoPaths.toRepoURL / fetchText.
 
-Интро орёт / не мьютится: стартовый gain=0.05, window.intro.mute(true), обработчик keydown (M), при hide — setTargetAtTime(0, t, 0.05) и/или audioCtx.close().
+Черная половина сцены: сцена должна встраиваться через scene-frame (full-bleed, canvas-фон).
 
-Нота бене
-Внешние PR/issue выключены по смыслу проекта.
+Jitter в сайдбаре: фикс-паддинги/высоты, анимации только opacity/transform.
 
-SPA-404 для GitHub Pages присутствует; прямые ссылки вида #/glitch/* и #/scene/* работают после перезагрузки.
-
-Favicon — data-URL, чтобы не ловить 404.
+Интро аудио орёт/ломается: один контекст, старт после жеста, gain=0.05, на hide — плавный fade, контекст не закрывать.
