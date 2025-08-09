@@ -10,7 +10,7 @@
   }
 
   var ready = Promise.all([
-    loadScript('https://cdn.jsdelivr.net/npm/marked/marked.min.js'),
+    loadScript('https://cdn.jsdelivr.net/npm/marked@12.0.2/marked.min.js'),
     loadScript('https://cdn.jsdelivr.net/npm/dompurify@3.0.3/dist/purify.min.js')
   ]);
 
