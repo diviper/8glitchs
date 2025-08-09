@@ -18,7 +18,24 @@
     'Наблюдатель': '#b0ffc6'
   };
 
+  window.renderMindMapFallback = async function(){
+    const container = document.getElementById('content');
+    if (!container) return;
+    container.innerHTML = '';
+    let manifest = [];
+    try { manifest = await fetch('content/glitches.json').then(r => r.json()); } catch(e){}
+    const cats = Array.from(new Set(manifest.map(g => g.category)));
+    let html = '<ul>';
+    cats.forEach(c => {
+      const slug = catSlugMap[c] || '';
+      html += '<li><a href="#/overview?cat=' + slug + '">' + c + '</a></li>';
+    });
+    html += '</ul>';
+    container.innerHTML = html;
+  };
+
   window.renderMindMap = async function () {
+    if (!window.d3 || !window.d3.forceSimulation) return window.renderMindMapFallback();
     const container = document.getElementById('content');
     if (!container) return;
     container.innerHTML = '';
@@ -27,18 +44,6 @@
     try {
       manifest = await fetch('content/glitches.json').then(r => r.json());
     } catch (e) {}
-
-    if (!window.d3 || !window.d3.forceSimulation) {
-      const cats = Array.from(new Set(manifest.map(g => g.category)));
-      let html = '<ul>';
-      cats.forEach(c => {
-        const slug = catSlugMap[c] || '';
-        html += '<li><a href="#/overview?cat=' + slug + '">' + c + '</a></li>';
-      });
-      html += '</ul>';
-      container.innerHTML = html;
-      return;
-    }
 
     const toolbar = document.createElement('div');
     toolbar.className = 'map-toolbar';

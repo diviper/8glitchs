@@ -41,7 +41,7 @@
     }
     const now = ctx.currentTime;
     env.gain.cancelScheduledValues(now);
-    env.gain.linearRampToValueAtTime(0.03, now + 0.8);
+    env.gain.linearRampToValueAtTime(0.05, now + 0.8);
   }
 
   function stopAudio() {

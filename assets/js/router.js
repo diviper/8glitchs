@@ -34,17 +34,17 @@
     });
   }
 
-  function basePath() {
-    var repo = location.pathname.split('/')[1];
-    return repo ? '/' + repo + '/' : '/';
+  function repoBase() {
+    var seg = location.pathname.split('/').filter(Boolean)[0];
+    return seg ? '/' + seg + '/' : '/';
   }
 
-  function toUrl(p) {
-    return new URL(p, basePath()).href;
+  function buildUrl(rel) {
+    return rel.startsWith('http') ? rel : repoBase() + rel.replace(/^\/+/, '');
   }
 
   async function fetchText(p) {
-    var r = await fetch(toUrl(p), { cache: 'no-cache' });
+    var r = await fetch(buildUrl(p), { cache: 'no-cache' });
     if (!r.ok) throw new Error('load fail ' + p + ' (' + r.status + ')');
     return r.text();
   }
@@ -133,7 +133,7 @@
 
   function setTitle(pageTitle) {
     var t = window.theme || window.THEME;
-    var base = (t && t.brand && t.brand.short) || 'Glitch Registry';
+    var base = (t && (t.brandShort || (t.brand && t.brand.short))) || 'Glitch Registry';
     document.title = pageTitle ? base + ' — ' + pageTitle : base;
   }
 
@@ -185,17 +185,9 @@
   }
 
   async function renderMapRoute(){
-    try{
-      if(!window.d3){
-        try { await loadScript('https://cdn.jsdelivr.net/npm/d3-force@3/dist/d3-force.min.js'); }
-        catch { await loadScript('https://unpkg.com/d3-force@3/dist/d3-force.min.js'); }
-      }
-      if(!window.renderMindMap) await loadScript('assets/js/map.js');
-      window.renderMindMap?.();
-    }catch(e){
-      (document.querySelector('.md-body')||contentEl).innerHTML =
-        '<div class="callout warn">Карта недоступна (' + (e.message||'сеть') + '). Попробуйте позже.</div>';
-    }
+    if (!window.d3) await loadScript('https://cdn.jsdelivr.net/npm/d3-force@3/dist/d3-force.min.js').catch(function(){});
+    if (!window.renderMindMap) await loadScript('assets/js/map.js').catch(function(){});
+    (window.renderMindMap || window.renderMindMapFallback)?.();
   }
 
   async function renderShow(slug) {
@@ -221,16 +213,18 @@
     var target = contentEl.querySelector('.md-body');
     if (!target) return;
     try {
-      var md = await fetchText(mdPath);
+      var mdUrl = buildUrl(mdPath);
+      var res = await fetch(mdUrl);
+      if (!res.ok) throw new Error('MD not found: ' + mdUrl + ' (' + res.status + ')');
+      var md = await res.text();
       await window.renderMarkdown(md, target, { slug: slug, item: item, manifest: glitches });
     } catch (e) {
       console.warn(e);
       target.innerHTML = '<div class="callout warn">Карточка временно недоступна.' +
-        (item && item.paths && item.paths.scene ? ' <a class="btn-link" href="#/scene/' + slug + '">открыть сцену</a>' : '') +
+        (item && item.paths && item.paths.scene ? ' Сцена: <a class="btn-link" href="#/scene/' + slug + '">открыть</a>' : '') +
         '</div>';
       return;
     }
-    try { window.widgets?.mountAll(target); } catch (e) { console.warn('[widgets]', e); }
     setActive(slug);
     var headings = target.querySelectorAll('h3');
     if (headings.length >= 2) {
@@ -444,7 +438,7 @@
           var cached = localStorage.getItem(key);
           if (cached) return JSON.parse(cached);
         } catch (e) {}
-        var data = await fetch(toUrl('content/glitches.json'), { cache: 'no-store' }).then(function (r) { return r.json(); });
+        var data = await fetch(buildUrl('content/glitches.json'), { cache: 'no-store' }).then(function (r) { return r.json(); });
         await Promise.all(data.map(async function (g) {
           try {
             var txt = await fetchText(g.paths.card);

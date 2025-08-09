@@ -1,24 +1,18 @@
-// Brand and color helpers
-window.theme = (function(){
-  const brand = {
-    name: 'Парадоксы реальности',
-    short: 'Glitch Registry'
-  };
-  const categories = {
-    'Квант': '#7cf3ff',
-    'Время': '#c7f36b',
-    'Космос': '#ffa96b',
-    'Информация': '#b58cff',
-    'Логика': '#ff6bd5',
-    'Идентичность': '#7bd3ff'
-  };
-  function categoryColor(id){
-    return categories[id] || '#9aa4b2';
+// Brand tokens
+window.theme = {
+  brandShort: 'Glitch Registry',
+  brandTagline: 'Парадоксы реальности',
+  colors: {
+    'Квант': '#41e0d0',
+    'Время': '#b792ff',
+    'Космос': '#59a6ff',
+    'Информация': '#ffb84d',
+    'Логика': '#ff6ea8',
+    'Идентичность': '#7bdc7b',
+    'Наблюдатель': '#56d3ff'
+  },
+  catColor: function (cat) {
+    return this.colors[cat] || '#aaa';
   }
-  function token(name){
-    const css = name.replace(/([A-Z])/g,'-$1').toLowerCase();
-    return getComputedStyle(document.documentElement).getPropertyValue('--' + css).trim();
-  }
-  return { brand, categoryColor, token };
-})();
+};
 window.THEME = window.theme; // backward compatibility
