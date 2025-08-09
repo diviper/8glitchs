@@ -5,7 +5,8 @@ const manifest = JSON.parse(fs.readFileSync('content/glitches.json','utf8'));
 const reqSections = ['TL;DR','Научная опора','Парадокс','Дневник Дивайпера','Юнг','Сенека','Рик','Сцена/механика','Ссылки'];
 
 function hasAllSections(md){
-  return reqSections.every(h => new RegExp(`^###\\s*${h}\\b`, 'm').test(md));
+  // Word boundary (\b) fails for Cyrillic; match heading followed by whitespace or EOL instead.
+  return reqSections.every(h => new RegExp(`^###\\s*${h}(?:\\s|$)`, 'm').test(md));
 }
 
 const rows = [];
