@@ -4,7 +4,9 @@
   };
   const ctx = new (window.AudioContext || window.webkitAudioContext)();
   const master = ctx.createGain();
-  master.gain.value = 0.12;
+  const VOL_DEFAULT = 0.05;
+  const VOL_MAX = 0.2;
+  master.gain.value = VOL_DEFAULT;
   master.connect(ctx.destination);
 
   const noiseBuf = ctx.createBuffer(1, ctx.sampleRate * 2, ctx.sampleRate);
@@ -47,8 +49,7 @@
     const now = ctx.currentTime;
     env.gain.cancelScheduledValues(now);
     env.gain.linearRampToValueAtTime(0.0, now + 0.2);
-    master.gain.linearRampToValueAtTime(0.0, now + 0.25);
-    ctx.suspend().catch(() => {});
+    master.gain.setTargetAtTime(0, now, 0.05);
   }
 
   function setMuted(m, silent) {
@@ -58,7 +59,7 @@
     } else {
       if (!silent) startAudioOnGesture();
       else if (ctx.state !== 'running') ctx.resume();
-      master.gain.value = 0.12;
+      master.gain.value = Math.min(VOL_MAX, Math.max(0, VOL_DEFAULT));
     }
   }
 
@@ -112,7 +113,13 @@
     });
   }
 
-  function show(force = false) {
+  function showIntro() {
+    document.getElementById('intro')?.classList.remove('hidden');
+    requestAnimationFrame(draw);
+    requestIdleCallback?.(prefetch);
+  }
+
+  function maybeShow(force = false) {
     const seen = +localStorage.getItem(LS.k.seen) || 0;
     const skip = localStorage.getItem(LS.k.skip) === '1';
     const week = 7 * 24 * 3600 * 1000;
@@ -120,16 +127,18 @@
       location.hash = location.hash || '#/overview';
       return;
     }
-    document.getElementById('intro')?.removeAttribute('hidden');
-    requestAnimationFrame(draw);
-    requestIdleCallback?.(prefetch);
+    showIntro();
+  }
+
+  function hide() {
+    cancelAnimationFrame(rafId);
+    stopAudio();
+    document.getElementById('intro')?.classList.add('hidden');
   }
 
   function hideToHub() {
     localStorage.setItem(LS.k.seen, Date.now().toString());
-    cancelAnimationFrame(rafId);
-    stopAudio();
-    document.getElementById('intro')?.setAttribute('hidden', '');
+    hide();
     location.hash = '#/overview';
   }
 
@@ -146,7 +155,7 @@
     });
 
     document.addEventListener('keydown', e => {
-      if (e.key === 'Enter' && !introEl.hasAttribute('hidden')) hideToHub();
+      if (e.key === 'Enter' && !introEl.classList.contains('hidden')) hideToHub();
     });
 
     canvas?.addEventListener('click', e => {
@@ -176,7 +185,7 @@
       applyMuteUI(mute);
     }
     mute?.addEventListener('click', toggleMute);
-    document.addEventListener('keydown', e => {
+    window.addEventListener('keydown', e => {
       if (e.key.toLowerCase() === 'm') toggleMute();
     });
 
@@ -185,11 +194,15 @@
     if (always && localStorage.getItem(LS.k.skip) === '1') always.checked = true;
   }
 
-  window.intro = { show, hideToHub };
+  window.intro = {
+    show: showIntro,
+    hide,
+    mute: setMuted
+  };
   window.addEventListener('DOMContentLoaded', () => {
     bind();
     const url = new URL(location.href);
-    if (url.searchParams.get('skip') === '0') show(true); else show(false);
+    if (url.searchParams.get('skip') === '0') maybeShow(true); else maybeShow(false);
   });
 })();
 
