@@ -935,11 +935,11 @@ input, select {
 .map-toolbar{display:flex;gap:8px;align-items:center;margin:8px 0 12px}
 .map-tip{position:fixed;pointer-events:none;padding:8px 10px;border-radius:8px;border:1px solid rgba(255,255,255,.15);background:rgba(0,0,0,.8)}
 
-#intro{position:fixed;inset:0;z-index:9999;display:grid;place-items:center;background:#000}
+#intro{position:fixed;inset:0;z-index:9999;display:grid;place-items:center;background:#000;overflow:hidden}
 #intro[hidden]{display:none}
 #intro-canvas{position:absolute;inset:0;width:100%;height:100%}
 .intro-ui{position:relative;text-align:center;padding:24px 28px}
 .intro-ui h1{margin:0 0 8px}
-.intro-controls{position:fixed;top:12px;right:12px;display:flex;gap:8px;align-items:center}
-.intro-controls .btn{padding:6px 10px}
-@media (prefers-reduced-motion: reduce){ #intro-canvas{display:none} }
+#intro-mute{position:fixed;top:12px;right:12px;padding:6px 10px}
+#intro button:focus-visible,#intro label:focus-within{outline:2px solid #fff;outline-offset:2px}
+@media (prefers-reduced-motion: reduce){ #intro-canvas{opacity:.4} }
