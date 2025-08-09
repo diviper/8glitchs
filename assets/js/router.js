@@ -543,22 +543,8 @@
           if (typeof window.setLastVisited === 'function') {
             window.setLastVisited({ type: 'glitch', slug: slug });
           }
-        } else {
-          contentEl.innerHTML = '<div class="callout warn">Глитч не найден. <a href="#/overview">На обзор</a>.</div>';
-        }
-      } else {
-        contentEl.innerHTML = '<div class="callout warn">Глитч не найден. <a href="#/overview">На обзор</a>.</div>';
-      }
-    } else if (parts[0] === 'map') {
-      document.title = 'Glitch Registry — Карта';
-      if (window.renderMap) {
-        await window.renderMap(contentEl, glitches);
-      } else {
-        contentEl.innerHTML = '<div class="empty">Карта недоступна</div>';
-      }
-      highlightActive(null);
-      return;
-    } else if (parts[0] === 'scene' && slug) {
+          }
+        } else if (parts[0] === 'scene' && slug) {
       var itemScene = glitches.find(function (g) { return g.slug === slug; });
       if (itemScene) {
         document.title = 'Glitch Registry — ' + itemScene.title;
@@ -730,6 +716,15 @@
         document.title = 'Glitch Registry — Обзор';
       } catch (e) {
         contentEl.innerHTML = '<div class="empty">Не нашлось</div>';
+      }
+      highlightActive(null);
+      return;
+    } else if (parts[0] === 'map') {
+      document.title = 'Glitch Registry — Карта';
+      if (window.renderMap) {
+        await window.renderMap(contentEl, glitches);
+      } else {
+        contentEl.innerHTML = '<div class="empty">Карта недоступна</div>';
       }
       highlightActive(null);
       return;
