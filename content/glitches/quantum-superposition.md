@@ -42,3 +42,5 @@ status: draft
 ### Ссылки
 - Двойная щель: простое объяснение интерференции.
 - Decoherence: почему «магии» меньше, чем кажется.
+
+<button class="btn" data-quest-done>Завершить сцену</button>

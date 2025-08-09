@@ -6,6 +6,8 @@ tags: [отбор наблюдателя, селекция]
 status: draft
 ---
 
+<!-- markdownlint-disable MD033 -->
+
 ### TL;DR
 Мы наблюдаем Вселенную, допускающую наше появление; удивление в том, что параметры именно таковы.
 
@@ -42,3 +44,5 @@ status: draft
 - Brandon Carter. *Large Number Coincidences and the Anthropic Principle* — исходный доклад.
 - Barrow & Tipler. *The Anthropic Cosmological Principle* — обзор вариантов и критики.
 - Статья на arXiv: "Anthropic arguments in cosmology".
+
+<button class="btn" data-quest-done>Завершить сцену</button>

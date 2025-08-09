@@ -810,6 +810,8 @@ input, select {
 .gl-item { display:flex; align-items:center; gap:8px; padding:6px 8px; border-radius:8px; text-decoration:none; }
 .gl-item:hover { background:rgba(255,255,255,.05); }
 .gl-item.active, .gl-item.focused { background:rgba(255,255,255,.08); border-radius:8px; }
+.sidebar .gl-item { border:1px solid transparent; min-height:28px; }
+.sidebar .gl-item:hover { border-color: rgba(255,255,255,.18); }
 .sidebar .gl-item.active{ background:rgba(255,255,255,.08); }
 .gl-item .check { margin-left:auto; opacity:.85; }
 .gl-item .check.quiz-done { color:#41ff9a; }
@@ -869,6 +871,34 @@ input, select {
 .toast { position:fixed; bottom:20px; right:20px; background:rgba(0,0,0,.8); padding:8px 14px; border-radius:8px; opacity:0; transition:opacity .3s; z-index:9999; display:flex; align-items:center; gap:8px; pointer-events:none; }
 .toast.show { opacity:1; }
 .toast button { pointer-events:auto; background:none; border:none; color:#fff; cursor:pointer; }
+/* плавающий тост внутри сцены */
+.toast.floating { position:absolute; bottom:12px; right:12px; z-index:5; }
+
+/* сцена */
+.quest-scene { position:relative; border-radius:12px; overflow:hidden; }
+.quest-scene .scene-bg {
+  position:absolute; inset:0;
+  background:
+    radial-gradient(1200px 600px at 80% 10%, rgba(0,255,255,.15), transparent 60%),
+    radial-gradient(800px 400px at 20% 90%, rgba(255,0,200,.12), transparent 60%),
+    linear-gradient(135deg, rgba(10,10,18,1), rgba(8,12,24,1));
+  filter: saturate(1.1);
+  animation: bg-pan 18s linear infinite;
+}
+@keyframes bg-pan { to { background-position: 120% 0, -20% 100%, 0 0; } }
+@media (prefers-reduced-motion: reduce) {
+  .quest-scene .scene-bg { animation: none; }
+}
+.quest-scene .scene-layer {
+  position:relative; padding:16px; backdrop-filter: blur(6px);
+  background: linear-gradient(180deg, rgba(0,0,0,.35), rgba(0,0,0,.15));
+  transition: opacity .3s ease;
+}
+.quest-scene .scene-layer.fade-out { opacity:0; }
+.quest-scene .scene-title { margin:0 0 6px; letter-spacing:.5px; }
+.quest-scene .scene-intro { opacity:.9; margin:0 0 10px; }
+.quest-scene .scene-riddle { display:flex; gap:8px; flex-wrap:wrap; align-items:center; }
+.quest-scene .scene-content.hidden { display:none; }
 
 .callout { border:1px solid rgba(255,255,255,.12); border-radius:12px; padding:16px 18px; margin:16px 0; background:rgba(255,255,255,.03); }
 .callout.warn{

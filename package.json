@@ -8,6 +8,7 @@
     "lint:html": "htmlhint \"**/*.html\"",
     "lint:md": "markdownlint '**/*.md' --ignore node_modules --ignore legacy",
     "check:manifest": "node scripts/check-manifest.mjs",
+    "doctor:manifest": "node scripts/manifest-doctor.mjs",
     "check:cards": "node scripts/check-cards.mjs",
     "check:links": "node scripts/check-links.mjs"
   },
