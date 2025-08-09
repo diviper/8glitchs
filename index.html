@@ -14,14 +14,10 @@
   <div class="intro-ui">
     <h1>Glitch Registry</h1>
     <p>Подёргай реальность. Сначала красиво — потом глубоко.</p>
-    <button id="intro-enter" class="btn">Войти в реестр</button>
+    <label><input id="intro-always-skip" type="checkbox"> Пропускать всегда</label>
+    <button id="intro-enter" class="btn" aria-label="Войти в реестр">Войти в реестр</button>
   </div>
-
-  <div class="intro-controls">
-    <label><input id="intro-always-skip" type="checkbox"> Всегда пропускать</label>
-    <button id="intro-mute" class="btn" data-muted>Mute</button>
-    <button id="intro-skip" class="btn">Skip intro</button>
-  </div>
+  <button id="intro-mute" class="btn" aria-label="Звук вкл/выкл" data-muted>🔊</button>
 </div>
 <nav>
   <button id="sidebar-toggle" type="button" aria-controls="sidebar">≡ Список</button>
@@ -58,7 +54,7 @@
 <script src="assets/js/screen-shader.js"></script>
 <script src="assets/js/night-mode.js"></script>
 <script src="assets/js/intro.js" defer></script>
-<script src="assets/js/router.js"></script>
+<script src="assets/js/router.js" defer></script>
 <script>
   window.addEventListener('DOMContentLoaded', () => {
     window.initScreenShader && window.initScreenShader();
