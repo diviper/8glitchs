@@ -43,17 +43,10 @@
     return new URL(p, basePath()).href;
   }
 
-  async function loadText(p) {
+  async function fetchText(p) {
     var r = await fetch(toUrl(p), { cache: 'no-cache' });
-    if (!r.ok) throw new Error(p + ' (' + r.status + ')');
+    if (!r.ok) throw new Error('load fail ' + p + ' (' + r.status + ')');
     return r.text();
-  }
-
-  function showWarnCard(item){
-    var target = document.querySelector('.md-body');
-    if (!target) return;
-    var link = (item && item.paths && item.paths.scene) ? '<div style="margin-top:8px;"><a class="btn-link" href="#/scene/' + item.slug + '">Открыть сцену</a></div>' : '';
-    target.innerHTML = '\n    <div class="callout warn">\n      Карточка не найдена.\n      ' + link + '\n    </div>';
   }
 
   function updateFocused() {
@@ -183,26 +176,25 @@
   function loadScript(src) {
     return new Promise(function (res, rej) {
       var s = document.createElement('script');
-      s.src = src; s.async = true;
-      s.onload = res; s.onerror = rej;
+      s.src = src;
+      s.async = true;
+      s.onload = res;
+      s.onerror = function () { rej(new Error('load fail ' + src)); };
       document.head.appendChild(s);
     });
   }
 
-  async function renderMapRoute() {
-    if (navigator.onLine) {
-      try {
-        if (!window.d3) await loadScript('https://cdn.jsdelivr.net/npm/d3-force@3/dist/d3-force.min.js');
-      } catch (e) {}
-    }
-    try {
-      if (!window.renderMindMap) await loadScript('assets/js/map.js');
-    } catch (e) {}
-    if (window.renderMindMap) {
-      try { await window.renderMindMap(); }
-      catch (e) { contentEl.innerHTML = '<div class="empty">Карта недоступна</div>'; }
-    } else {
-      contentEl.innerHTML = '<div class="empty">Карта недоступна</div>';
+  async function renderMapRoute(){
+    try{
+      if(!window.d3){
+        try { await loadScript('https://cdn.jsdelivr.net/npm/d3-force@3/dist/d3-force.min.js'); }
+        catch { await loadScript('https://unpkg.com/d3-force@3/dist/d3-force.min.js'); }
+      }
+      if(!window.renderMindMap) await loadScript('assets/js/map.js');
+      window.renderMindMap?.();
+    }catch(e){
+      (document.querySelector('.md-body')||contentEl).innerHTML =
+        '<div class="callout warn">Карта недоступна (' + (e.message||'сеть') + '). Попробуйте позже.</div>';
     }
   }
 
@@ -210,7 +202,7 @@
     if (slug === 'intro') { contentEl.innerHTML = ''; window.intro?.show(); return; }
     if (slug === 'bugs') {
       try {
-        var showHtml = await loadText('reality_bugs_mindmap.html');
+        var showHtml = await fetchText('reality_bugs_mindmap.html');
         contentEl.innerHTML = showHtml;
         setTitle('Show');
       } catch (e) {
@@ -228,15 +220,16 @@
     contentEl.innerHTML = '<div class="card-wrap"><div class="md-body"></div></div>';
     var target = contentEl.querySelector('.md-body');
     if (!target) return;
-    var md = '';
     try {
-      md = await loadText(mdPath);
+      var md = await fetchText(mdPath);
+      await window.renderMarkdown(md, target, { slug: slug, item: item, manifest: glitches });
     } catch (e) {
       console.warn(e);
-      showWarnCard(item);
+      target.innerHTML = '<div class="callout warn">Карточка временно недоступна.' +
+        (item && item.paths && item.paths.scene ? ' <a class="btn-link" href="#/scene/' + slug + '">открыть сцену</a>' : '') +
+        '</div>';
       return;
     }
-    await window.renderMarkdown(md, target, { slug: slug, item: item, manifest: glitches });
     try { window.widgets?.mountAll(target); } catch (e) { console.warn('[widgets]', e); }
     setActive(slug);
     var headings = target.querySelectorAll('h3');
@@ -272,7 +265,6 @@
     }
     var storedPos = null;
     try { storedPos = sessionStorage.getItem('scroll:' + slug); } catch (e) {}
-    if (!anchor) { window.__shareAnchor = null; }
     if (!anchor && storedPos !== null) {
       window.scrollTo(0, parseInt(storedPos, 10));
     }
@@ -300,7 +292,7 @@
     var root = document.getElementById('scene-root');
     if (item && item.paths && item.paths.scene) {
       try {
-        var html = await loadText(item.paths.scene);
+        var html = await fetchText(item.paths.scene);
         html = html.replace(/<script[^>]*scene-frame.js[^>]*><\/script>/gi, '');
         var parser = new DOMParser();
         var doc = parser.parseFromString(html, 'text/html');
@@ -455,7 +447,7 @@
         var data = await fetch(toUrl('content/glitches.json'), { cache: 'no-store' }).then(function (r) { return r.json(); });
         await Promise.all(data.map(async function (g) {
           try {
-            var txt = await loadText(g.paths.card);
+            var txt = await fetchText(g.paths.card);
             var m = txt.match(/^---\s*([\s\S]*?)\n---/);
             if (m) {
               var tagsMatch = m[1].match(/tags:\s*\[(.*?)\]/);
@@ -604,7 +596,6 @@ async function handleRoute() {
     }
     saveScroll(lastSlug);
     closeSidebar();
-    window.intro?.hide();
     if (!location.hash) {
       return;
     }
@@ -613,6 +604,7 @@ async function handleRoute() {
   var slug = parsed.slug;
   var anchor = parsed.anchor;
   var params = parsed.query;
+  if (!(route === 'show' && slug === 'intro')) { window.intro?.hide?.(); }
   applyFilters(params);
   updateHashQuery();
   await renderList(slug);
@@ -632,7 +624,7 @@ async function handleRoute() {
       return;
     } else if (route === 'overview' || !route) {
       try {
-        var mdOverview = await loadText('content/overview.md');
+        var mdOverview = await fetchText('content/overview.md');
         contentEl.innerHTML = '';
 
         var grid = document.createElement('div');

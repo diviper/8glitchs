@@ -819,11 +819,11 @@ input, select {
 .chip.cat{color:#02040a;font-weight:600;}
 .card-wrap{max-width:980px;margin:0 auto;padding:16px;min-height:calc(100vh - 160px);}
 /* контейнер сцены на всю высоту вьюпорта */
-.scene-wrap{position:relative;min-height:calc(100vh - 56px);}
+.scene-wrap{min-height:calc(100vh - 140px);display:flex;flex-direction:column;}
 /* фоновая канва/градиент тянется */
-.scene-bg{position:absolute;inset:0;pointer-events:none;}
-/* основной контент сцены */
-.scene-main{position:relative;max-width:980px;margin:0 auto;padding:16px 20px 32px;}
+.scene-bg{position:absolute;inset:0;pointer-events:none;opacity:.3;}
+/* основная панель сцены */
+.scene-panel{position:relative;background:linear-gradient(180deg,#0c1020 0,#090d19 100%);border-radius:14px;padding:16px;}
 /* шапки без дырок */
 /* .card-head,.scene-head defined above */
 

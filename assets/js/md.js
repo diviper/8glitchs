@@ -115,14 +115,11 @@
       btn.textContent = '#';
       btn.addEventListener('click', function (e) {
         e.preventDefault();
-        window.__shareAnchor = id;
         var hash = location.hash;
         var second = hash.indexOf('#', 1);
         var base = second === -1 ? hash : hash.slice(0, second);
         var url = location.origin + location.pathname + base + '#' + id;
-        if (navigator.share) {
-          navigator.share({ url: url }).catch(function () {});
-        } else if (navigator.clipboard && navigator.clipboard.writeText) {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
           navigator.clipboard.writeText(url).then(function () {
             if (window.showToast) window.showToast('Ссылка скопирована');
           });
