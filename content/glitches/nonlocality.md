@@ -6,6 +6,7 @@ tags: [эпр, белл, корреляции]
 status: draft
 ---
 
+<!-- markdownlint-disable MD033 -->
 ### TL;DR
 Запутанные частицы дают корреляции, которые нарушают неравенства Белла. **Передачи сигнала быстрее света нет.**
 
@@ -33,6 +34,15 @@ status: draft
 Сгенерируй тысячи пар и посмотри на значение S: оно превышает 2, но попытка управлять отдельными исходами всё равно бесполезна.
 
 <div class="widget" data-type="chsh"></div>
+
+<div class="quiz" data-id="q-nonlocality-1" data-type="single">
+  <div class="q">Нарушение неравенств Белла означает…</div>
+  <label><input type="radio" name="q1" value="a"> мгновенную передачу сигнала</label>
+  <label><input type="radio" name="q1" value="b"> нелокальные корреляции без сигнала</label>
+  <label><input type="radio" name="q1" value="c"> экспериментальную ошибку</label>
+  <div class="explain" data-correct="b">Правильно: корреляции нелокальны, но сигнал FTL отсутствует.</div>
+  <button data-check>Проверить</button><div class="quiz-result"></div>
+</div>
 
 ### Ссылки
 - SEP: Bell’s Theorem — подробный разбор.

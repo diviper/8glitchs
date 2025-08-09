@@ -1,4 +1,4 @@
-const { markDone, isDone, getProgress } = require('../assets/js/progress');
+const { markDone, isDone, getProgress, setQuizPassed, isQuizPassed } = require('../assets/js/progress');
 
 describe('progress utility', () => {
   beforeEach(() => {
@@ -18,5 +18,11 @@ describe('progress utility', () => {
     expect(getProgress()).toEqual(['a1']);
     markDone('a2');
     expect(getProgress().sort()).toEqual(['a1', 'a2']);
+  });
+
+  test('quiz progress', () => {
+    expect(isQuizPassed('s1', 'q1')).toBe(false);
+    setQuizPassed('s1', 'q1');
+    expect(isQuizPassed('s1', 'q1')).toBe(true);
   });
 });

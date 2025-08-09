@@ -6,6 +6,7 @@ tags: [энтропия, болцман, H-теорема]
 status: draft
 ---
 
+<!-- markdownlint-disable MD033 -->
 ### TL;DR
 Почему прошлое отличается от будущего? Потому что энтропия растёт: микромир обратим, а макромир почти всегда течёт "вперёд".
 
@@ -33,6 +34,15 @@ status: draft
 Чем грубее смотришь на систему, тем менее различимы микросостояния — крути ползунок и наблюдай, как из хаоса рождается стрела.
 
 <div class="widget" data-type="arrow"></div>
+
+<div class="quiz" data-id="q-arrow-1" data-type="single">
+  <div class="q">Главная причина «стрелы времени» в макромире?</div>
+  <label><input type="radio" name="q1" value="a"> необратимость микрозаконов</label>
+  <label><input type="radio" name="q1" value="b"> граничные условия и рост энтропии</label>
+  <label><input type="radio" name="q1" value="c"> календарь Григория XIII</label>
+  <div class="explain" data-correct="b">Микрозаконы обратимы; стрелу задают начальные условия и энтропия.</div>
+  <button data-check>Проверить</button><div class="quiz-result"></div>
+</div>
 
 ### Ссылки
 - SEP: Arrow of Time — обзор подходов.

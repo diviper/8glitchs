@@ -6,6 +6,7 @@ tags: [бит, теплота, стирание]
 status: draft
 ---
 
+<!-- markdownlint-disable MD033 -->
 ### TL;DR
 Стирание бита стоит не меньше \(kT\ln 2\) энергии — **информация физична**.
 
@@ -33,6 +34,13 @@ status: draft
 Подвигай ползунки температуры и числа стираемых битов — увидишь, как минимум тепла растёт по формуле \(Q_{min}=kT\ln2\,N\). График ниже отражает зависимость от T при фиксированном N.
 
 <div class="widget" data-type="landauer" data-T="300" data-N="1000000"></div>
+
+<div class="quiz" data-id="q-landauer-1" data-type="numeric" data-eps="0.05">
+  <div class="q">При T=300K и N=1 бит приблизительно чему равен kT ln2 (в 10⁻²¹ Дж)?</div>
+  <input type="number" step="0.01" placeholder="в фемто-джоулях (×10⁻²¹)">
+  <div class="explain" data-correct="2.87">Ожидаемо ≈2.87×10⁻²¹ Дж (k·T·ln2).</div>
+  <button data-check>Проверить</button><div class="quiz-result"></div>
+</div>
 
 ### Ссылки
 - Landauer’s Principle — вводные.

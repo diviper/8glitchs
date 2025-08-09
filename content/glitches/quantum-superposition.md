@@ -5,6 +5,7 @@ category: Квант
 status: draft
 ---
 
+<!-- markdownlint-disable MD033 -->
 ### TL;DR
 Квантовый объект существует сразу в нескольких вариантах — пока ты не заставишь мир определиться измерением.
 
@@ -28,6 +29,15 @@ status: draft
 Мини-график интенсивности двойной щели: включи «наблюдателя» и увидишь, как интерференция пропадает.
 
 <div class="widget" data-type="twoslit"></div>
+
+<div class="quiz" data-id="q-superposition-1" data-type="multi">
+  <div class="q">Что верно про суперпозицию (выберите все верные)?</div>
+  <label><input type="checkbox" value="a"> система может быть в линейной комбинации состояний</label>
+  <label><input type="checkbox" value="b"> измерение проецирует в базис</label>
+  <label><input type="checkbox" value="c"> всегда можно получить сигнал быстрее света</label>
+  <div class="explain" data-correct="a,b">Верно a и b; суперпозиция не даёт FTL-сигнала.</div>
+  <button data-check>Проверить</button><div class="quiz-result"></div>
+</div>
 
 ### Ссылки
 - Двойная щель: простое объяснение интерференции.

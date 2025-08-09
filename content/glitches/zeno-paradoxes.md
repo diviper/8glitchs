@@ -6,6 +6,7 @@ tags: [бесконечность, предел, движение]
 status: draft
 ---
 
+<!-- markdownlint-disable MD033 -->
 ### TL;DR
 Как пройти бесконечно много половин пути? Математика отвечает: пределом.
 
@@ -33,6 +34,15 @@ status: draft
 Запусти бегуна: каждое нажатие шагает по ряду 1/2, показывая, как частичные суммы быстро приближаются к финишу.
 
 <div class="widget" data-type="zeno"></div>
+
+<div class="quiz" data-id="q-zeno-1" data-type="single">
+  <div class="q">Что «чинит» парадокс бесконечных половин?</div>
+  <label><input type="radio" name="q1" value="a"> бесконечность делает движение невозможным</label>
+  <label><input type="radio" name="q1" value="b"> концепция предела суммы ряда</label>
+  <label><input type="radio" name="q1" value="c"> квантование пространства</label>
+  <div class="explain" data-correct="b">Сходимость ряда через предел объясняет конечное время.</div>
+  <button data-check>Проверить</button><div class="quiz-result"></div>
+</div>
 
 ### Ссылки
 - SEP: Zeno’s Paradoxes.
