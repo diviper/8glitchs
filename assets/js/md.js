@@ -54,18 +54,21 @@
     try { if (window.widgets && window.widgets.mountAll) window.widgets.mountAll(container); } catch (e) {}
     container.querySelectorAll('.legacy-banner,.banner,.badges,.g-universe,.btns-legacy,[data-legacy]').forEach(function(n){ n.remove(); });
     var head = document.createElement('div');
-    head.className = 'head';
-    head.innerHTML = '<a class="crumb" href="#/overview" aria-label="К реестру">← к реестру</a>' +
-                     '<h1 class="title"></h1>' +
-                     '<div class="meta"><span class="chip cat"></span><span class="chips tags"></span></div>';
+    head.className = 'card-head';
+    head.innerHTML = '<h1 class="title"></h1><span class="chip cat"></span><div class="chips tags"></div>';
     var mdH1 = container.querySelector('h1');
-    var titleText = opts && opts.title ? opts.title : (mdH1 ? mdH1.textContent : '');
+    var titleText = opts && opts.item && opts.item.title ? opts.item.title : (mdH1 ? mdH1.textContent : '');
     if (mdH1) mdH1.remove();
     head.querySelector('.title').textContent = titleText;
     var cat = opts && opts.item && opts.item.category ? opts.item.category : '';
     var catEl = head.querySelector('.chip.cat');
     catEl.textContent = cat;
-    try { catEl.style.background = window.THEME.catColor(cat); } catch(e){}
+    try {
+      var th = window.theme || window.THEME;
+      catEl.style.background = th.categoryColor(cat);
+      var cFg = th.token ? th.token('chipFg') : '';
+      if (cFg) catEl.style.color = cFg;
+    } catch(e){}
     var tags = (opts && opts.item && opts.item.tags) ? opts.item.tags : [];
     var maxTags = 6;
     var tagBox = head.querySelector('.tags');
@@ -73,6 +76,13 @@
       var s = document.createElement('span');
       s.className = 'chip tag';
       s.textContent = t;
+      try {
+        var th = window.theme || window.THEME;
+        var bg = th.token ? th.token('chipBg') : '';
+        var fg = th.token ? th.token('chipFg') : '';
+        if (bg) s.style.background = bg;
+        if (fg) s.style.color = fg;
+      } catch(e){}
       tagBox.appendChild(s);
     });
     if (tags.length > maxTags) {
@@ -80,6 +90,13 @@
       more.className = 'chip tag';
       more.textContent = '+' + (tags.length - maxTags);
       more.title = tags.slice(maxTags).join(', ');
+      try {
+        var th2 = window.theme || window.THEME;
+        var bg2 = th2.token ? th2.token('chipBg') : '';
+        var fg2 = th2.token ? th2.token('chipFg') : '';
+        if (bg2) more.style.background = bg2;
+        if (fg2) more.style.color = fg2;
+      } catch(e){}
       tagBox.appendChild(more);
     }
     container.prepend(head);

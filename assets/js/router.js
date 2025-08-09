@@ -24,6 +24,25 @@
   var lastSlug = null;
   var scrollHandler = null;
 
+  function basePath() {
+    var repo = location.pathname.split('/')[1];
+    return repo ? '/' + repo + '/' : '/';
+  }
+
+  async function loadMd(mdPath) {
+    var url = new URL(mdPath, basePath());
+    var r = await fetch(url.href, { cache: 'no-cache' });
+    if (!r.ok) throw new Error('MD not found: ' + mdPath + ' (' + r.status + ')');
+    return r.text();
+  }
+
+  function showWarnCard(item){
+    var target = document.querySelector('.md-body');
+    if (!target) return;
+    var link = (item && item.paths && item.paths.scene) ? '<div style="margin-top:8px;"><a class="btn-link" href="#/scene/' + item.slug + '">Открыть сцену</a></div>' : '';
+    target.innerHTML = '\n    <div class="callout warn">\n      Карточка не найдена.\n      ' + link + '\n    </div>';
+  }
+
   function updateFocused() {
     var items = listEl.querySelectorAll('.gl-item');
     items.forEach(function (el, i) {
@@ -107,7 +126,8 @@
   }
 
   function setTitle(pageTitle) {
-    var base = (window.THEME && window.THEME.brandShort) || 'Glitch Registry';
+    var t = window.theme || window.THEME;
+    var base = (t && t.brand && t.brand.short) || 'Glitch Registry';
     document.title = pageTitle ? base + ' — ' + pageTitle : base;
   }
 
@@ -188,22 +208,21 @@
     contentEl.innerHTML = '<div class="empty">Не нашлось</div>';
   }
 
-  async function renderCard(slug, anchor, glitches) {
+  async function renderCard(slug, anchor) {
+    var glitches = await loadManifest();
     var item = glitches.find(function (g) { return g.slug === slug; });
     var mdPath = item && item.paths && item.paths.card ? item.paths.card : ('content/glitches/' + slug + '.md');
     contentEl.innerHTML = '<div class="card-wrap"><div class="md-body"></div></div>';
     var target = contentEl.querySelector('.md-body');
     var md = '';
     try {
-      var resp = await fetch(mdPath, { cache: 'no-cache' });
-      if (!resp.ok) throw new Error('MD not found: ' + mdPath + ' (' + resp.status + ')');
-      md = await resp.text();
+      md = await loadMd(mdPath);
     } catch (e) {
-      console.warn(e.message);
-      target.innerHTML = '\n    <div class="callout warn">Карточка временно недоступна.' + (item && item.paths && item.paths.scene ? ' Сцена: <a class="btn-link" href="#/scene/' + slug + '">открыть</a>' : '') + '</div>';
+      console.warn(e);
+      showWarnCard(item);
       return;
     }
-    await window.renderMarkdown(md, target, { slug: slug, title: item ? item.title : slug, manifest: glitches, item: item });
+    await window.renderMarkdown(md, target, { slug: slug, item: item, manifest: glitches });
     var headings = target.querySelectorAll('h3');
     if (headings.length >= 2) {
       var toc = document.createElement('div');
@@ -258,22 +277,25 @@
     }
   }
 
-  async function renderScene(slug, params, glitches) {
+  async function renderScene(slug, params) {
+    var glitches = await loadManifest();
     var item = glitches.find(function (g) { return g.slug === slug; });
     contentEl.innerHTML = '<div id="scene-root"></div>';
     var root = document.getElementById('scene-root');
     if (item && item.paths && item.paths.scene) {
       try {
-        var html = await fetch(item.paths.scene).then(function (r) { return r.text(); });
+        var html = await fetch(new URL(item.paths.scene, basePath())).then(function (r) { return r.text(); });
         html = html.replace(/<script[^>]*scene-frame.js[^>]*><\/script>/gi, '');
-        root.innerHTML = html;
+        var parser = new DOMParser();
+        var doc = parser.parseFromString(html, 'text/html');
+        root.innerHTML = doc.body ? doc.body.innerHTML : html;
         if (typeof window.__initScene === 'function') { try { window.__initScene(); } catch(e){} }
         if (typeof window.__applyParams === 'function') { try { window.__applyParams(params); } catch(e){} }
       } catch (e) {
         console.warn(e.message);
       }
     }
-    window.renderSceneFrame?.(slug, { title: item ? item.title : '', category: item ? item.category : '', tags: item && item.tags ? item.tags : [] });
+    window.renderSceneFrame?.(slug, { title: item ? item.title : '', category: item ? item.category : '', tags: item && item.tags ? item.tags : [], intro: item && item.quest ? item.quest.intro : '' });
     if (typeof window.setLastVisited === 'function') {
       window.setLastVisited({ type: 'scene', slug: slug });
     }
@@ -323,7 +345,7 @@
 
   if (randomBtn) {
     randomBtn.addEventListener('click', async function () {
-      var glitches = await getManifest();
+      var glitches = await loadManifest();
       var cards = glitches.filter(function (g) { return g.status === 'cardOnly'; });
       var pool = cards.length ? cards.concat(glitches) : glitches;
       var pick = pool[Math.floor(Math.random() * pool.length)];
@@ -405,7 +427,7 @@
     }
   });
 
-  function getManifest() {
+  function loadManifest() {
     if (!manifestPromise) {
       manifestPromise = (async function () {
         var ver = (window.APP_VERSION || '0');
@@ -414,10 +436,10 @@
           var cached = localStorage.getItem(key);
           if (cached) return JSON.parse(cached);
         } catch (e) {}
-        var data = await fetch('content/glitches.json', { cache: 'no-store' }).then(function (r) { return r.json(); });
+        var data = await fetch(new URL('content/glitches.json', basePath()), { cache: 'no-store' }).then(function (r) { return r.json(); });
         await Promise.all(data.map(async function (g) {
           try {
-            var txt = await fetch(g.paths.card, { cache: 'no-store' }).then(function (r) { return r.text(); });
+            var txt = await loadMd(g.paths.card);
             var m = txt.match(/^---\s*([\s\S]*?)\n---/);
             if (m) {
               var tagsMatch = m[1].match(/tags:\s*\[(.*?)\]/);
@@ -454,7 +476,7 @@
   }
 
   async function renderList(activeSlug) {
-    var glitches = await getManifest();
+    var glitches = await loadManifest();
     var quizStats = {};
     if (typeof window.getQuizStats === 'function') {
       try { quizStats = await window.getQuizStats(); } catch (e) {}
@@ -581,13 +603,13 @@ async function handleRoute() {
 
     if (!contentEl) return;
     contentEl.innerHTML = '<div class="empty">Загрузка…</div>';
-    var glitches = await getManifest();
+    var glitches = await loadManifest();
 
     try {
     if (route === 'glitch' && slug) {
-      await renderCard(slug, anchor, glitches);
+      await renderCard(slug, anchor);
     } else if (route === 'scene' && slug) {
-      await renderScene(slug, params, glitches);
+      await renderScene(slug, params);
     } else if (route === 'show') {
       await renderShow(slug);
       highlightActive(null);
