@@ -411,11 +411,34 @@
       el.setAttribute('aria-selected', isActive ? 'true' : 'false');
       if (isActive) idx = i;
     });
-    navIndex = idx;
-    updateFocused();
-  }
+  navIndex = idx;
+  updateFocused();
+}
 
-  async function handleRoute() {
+function parseHash(hash) {
+  var h = hash.startsWith('#') ? hash.slice(1) : hash;
+  var anchor = null;
+  var anchorIndex = h.indexOf('#');
+  if (anchorIndex !== -1) {
+    anchor = h.slice(anchorIndex + 1);
+    h = h.slice(0, anchorIndex);
+  }
+  var queryStr = '';
+  var qIndex = h.indexOf('?');
+  if (qIndex !== -1) {
+    queryStr = h.slice(qIndex + 1);
+    h = h.slice(0, qIndex);
+  }
+  var parts = h.split('/').filter(Boolean);
+  return {
+    route: parts[0] || null,
+    slug: parts[1] || null,
+    anchor: anchor,
+    query: Object.fromEntries(new URLSearchParams(queryStr))
+  };
+}
+
+async function handleRoute() {
     if (scrollHandler) {
       window.removeEventListener('scroll', scrollHandler);
       scrollHandler = null;
@@ -425,32 +448,21 @@
     if (!location.hash) {
       return;
     }
-    var rawHash = location.hash.slice(1);
-    var anchorIndex = rawHash.indexOf('#');
-    var anchor = null;
-    if (anchorIndex !== -1) {
-      anchor = rawHash.slice(anchorIndex + 1);
-      rawHash = rawHash.slice(0, anchorIndex);
-    }
-    var qIndex = rawHash.indexOf('?');
-    var query = '';
-    if (qIndex !== -1) {
-      query = rawHash.slice(qIndex + 1);
-      rawHash = rawHash.slice(0, qIndex);
-    }
-    var params = Object.fromEntries(new URLSearchParams(query));
-    applyFilters(params);
-    updateHashQuery();
-    var parts = rawHash.split('/').filter(Boolean);
-    var slug = parts[1];
-    await renderList(slug);
+  var parsed = parseHash(location.hash);
+  var route = parsed.route;
+  var slug = parsed.slug;
+  var anchor = parsed.anchor;
+  var params = parsed.query;
+  applyFilters(params);
+  updateHashQuery();
+  await renderList(slug);
 
     if (!contentEl) return;
     contentEl.innerHTML = '<div class="empty">Загрузка…</div>';
     var glitches = await getManifest();
 
     try {
-    if (parts[0] === 'glitch' && slug) {
+    if (route === 'glitch' && slug) {
       var item = glitches.find(function (g) { return g.slug === slug; });
       if (item) {
         var catSlug = catSlugMap[item.category] || 'unknown';
@@ -568,11 +580,10 @@
           window.addEventListener('scroll', scrollHandler);
           lastSlug = slug;
 
-          if (typeof window.setLastVisited === 'function') {
-            window.setLastVisited({ type: 'glitch', slug: slug });
-          }
-          }
-      } else {
+            if (typeof window.setLastVisited === 'function') {
+              window.setLastVisited({ type: 'glitch', slug: slug });
+            }
+        } else {
         var fbPath = 'content/glitches/' + slug + '.md';
         try {
           var fbResp = await fetch(fbPath, { cache: 'no-store' });
@@ -586,7 +597,7 @@
           contentEl.innerHTML = '<div class="callout warn">Глитч не найден. <a href="#/overview">На обзор</a>.</div>';
         }
       }
-    } else if (parts[0] === 'scene' && slug) {
+    } else if (route === 'scene' && slug) {
       var itemScene = glitches.find(function (g) { return g.slug === slug; });
       if (itemScene) {
         document.title = 'Glitch Registry — ' + itemScene.title;
@@ -653,7 +664,22 @@
       } else {
         contentEl.innerHTML = '<div class="callout warn">Глитч не найден. <a href="#/overview">На обзор</a>.</div>';
       }
-    } else if (parts[0] === 'overview') {
+    } else if (route === 'show' && slug) {
+      try {
+        var showPath = slug === 'bugs' ? 'reality_bugs_mindmap.html' : '';
+        if (showPath) {
+          var showHtml = await fetch(showPath).then(function (r) { return r.text(); });
+          contentEl.innerHTML = showHtml;
+          document.title = 'Glitch Registry — Show';
+        } else {
+          contentEl.innerHTML = '<div class="empty">Не нашлось</div>';
+        }
+      } catch (e) {
+        contentEl.innerHTML = '<div class="empty">Не нашлось</div>';
+      }
+      highlightActive(null);
+      return;
+    } else if (route === 'overview' || !route) {
       try {
         var mdOverview = await fetch('content/overview.md').then(function (r) { return r.text(); });
         contentEl.innerHTML = '';
@@ -761,17 +787,17 @@
       }
       highlightActive(null);
       return;
-    } else if (parts[0] === 'map') {
+    } else if (route === 'map') {
       document.title = 'Glitch Registry — Карта';
       await renderMapRoute();
       highlightActive(null);
       return;
     } else {
-      contentEl.innerHTML = '<div class="callout warn">Глитч не найден. <a href="#/overview">На обзор</a>.</div>';
+      location.hash = '#/overview';
     }
     } catch (e) {
-      console.error(e);
-      contentEl.innerHTML = '<div class="callout warn">Глитч не найден. <a href="#/overview">На обзор</a>.</div>';
+      console.error('[router] route error:', e);
+      location.hash = '#/overview';
     }
 
     highlightActive(slug);
