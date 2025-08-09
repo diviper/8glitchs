@@ -143,6 +143,30 @@
   }
   window.showToast = showToast;
 
+  function loadScript(src) {
+    return new Promise(function (res, rej) {
+      var s = document.createElement('script');
+      s.src = src; s.async = true;
+      s.onload = res; s.onerror = rej;
+      document.head.appendChild(s);
+    });
+  }
+
+  async function renderMapRoute() {
+    var glitches = await getManifest();
+    if (!window.d3) {
+      await loadScript('https://cdn.jsdelivr.net/npm/d3-force@3/dist/d3-force.min.js');
+    }
+    if (!window.renderMap) {
+      await loadScript('assets/js/map.js');
+    }
+    if (window.renderMap) {
+      await window.renderMap(contentEl, glitches);
+    } else {
+      contentEl.innerHTML = '<div class="empty">Карта недоступна</div>';
+    }
+  }
+
   function saveScroll(slug) {
     if (!slug) return;
     try { sessionStorage.setItem('scroll:' + slug, String(window.scrollY)); } catch (e) {}
@@ -391,17 +415,18 @@
     updateFocused();
   }
 
-  async function load() {
+  async function handleRoute() {
     if (scrollHandler) {
       window.removeEventListener('scroll', scrollHandler);
       scrollHandler = null;
     }
     saveScroll(lastSlug);
-    var rawHash = location.hash.slice(1);
-    if (!rawHash) {
+    closeSidebar();
+    if (!location.hash) {
       location.hash = '#/overview';
       return;
     }
+    var rawHash = location.hash.slice(1);
     var anchorIndex = rawHash.indexOf('#');
     var anchor = null;
     if (anchorIndex !== -1) {
@@ -425,6 +450,7 @@
     contentEl.innerHTML = '<div class="empty">Загрузка…</div>';
     var glitches = await getManifest();
 
+    try {
     if (parts[0] === 'glitch' && slug) {
       var item = glitches.find(function (g) { return g.slug === slug; });
       if (item) {
@@ -445,15 +471,11 @@
         var shareBtn = contentEl.querySelector('[data-share]');
         var doneBtn = contentEl.querySelector('[data-done]');
         var backBtn = contentEl.querySelector('[data-back]');
-        var mdPath = item.paths && item.paths.card;
+        var mdPath = (item.paths && item.paths.card) || ('content/glitches/' + slug + '.md');
         var sceneLink = item.paths && item.paths.scene ? '<a class="btn-link" href="#/scene/' + slug + '">Открыть сцену</a>' : '';
-        if (!mdPath) {
-          target.innerHTML = '<div class="callout warn">Карточка в разработке.<br>' + sceneLink + '</div>';
-          return;
-        }
         var md;
         try {
-          var resp = await fetch(mdPath, { cache: 'no-store' });
+          var resp = await fetch(mdPath, { cache: 'no-cache' });
           if (!resp.ok) throw new Error('MD not found: ' + mdPath + ' (' + resp.status + ')');
           md = await resp.text();
         } catch (e) {
@@ -462,6 +484,7 @@
           return;
         }
         await window.renderMarkdown(md, target, { slug: slug, manifest: glitches });
+        try { window.widgets?.mountAll(target); } catch (e) {}
         target.querySelectorAll('.hero,.legacy,.series,.bug-series,.project-banner')
           .forEach(function (n) { n.remove(); });
 
@@ -721,7 +744,7 @@
             if (typeof window.resetProgress === 'function') { window.resetProgress(); }
             showToast('Сброшено');
             renderList(null);
-            load();
+            handleRoute();
           }
         });
         resetTile.appendChild(resetBtn);
@@ -741,14 +764,14 @@
       return;
     } else if (parts[0] === 'map') {
       document.title = 'Glitch Registry — Карта';
-      if (window.renderMap) {
-        await window.renderMap(contentEl, glitches);
-      } else {
-        contentEl.innerHTML = '<div class="empty">Карта недоступна</div>';
-      }
+      await renderMapRoute();
       highlightActive(null);
       return;
     } else {
+      contentEl.innerHTML = '<div class="callout warn">Глитч не найден. <a href="#/overview">На обзор</a>.</div>';
+    }
+    } catch (e) {
+      console.error(e);
       contentEl.innerHTML = '<div class="callout warn">Глитч не найден. <a href="#/overview">На обзор</a>.</div>';
     }
 
@@ -776,15 +799,7 @@
     updateHashQuery();
   });
 
-  window.addEventListener('hashchange', function () {
-    closeSidebar();
-    load();
-  });
-  window.addEventListener('DOMContentLoaded', function () {
-    if (!location.hash) {
-      location.hash = '#/overview';
-    }
-    load();
-  });
+  window.addEventListener('hashchange', handleRoute);
+  window.addEventListener('DOMContentLoaded', handleRoute);
 })();
 
