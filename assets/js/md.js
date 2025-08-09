@@ -31,6 +31,7 @@
   }
 
   window.renderMarkdown = async function (markdown, container, opts) {
+    if (!container) return;
     await ready;
     var html = marked.parse(stripFrontMatter(markdown));
     var safe = DOMPurify.sanitize(html, { ADD_ATTR: ['target', 'rel'] });
@@ -51,7 +52,7 @@
       container.innerHTML = cardHTML;
     }
     try { if (window.quiz && window.quiz.mountAll) window.quiz.mountAll(container); } catch (e) {}
-    try { if (window.widgets && window.widgets.mountAll) window.widgets.mountAll(container); } catch (e) {}
+    try { window.widgets?.mountAll(container); } catch (e) { console.warn('[widgets]', e); }
     container.querySelectorAll('.legacy-banner,.banner,.badges,.g-universe,.btns-legacy,[data-legacy]').forEach(function(n){ n.remove(); });
     var head = document.createElement('div');
     head.className = 'card-head';
