@@ -54,21 +54,35 @@
     try { if (window.widgets && window.widgets.mountAll) window.widgets.mountAll(container); } catch (e) {}
     container.querySelectorAll('.legacy-banner,.banner,.badges,.g-universe,.btns-legacy,[data-legacy]').forEach(function(n){ n.remove(); });
     var head = document.createElement('div');
-    head.className = 'card-head';
+    head.className = 'head';
+    head.innerHTML = '<a class="crumb" href="#/overview" aria-label="К реестру">← к реестру</a>' +
+                     '<h1 class="title"></h1>' +
+                     '<div class="meta"><span class="chip cat"></span><span class="chips tags"></span></div>';
+    var mdH1 = container.querySelector('h1');
+    var titleText = opts && opts.title ? opts.title : (mdH1 ? mdH1.textContent : '');
+    if (mdH1) mdH1.remove();
+    head.querySelector('.title').textContent = titleText;
     var cat = opts && opts.item && opts.item.category ? opts.item.category : '';
+    var catEl = head.querySelector('.chip.cat');
+    catEl.textContent = cat;
+    try { catEl.style.background = window.THEME.catColor(cat); } catch(e){}
     var tags = (opts && opts.item && opts.item.tags) ? opts.item.tags : [];
-    head.innerHTML = '<a class="crumb" href="#/overview">← к реестру</a>' +
-                     '<h1>' + (opts && opts.title ? opts.title : '') + '</h1>' +
-                     '<span class="chips"><span class="chip chip-cat">' + cat + '</span>' +
-                     tags.map(function(t){ return '<span class="chip">' + t + '</span>'; }).join('') +
-                     '</span>' +
-                     '<button class="btn-link share">Поделиться</button>';
-    container.prepend(head);
-    head.querySelector('.share')?.addEventListener('click', async function(){
-      var url = location.href;
-      try { await navigator.share?.({ title: opts && opts.title ? opts.title : '', url: url }); } catch(e){}
-      try { await navigator.clipboard?.writeText(url); if (window.showToast) window.showToast('Ссылка скопирована'); } catch(e){}
+    var maxTags = 6;
+    var tagBox = head.querySelector('.tags');
+    tags.slice(0, maxTags).forEach(function(t){
+      var s = document.createElement('span');
+      s.className = 'chip tag';
+      s.textContent = t;
+      tagBox.appendChild(s);
     });
+    if (tags.length > maxTags) {
+      var more = document.createElement('span');
+      more.className = 'chip tag';
+      more.textContent = '+' + (tags.length - maxTags);
+      more.title = tags.slice(maxTags).join(', ');
+      tagBox.appendChild(more);
+    }
+    container.prepend(head);
     window.currentMarkdownContainer = container;
     container.querySelectorAll('a[target="_blank"]').forEach(function (a) {
       a.setAttribute('rel', 'noopener noreferrer');

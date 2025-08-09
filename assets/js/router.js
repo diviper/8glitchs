@@ -10,8 +10,7 @@
     'Космос': 'cosmos',
     'Идентичность': 'id',
     'Информация': 'info',
-    'Логика': 'logic',
-    'Наблюдатель': 'observer'
+    'Логика': 'logic'
   };
   var slugCatMap = {};
   Object.keys(catSlugMap).forEach(function (k) { slugCatMap[catSlugMap[k]] = k; });
@@ -107,6 +106,11 @@
     };
   }
 
+  function setTitle(pageTitle) {
+    var base = (window.THEME && window.THEME.brandShort) || 'Glitch Registry';
+    document.title = pageTitle ? base + ' — ' + pageTitle : base;
+  }
+
   function saveCat() {
     try {
       var val = categorySelect.value;
@@ -175,7 +179,7 @@
       try {
         var showHtml = await fetch('reality_bugs_mindmap.html').then(function (r) { return r.text(); });
         contentEl.innerHTML = showHtml;
-        document.title = 'Glitch Registry — Show';
+        setTitle('Show');
       } catch (e) {
         contentEl.innerHTML = '<div class="empty">Не нашлось</div>';
       }
@@ -187,7 +191,7 @@
   async function renderCard(slug, anchor, glitches) {
     var item = glitches.find(function (g) { return g.slug === slug; });
     var mdPath = item && item.paths && item.paths.card ? item.paths.card : ('content/glitches/' + slug + '.md');
-    contentEl.innerHTML = '<div class="md-body"></div>';
+    contentEl.innerHTML = '<div class="card-wrap"><div class="md-body"></div></div>';
     var target = contentEl.querySelector('.md-body');
     var md = '';
     try {
@@ -196,7 +200,7 @@
       md = await resp.text();
     } catch (e) {
       console.warn(e.message);
-      target.innerHTML = '\n    <div class="callout warn">\n      Не удалось загрузить карточку.\n      ' + (item && item.paths && item.paths.scene ? '<div style="margin-top:8px">\n        <a class="btn-link" href="#/scene/' + slug + '">Открыть сцену</a>\n      </div>' : '') + '\n    </div>';
+      target.innerHTML = '\n    <div class="callout warn">Карточка временно недоступна.' + (item && item.paths && item.paths.scene ? ' Сцена: <a class="btn-link" href="#/scene/' + slug + '">открыть</a>' : '') + '</div>';
       return;
     }
     await window.renderMarkdown(md, target, { slug: slug, title: item ? item.title : slug, manifest: glitches, item: item });
@@ -245,7 +249,7 @@
         window.scrollTo(0, topA);
       }
     }
-    document.title = 'Glitch Registry — ' + (item ? item.title : '');
+    setTitle(item ? item.title : '');
     scrollHandler = debounce(function(){ saveScroll(slug); }, 200);
     window.addEventListener('scroll', scrollHandler);
     lastSlug = slug;
@@ -273,7 +277,7 @@
     if (typeof window.setLastVisited === 'function') {
       window.setLastVisited({ type: 'scene', slug: slug });
     }
-    document.title = 'Glitch Registry — ' + (item ? item.title : '');
+    setTitle(item ? item.title : '');
   }
 
   function saveScroll(slug) {
@@ -699,14 +703,14 @@ async function handleRoute() {
             if (hEl) hEl.insertAdjacentElement('afterend', info); else bodyOverview.prepend(info);
           } catch (e) {}
         }
-        document.title = 'Glitch Registry — Обзор';
+        setTitle('Обзор');
       } catch (e) {
         contentEl.innerHTML = '<div class="empty">Не нашлось</div>';
       }
       highlightActive(null);
       return;
     } else if (route === 'map') {
-      document.title = 'Glitch Registry — Карта';
+      setTitle('Карта');
       await renderMapRoute();
       highlightActive(null);
       return;
