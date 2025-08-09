@@ -508,20 +508,19 @@ async function handleRoute() {
         var shareBtn = contentEl.querySelector('[data-share]');
         var doneBtn = contentEl.querySelector('[data-done]');
         var backBtn = contentEl.querySelector('[data-back]');
-        var mdPath = (item.paths && item.paths.card) || ('content/glitches/' + slug + '.md');
-        var sceneLink = item.paths && item.paths.scene ? '<a class="btn-link" href="#/scene/' + slug + '">Открыть сцену</a>' : '';
-        var md;
+        var mdPath = (item?.paths?.card) ?? ('content/glitches/' + slug + '.md');
+        var md = '';
         try {
           var resp = await fetch(mdPath, { cache: 'no-cache' });
           if (!resp.ok) throw new Error('MD not found: ' + mdPath + ' (' + resp.status + ')');
           md = await resp.text();
         } catch (e) {
           console.warn(e.message);
-          target.innerHTML = '<div class="callout warn">Карточка не найдена. ' + sceneLink + '</div>';
+          target.innerHTML = '\n    <div class="callout warn">\n      Не удалось загрузить карточку.\n      ' + (item.paths && item.paths.scene ? '<div style="margin-top:8px">\n        <a class="btn-link" href="#/scene/' + slug + '">Открыть сцену</a>\n      </div>' : '') + '\n    </div>';
           return;
         }
         await window.renderMarkdown(md, target, { slug: slug, title: item.title, manifest: glitches, item: item });
-        try { window.widgets?.mountAll(target); } catch (e) {}
+        window.widgets?.mountAll(target);
         target.querySelectorAll('.hero,.legacy,.series,.bug-series,.project-banner')
           .forEach(function (n) { n.remove(); });
 
@@ -630,63 +629,27 @@ async function handleRoute() {
         if (typeof window.setLastVisited === 'function') {
           window.setLastVisited({ type: 'scene', slug: slug });
         }
+        contentEl.innerHTML = '<div id="scene-frame"></div>';
+        var frame = document.getElementById('scene-frame');
         if (itemScene.status === 'cardOnly' || !itemScene.paths.scene) {
-          contentEl.innerHTML = '<div class="scene-head">'
-            + '<div class="actions-left"><a class="btn-link" href="#/glitch/' + slug + '">← К карточке</a></div>'
-            + '<h1>' + itemScene.title + '</h1>'
-            + '<div class="actions-right"><button class="btn-link" data-share>Поделиться</button></div>'
-            + '</div>'
-            + '<div class="callout warn">Сцена в разработке.</div>';
+          frame.innerHTML = '<div class="callout warn">Сцена в разработке.</div>';
         } else {
           try {
             var html = await fetch(itemScene.paths.scene).then(function (r) { return r.text(); });
-            contentEl.innerHTML = '<div class="scene-head">'
-              + '<div class="actions-left"><a class="btn-link" href="#/glitch/' + slug + '">← К карточке</a></div>'
-              + '<h1>' + itemScene.title + '</h1>'
-              + '<div class="actions-right"><button class="btn-link" data-share>Поделиться</button></div>'
-              + '</div>'
-              + '<div class="scene-frame"></div>';
-            var frame = contentEl.querySelector('.scene-frame');
+            html = html.replace(/<script[^>]*scene-frame.js[^>]*><\/script>/gi, '');
             frame.innerHTML = html;
-            [
-              '.series',
-              '.series-bar',
-              '[data-series]',
-              '.bug-title',
-              '.bug-header',
-              'h1.bug',
-              '.bug-number',
-              '.progress',
-              '.progress-bar',
-              '.promise-section'
-            ].forEach(function (sel) {
-              frame.querySelectorAll(sel).forEach(function (el) { el.remove(); });
-            });
             if (typeof window.__initScene === 'function') { window.__initScene(); }
             if (typeof window.__applyParams === 'function') { window.__applyParams(params); }
           } catch (e) {
-            contentEl.innerHTML = '<div class="empty">Не нашлось</div>';
+            frame.innerHTML = '<div class="empty">Не нашлось</div>';
           }
         }
-        var shareBtnScene = contentEl.querySelector('[data-share]');
-        if (shareBtnScene) {
-          shareBtnScene.addEventListener('click', function () {
-            var shareHash = '#/scene/' + slug;
-            if (typeof window.__getShareParams === 'function') {
-              var sp = window.__getShareParams();
-              var qs = typeof sp === 'string' ? sp : new URLSearchParams(sp).toString();
-              if (qs) shareHash += '?' + qs;
-            }
-            var url = location.origin + location.pathname + shareHash;
-            if (navigator.share) {
-              navigator.share({ url: url }).catch(function () {});
-            } else if (navigator.clipboard && navigator.clipboard.writeText) {
-              navigator.clipboard.writeText(url).then(function () { showToast('Ссылка скопирована'); });
-            } else {
-              prompt('Ссылка:', url);
-            }
-          });
-        }
+        window.sceneFrame?.cleanupLegacy();
+        var badge = document.createElement('div');
+        badge.className = 'scene-label';
+        badge.textContent = 'Парадоксы вселенной';
+        frame.prepend(badge);
+        window.sceneFrame?.renderSceneHead({ title: itemScene.title || '', slug: slug });
       } else {
         contentEl.innerHTML = '<div class="callout warn">Глитч не найден. <a href="#/overview">На обзор</a>.</div>';
       }
