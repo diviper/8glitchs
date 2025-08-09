@@ -1,13 +1,11 @@
 (() => {
   const LS = {
-    get k() { return { skip: 'intro:alwaysSkip', seen: 'intro:lastSeen', mute: 'intro:mute' }; }
+    get k() { return { skip: 'intro:alwaysSkip', seen: 'intro:lastSeen' }; }
   };
-  const ctx = new (window.AudioContext || window.webkitAudioContext)();
+  const { ctx, gain: busGain } = window.audioBus.ensure();
   const master = ctx.createGain();
-  const VOL_DEFAULT = 0.05;
-  const VOL_MAX = 0.2;
-  master.gain.value = VOL_DEFAULT;
-  master.connect(ctx.destination);
+  master.gain.value = 1;
+  master.connect(busGain);
 
   const noiseBuf = ctx.createBuffer(1, ctx.sampleRate * 2, ctx.sampleRate);
   const data = noiseBuf.getChannelData(0);
@@ -52,19 +50,8 @@
     master.gain.setTargetAtTime(0, now, 0.05);
   }
 
-  function setMuted(m, silent) {
-    localStorage.setItem(LS.k.mute, m ? '1' : '0');
-    if (m) {
-      master.gain.value = 0;
-    } else {
-      if (!silent) startAudioOnGesture();
-      else if (ctx.state !== 'running') ctx.resume();
-      master.gain.value = Math.min(VOL_MAX, Math.max(0, VOL_DEFAULT));
-    }
-  }
-
   function applyMuteUI(btn) {
-    const isMuted = master.gain.value === 0;
+    const isMuted = window.audioBus.isMuted();
     btn && (btn.textContent = isMuted ? '🔇' : '🔊', btn.toggleAttribute('data-muted', isMuted));
   }
 
@@ -181,7 +168,7 @@
     });
 
     function toggleMute() {
-      setMuted(master.gain.value > 0);
+      window.audioBus.setMuted(!window.audioBus.isMuted());
       applyMuteUI(mute);
     }
     mute?.addEventListener('click', toggleMute);
@@ -189,7 +176,6 @@
       if (e.key.toLowerCase() === 'm') toggleMute();
     });
 
-    setMuted(localStorage.getItem(LS.k.mute) === '1', true);
     applyMuteUI(mute);
     if (always && localStorage.getItem(LS.k.skip) === '1') always.checked = true;
   }
@@ -197,7 +183,7 @@
   window.intro = {
     show: showIntro,
     hide,
-    mute: setMuted
+    mute: window.audioBus.setMuted
   };
   window.addEventListener('DOMContentLoaded', () => {
     bind();
