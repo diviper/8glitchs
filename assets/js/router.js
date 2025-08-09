@@ -176,22 +176,26 @@
     });
   }
 
+  
   async function renderMapRoute(){
     try {
-      if (!window.renderMindMap) {
-        if (!window.d3) await loadScript('https://cdn.jsdelivr.net/npm/d3-force@3/dist/d3-force.min.js');
-        await loadScript('assets/js/map.js');
-      }
+      if (!window.d3) await loadScript('https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js');
+      if (!window.renderMindMap) await loadScript('assets/js/map.js');
       if (window.renderMindMap) {
         window.renderMindMap();
-      } else if (window.renderMindMapFallback) {
-        window.renderMindMapFallback();
+      } else {
+        throw new Error('renderMindMap missing');
       }
     } catch (e) {
       console.warn('[map] offline/fallback:', e);
       try {
         if (!window.renderMindMapFallback) await loadScript('assets/js/map.js');
-        window.renderMindMapFallback?.();
+        if (window.renderMindMapFallback) {
+          window.renderMindMapFallback();
+        } else {
+          var t = document.querySelector('#content') || document.body;
+          t.innerHTML = '<div class="callout warn">Карта недоступна. Проверьте сеть.</div>';
+        }
       } catch (e2) {
         var target = document.querySelector('#content') || document.body;
         target.innerHTML = '<div class="callout warn">Карта недоступна. Проверьте сеть.</div>';
