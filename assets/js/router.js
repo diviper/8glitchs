@@ -36,22 +36,32 @@
 
   function toRepoURL(relPath) {
     var base = document.baseURI || (location.origin + location.pathname.replace(/[^\/]*$/, ''));
+    var clean = String(relPath || '').replace(/^\//, '');
     try {
-      return new URL(String(relPath).replace(/^\/+/, ''), base).href;
+      return new URL(clean, base).href;
     } catch (e) {
-      console.warn('[router] toRepoURL fallback', relPath, e);
-      return String(relPath).replace(/^\/+/, '');
+      console.warn('[router] toRepoURL fallback', { relPath: relPath, base: base, e: e });
+      return clean;
     }
   }
+
   async function fetchText(relPath) {
     var url = toRepoURL(relPath);
     var r = await fetch(url, { cache: 'no-store' });
     if (!r.ok) throw new Error('MD not found: ' + relPath + ' (' + r.status + ')');
     return r.text();
   }
+
+  function getManifestItem(slug) {
+    var src = window.glitches || window.GLITCHES || window.manifest || {};
+    var list = Array.isArray(src) ? src : (src.items || src.glitches || []);
+    return list.find ? list.find(function (i) { return i.slug === slug; }) : undefined;
+  }
+
   window.repoURL = toRepoURL;
   window.fetchText = fetchText;
   window.safeFetchText = fetchText;
+  window.getManifestItem = getManifestItem;
 
   function updateFocused() {
     var items = listEl.querySelectorAll('.gl-item');
@@ -216,20 +226,23 @@
   }
 
   async function renderCard(slug, anchor) {
-    var glitches = await loadManifest();
-    var item = glitches.find(function (g) { return g.slug === slug; });
-    var mdRel = item && item.paths && item.paths.card ? item.paths.card : null;
-    contentEl.innerHTML = '<div class="card-wrap"><div class="md-body"></div></div>';
-    var target = contentEl.querySelector('.md-body');
-    if (!target) return;
+    var item = getManifestItem && getManifestItem(slug);
+    var path = (item && item.paths && item.paths.card) || ('content/glitches/' + slug + '.md');
+    var target;
     try {
-      var md = await fetchText(mdRel || ('content/glitches/' + slug + '.md'));
-      await window.renderMarkdown(md, target, { slug: slug, item: item, manifest: glitches });
+      var md = await fetchText(path);
+      contentEl.innerHTML = '<div class="card-wrap"><div class="md-body"></div></div>';
+      target = contentEl.querySelector('.md-body');
+      await window.renderMarkdown(md, target, { slug: slug, item: item, manifest: window.glitches });
     } catch (e) {
-      console.warn(e);
-      target.innerHTML = '<div class="callout warn">Карточка временно недоступна.' +
-        (item && item.paths && item.paths.scene ? ' <a class="btn-link" href="#/scene/' + slug + '">Открыть сцену</a>' : '') +
-        '</div>';
+      console.error('[router] card load failed', slug, e);
+      var scenePath = item && item.paths && item.paths.scene;
+      var t = document.getElementById('content') || document.body;
+      var box = document.createElement('div');
+      box.className = 'callout warn';
+      box.innerHTML = '<b>Карточка временно недоступна.</b>' + (scenePath ? ' <a class="btn-link" href="#/scene/' + slug + '">Открыть сцену</a>' : '');
+      t.innerHTML = '';
+      t.appendChild(box);
       return;
     }
     setActive(slug);
@@ -287,28 +300,33 @@
   }
 
   async function renderScene(slug, params) {
-    var glitches = await loadManifest();
-    var item = glitches.find(function (g) { return g.slug === slug; });
+    var item = getManifestItem && getManifestItem(slug);
+    var htmlPath = (item && item.paths && item.paths.scene) || ('scenes/glitch-' + slug + '.html');
+    var url = toRepoURL(htmlPath);
     contentEl.innerHTML = '<div id="scene-root"></div>';
     var root = document.getElementById('scene-root');
-    if (item && item.paths && item.paths.scene) {
-      try {
-        var html = await fetchText(item.paths.scene);
-        html = html.replace(/<script[^>]*scene-frame.js[^>]*><\/script>/gi, '');
-        var parser = new DOMParser();
-        var doc = parser.parseFromString(html, 'text/html');
-        root.innerHTML = doc.body ? doc.body.innerHTML : html;
-        if (typeof window.__initScene === 'function') { try { window.__initScene(); } catch(e){} }
-        if (typeof window.__applyParams === 'function') { try { window.__applyParams(params); } catch(e){} }
-      } catch (e) {
-        console.warn(e.message);
+    try {
+      var html = await fetchText(url);
+      html = html.replace(/<script[^>]*scene-frame.js[^>]*><\/script>/gi, '');
+      var parser = new DOMParser();
+      var doc = parser.parseFromString(html, 'text/html');
+      root.innerHTML = doc.body ? doc.body.innerHTML : html;
+      if (typeof window.__initScene === 'function') { try { window.__initScene(); } catch(e){} }
+      if (typeof window.__applyParams === 'function') { try { window.__applyParams(params); } catch(e){} }
+      window.renderSceneFrame?.(slug, { title: item ? item.title : '', category: item ? item.category : '', tags: item && item.tags ? item.tags : [], intro: item && item.quest ? item.quest.intro : '' });
+      if (typeof window.setLastVisited === 'function') {
+        window.setLastVisited({ type: 'scene', slug: slug });
       }
+      setTitle(item ? item.title : '');
+    } catch (e) {
+      console.error('[router] scene load failed', slug, e);
+      var target = document.getElementById('content') || document.body;
+      var box = document.createElement('div');
+      box.className = 'callout warn';
+      box.textContent = 'Сцена недоступна.';
+      target.innerHTML = '';
+      target.appendChild(box);
     }
-    window.renderSceneFrame?.(slug, { title: item ? item.title : '', category: item ? item.category : '', tags: item && item.tags ? item.tags : [], intro: item && item.quest ? item.quest.intro : '' });
-    if (typeof window.setLastVisited === 'function') {
-      window.setLastVisited({ type: 'scene', slug: slug });
-    }
-    setTitle(item ? item.title : '');
   }
 
   function saveScroll(slug) {
@@ -461,6 +479,7 @@
           } catch (e) { g.tags = []; }
         }));
         try { localStorage.setItem(key, JSON.stringify(data)); } catch (e) {}
+        try { window.glitches = data; } catch (e) {}
         return data;
       })();
     }
