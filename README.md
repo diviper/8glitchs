@@ -32,6 +32,14 @@
 В `localStorage` хранятся настройки интро: `landing:skip`, `landing:muted` и `landing:lastSeen` (TTL 7 дней).
 Параметры отладки: `?hub=1` — сразу в хаб, `?skip=0` — показать интро принудительно.
 
+## Связанные глитчи (End Map)
+
+После каждой карточки показываются связанные глитчи. Чипы строятся по категории и общим тегам.
+
+## Карта реестра (Mind Map)
+
+Маршрут `#/map` открывает интерактивную карту всего реестра. Узлы окрашены по категориям, клик ведёт в карточку.
+
 ## Линт и тесты
 
 ```bash
@@ -55,4 +63,5 @@ MIT
 1. Создайте Markdown `content/glitches/<slug>.md` по шаблону.
 2. При наличии интерактива добавьте `scenes/glitch-<slug>.html` с API `__initScene/__applyParams/__getShareParams`.
 3. Добавьте запись в `content/glitches.json` с путями и статусом.
-4. Запустите `npm run check:manifest` и линтеры перед PR.
+4. Заполняйте `tags` в YAML — они улучшают End Map и Mind Map.
+5. Запустите `npm run check:manifest` и линтеры перед PR.

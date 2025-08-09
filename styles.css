@@ -915,3 +915,12 @@ input, select {
 .no-effects .overlay { display:none; }
 .lex{ border-bottom:1px dashed rgba(255,255,255,.5); cursor:help }
 .lex-pop{ position:absolute; z-index:10000; max-width:320px; padding:10px 12px; border:1px solid rgba(255,255,255,.15); border-radius:10px; background:rgba(0,0,0,.85); backdrop-filter:blur(6px) }
+.endmap{margin:24px 0 8px;padding-top:8px;border-top:1px solid rgba(255,255,255,.1)}
+.rel-list{display:flex;flex-wrap:wrap;gap:8px}
+.rel-chip{display:inline-flex;align-items:center;gap:6px;padding:8px 10px;border:1px solid rgba(255,255,255,.18);border-radius:999px;text-decoration:none}
+.rel-chip:hover{background:rgba(255,255,255,.06)}
+.rel-chip .cat{font-size:11px;opacity:.9;padding:0 6px;border-radius:6px;border:1px solid rgba(255,255,255,.2)}
+.rel-chip .scene{font-size:11px;opacity:.8}
+.map-wrap{height:calc(100vh - 140px);margin:0 auto;max-width:1080px}
+.map-toolbar{display:flex;gap:8px;align-items:center;margin:8px 0 12px}
+.map-tip{position:fixed;pointer-events:none;padding:8px 10px;border-radius:8px;border:1px solid rgba(255,255,255,.15);background:rgba(0,0,0,.8)}

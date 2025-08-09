@@ -30,7 +30,7 @@
     }).join('').replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
   }
 
-  window.renderMarkdown = async function (markdown, container) {
+  window.renderMarkdown = async function (markdown, container, opts) {
     await ready;
     var html = marked.parse(stripFrontMatter(markdown));
     var safe = DOMPurify.sanitize(html, { ADD_ATTR: ['target', 'rel'] });
@@ -79,5 +79,15 @@
         attachLexicon(container, dict);
       }
     } catch (e) {}
+
+    if (opts && opts.slug && Array.isArray(opts.manifest) && window.renderRelated) {
+      var box = document.createElement('div');
+      box.className = 'endmap';
+      box.innerHTML = '<h3>Связанные</h3><div class="rel-list"></div>';
+      container.appendChild(box);
+      try {
+        window.renderRelated(box.querySelector('.rel-list'), opts.slug, opts.manifest, opts);
+      } catch (e) {}
+    }
   };
 })();
