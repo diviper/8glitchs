@@ -7,8 +7,6 @@
 - Removed all Share buttons; cards and scenes use unified header markup.
 
 ## Route matrix
-# Route audit
-
 Всего записей: 35. Проблемных: 0.
 
 | slug | category | card | scene | issues |
