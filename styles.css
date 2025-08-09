@@ -812,6 +812,7 @@ input, select {
 .gl-item.active, .gl-item.focused { background:rgba(255,255,255,.08); border-radius:8px; }
 .sidebar .gl-item.active{ background:rgba(255,255,255,.08); }
 .gl-item .check { margin-left:auto; opacity:.85; }
+.gl-item .check.quiz-done { color:#41ff9a; }
 .badge { font-size:11px; padding:1px 6px; border:1px solid rgba(255,255,255,.15); border-radius:999px; opacity:.85; }
 .badge.scene { border-color:#57ffae44; }
 .badge.card  { border-color:#88aaff44; }
@@ -836,6 +837,15 @@ input, select {
 
 .md-body { max-width:820px; margin:0 auto; padding:16px 20px; line-height:1.65; color:inherit; }
 .md-body h2, .md-body h3 { margin:1.2em 0 .4em; font-size:clamp(18px,2vw,22px); scroll-margin-top:84px; }
+.quiz { border:1px solid rgba(255,255,255,.14); border-radius:10px; padding:12px; margin:14px 0; }
+.quiz .q { font-weight:600; margin-bottom:8px; }
+.quiz label { display:block; margin:6px 0; cursor:pointer; }
+.quiz [data-check] { margin-top:8px; }
+.quiz .quiz-result { margin-top:8px; min-height:1em; opacity:.9; }
+.quiz.correct { border-color:#41ff9a55; }
+.quiz.wrong { border-color:#ff7b7b55; }
+.quiz label.correct { color:#41ff9a; }
+.quiz label.wrong { color:#ff7b7b; }
 .lex{border-bottom:1px dashed rgba(255,255,255,.5); cursor:help}
 .lex-pop{position:absolute; z-index:10000; max-width:320px; padding:10px 12px; border:1px solid rgba(255,255,255,.15); border-radius:10px; background:rgba(0,0,0,.85); backdrop-filter:blur(6px)}
 

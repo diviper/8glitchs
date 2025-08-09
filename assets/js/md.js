@@ -35,6 +35,8 @@
     var html = marked.parse(stripFrontMatter(markdown));
     var safe = DOMPurify.sanitize(html, { ADD_ATTR: ['target', 'rel'] });
     container.innerHTML = safe;
+    if (opts && opts.slug) { container.dataset.slug = opts.slug; }
+    try { if (window.quiz && window.quiz.mountAll) window.quiz.mountAll(container); } catch (e) {}
     try { if (window.widgets && window.widgets.mountAll) window.widgets.mountAll(container); } catch (e) {}
     window.currentMarkdownContainer = container;
     container.querySelectorAll('a[target="_blank"]').forEach(function (a) {

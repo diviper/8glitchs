@@ -359,6 +359,10 @@
 
   async function renderList(activeSlug) {
     var glitches = await getManifest();
+    var quizStats = {};
+    if (typeof window.getQuizStats === 'function') {
+      try { quizStats = await window.getQuizStats(); } catch (e) {}
+    }
     var rawSearch = (searchInput.value || '').trim();
     var words = rawSearch.toLowerCase().split(/\s+/).filter(Boolean);
     var category = categorySelect.value;
@@ -399,6 +403,10 @@
         var doneIcon = document.createElement('span');
         doneIcon.className = 'check';
         doneIcon.textContent = '✔';
+        var qs = quizStats.bySlug && quizStats.bySlug[g.slug];
+        if (qs && qs.t > 0 && qs.p === qs.t) {
+          doneIcon.classList.add('quiz-done');
+        }
         a.appendChild(doneIcon);
       }
       listEl.appendChild(a);
@@ -788,6 +796,15 @@ async function handleRoute() {
         bodyOverview.className = 'md-body';
         contentEl.appendChild(bodyOverview);
         await window.renderMarkdown(mdOverview, bodyOverview);
+        if (typeof window.getQuizStats === 'function') {
+          try {
+            var qs = await window.getQuizStats();
+            var info = document.createElement('div');
+            info.textContent = 'Учебный прогресс: ' + qs.passed + '/' + qs.total;
+            var hEl = bodyOverview.querySelector('h1, h2, h3');
+            if (hEl) hEl.insertAdjacentElement('afterend', info); else bodyOverview.prepend(info);
+          } catch (e) {}
+        }
         document.title = 'Glitch Registry — Обзор';
       } catch (e) {
         contentEl.innerHTML = '<div class="empty">Не нашлось</div>';
@@ -833,5 +850,6 @@ async function handleRoute() {
 
   window.addEventListener('hashchange', handleRoute);
   window.addEventListener('DOMContentLoaded', handleRoute);
+  window.addEventListener('quiz-passed', function () { renderList(currentSlug()); });
 })();
 
