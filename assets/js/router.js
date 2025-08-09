@@ -34,20 +34,20 @@
     });
   }
 
-  function repoBase() {
-    var seg = location.pathname.split('/').filter(Boolean)[0];
-    return seg ? '/' + seg + '/' : '/';
+  function repoURL(rel) {
+    var clean = String(rel).replace(/^\/+/, '');
+    return new URL(clean, document.baseURI).href;
   }
+  window.repoURL = repoURL;
 
-  function buildUrl(rel) {
-    return rel.startsWith('http') ? rel : repoBase() + rel.replace(/^\/+/, '');
-  }
-
-  async function fetchText(p) {
-    var r = await fetch(buildUrl(p), { cache: 'no-cache' });
-    if (!r.ok) throw new Error('load fail ' + p + ' (' + r.status + ')');
+  async function safeFetchText(rel) {
+    var clean = String(rel).replace(/^\/+/, '');
+    var url = repoURL(clean);
+    var r = await fetch(url, { cache: 'no-store' });
+    if (!r.ok) throw new Error('MD not found: ' + clean + ' (' + r.status + ')');
     return r.text();
   }
+  window.safeFetchText = safeFetchText;
 
   function updateFocused() {
     var items = listEl.querySelectorAll('.gl-item');
@@ -185,16 +185,22 @@
   }
 
   async function renderMapRoute(){
-    if (!window.d3) await loadScript('https://cdn.jsdelivr.net/npm/d3-force@3/dist/d3-force.min.js').catch(function(){});
-    if (!window.renderMindMap) await loadScript('assets/js/map.js').catch(function(){});
-    (window.renderMindMap || window.renderMindMapFallback)?.();
+    try{
+      if(!window.d3) await loadScript('https://cdn.jsdelivr.net/npm/d3-force@3/dist/d3-force.min.js');
+      if(!window.renderMindMap) await loadScript('assets/js/map.js');
+      window.renderMindMap?.();
+    }catch(e){
+      console.warn('[map] offline/fallback:', e);
+      var target = document.querySelector('#content') || document.body;
+      target.innerHTML = '<div class="callout warn">Карта недоступна. Проверьте сеть.</div>';
+    }
   }
 
   async function renderShow(slug) {
     if (slug === 'intro') { contentEl.innerHTML = ''; window.intro?.show(); return; }
     if (slug === 'bugs') {
       try {
-        var showHtml = await fetchText('reality_bugs_mindmap.html');
+        var showHtml = await safeFetchText('reality_bugs_mindmap.html');
         contentEl.innerHTML = showHtml;
         setTitle('Show');
       } catch (e) {
@@ -213,10 +219,7 @@
     var target = contentEl.querySelector('.md-body');
     if (!target) return;
     try {
-      var mdUrl = buildUrl(mdPath);
-      var res = await fetch(mdUrl);
-      if (!res.ok) throw new Error('MD not found: ' + mdUrl + ' (' + res.status + ')');
-      var md = await res.text();
+      var md = await safeFetchText(mdPath);
       await window.renderMarkdown(md, target, { slug: slug, item: item, manifest: glitches });
     } catch (e) {
       console.warn(e);
@@ -286,7 +289,7 @@
     var root = document.getElementById('scene-root');
     if (item && item.paths && item.paths.scene) {
       try {
-        var html = await fetchText(item.paths.scene);
+        var html = await safeFetchText(item.paths.scene);
         html = html.replace(/<script[^>]*scene-frame.js[^>]*><\/script>/gi, '');
         var parser = new DOMParser();
         var doc = parser.parseFromString(html, 'text/html');
@@ -438,10 +441,10 @@
           var cached = localStorage.getItem(key);
           if (cached) return JSON.parse(cached);
         } catch (e) {}
-        var data = await fetch(buildUrl('content/glitches.json'), { cache: 'no-store' }).then(function (r) { return r.json(); });
+        var data = await fetch(repoURL('content/glitches.json'), { cache: 'no-store' }).then(function (r) { return r.json(); });
         await Promise.all(data.map(async function (g) {
           try {
-            var txt = await fetchText(g.paths.card);
+            var txt = await safeFetchText(g.paths.card);
             var m = txt.match(/^---\s*([\s\S]*?)\n---/);
             if (m) {
               var tagsMatch = m[1].match(/tags:\s*\[(.*?)\]/);
@@ -618,7 +621,7 @@ async function handleRoute() {
       return;
     } else if (route === 'overview' || !route) {
       try {
-        var mdOverview = await fetchText('content/overview.md');
+        var mdOverview = await safeFetchText('content/overview.md');
         contentEl.innerHTML = '';
 
         var grid = document.createElement('div');

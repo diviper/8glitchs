@@ -5,10 +5,10 @@
     var nodes = Array.from(container.childNodes);
     container.innerHTML = '
       <div class="head"><h1 class="title"></h1><span class="chip cat"></span><div class="tags"></div></div>
-      <section class="scene-wrap">
-        <canvas id="scene-bg"></canvas>
+      <div class="scene-root">
+        <canvas id="scene-bg" class="scene-bg"></canvas>
         <div class="scene-content"></div>
-      </section>';
+      </div>';
     var head = container.querySelector('.head');
     head.querySelector('.title').textContent = meta.title || '';
     var catEl = head.querySelector('.chip.cat');
@@ -31,10 +31,10 @@
       p.textContent = meta.intro || 'эта сцена ещё в разработке';
       content.appendChild(p);
     }
-    var wrap = container.querySelector('.scene-wrap');
-    var bg = container.querySelector('#scene-bg');
+    var root = container.querySelector('.scene-root');
+    var bg = container.querySelector('.scene-bg');
     function fit(){
-      var r = wrap.getBoundingClientRect();
+      var r = root.getBoundingClientRect();
       bg.width = r.width;
       bg.height = r.height;
     }
