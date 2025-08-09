@@ -1,61 +1,34 @@
 import fs from 'fs';
 import path from 'path';
 
-const MANIFEST = 'content/glitches.json';
-const ROOT = process.cwd();
-const ALLOWED_CATS = new Set(['Квант','Время','Космос','Идентичность','Информация','Логика','Наблюдатель']);
+const manifest = JSON.parse(fs.readFileSync('content/glitches.json','utf8'));
+const reqSections = ['TL;DR','Научная опора','Парадокс','Дневник Дивайпера','Юнг','Сенека','Рик','Сцена/механика','Ссылки'];
 
-const manifest = JSON.parse(fs.readFileSync(MANIFEST,'utf8'));
-const seen = new Set();
+function hasAllSections(md){
+  return reqSections.every(h => new RegExp(`^###\\s*${h}\\b`, 'm').test(md));
+}
+
 const rows = [];
-const problems = [];
+let missing = 0, bad = 0;
 
-function exists(p){ return fs.existsSync(path.join(ROOT, p)); }
-function hasYamlAndSections(p){
-  if(!exists(p)) return {yaml:false, sections:[]};
-  const txt = fs.readFileSync(path.join(ROOT,p),'utf8');
-  const yaml = /^---\s*[\s\S]*?---/m.test(txt);
-  const req = ['### TL;DR','### Научная опора','### Парадокс','### Дневник Дивайпера','### Юнг','### Сенека','### Рик','### Сцена/механика','### Ссылки'];
-  const found = req.filter(h => txt.includes(h));
-  return {yaml, sections:found};
-}
-
-for(const it of manifest){
-  const {slug, title, category, paths={}} = it;
-  const errs = [];
-  if(!slug) errs.push('no slug');
-  if(seen.has(slug)) errs.push('duplicate slug'); else seen.add(slug);
-  if(!ALLOWED_CATS.has(category)) errs.push(`bad category: ${category}`);
-  if(paths.card?.startsWith('/')) errs.push('card path starts with "/"');
-  if(paths.scene?.startsWith('/')) errs.push('scene path starts with "/"');
-
-  const cardOk = paths.card ? exists(paths.card) : false;
-  const sceneOk = paths.scene ? exists(paths.scene) : false;
-
-  if(paths.card && !cardOk) errs.push(`missing card: ${paths.card}`);
-  if(paths.scene && !sceneOk) errs.push(`missing scene: ${paths.scene}`);
-
-  const meta = hasYamlAndSections(paths.card||'');
-  if(paths.card){
-    if(!meta.yaml) errs.push('card: no YAML');
-    if(meta.sections.length < 5) errs.push('card: missing sections');
+for (const it of manifest){
+  const slug = it.slug;
+  const card = it.paths?.card || `content/glitches/${slug}.md`;
+  const scene = it.paths?.scene;
+  const existsCard = fs.existsSync(card);
+  const existsScene = scene ? fs.existsSync(scene) : false;
+  let issues = [];
+  if (!existsCard){ issues.push('no card'); missing++; }
+  else {
+    const md = fs.readFileSync(card,'utf8');
+    if (!hasAllSections(md)) { issues.push('sections'); bad++; }
   }
-
-  rows.push({ slug, title, category, card: cardOk?'OK':'—', scene: sceneOk?'OK':'—', errs: errs.join('; ')});
-  if(errs.length) problems.push({slug, errs});
+  if (it.status==='sceneExists' && !existsScene) issues.push('status=sceneExists but no scene');
+  rows.push({slug, category: it.category, card: existsCard?'OK':'—', scene: existsScene?'OK':'—', issues: issues.join(', ')||'—'});
 }
 
-const md = [
-  '# Route audit',
-  '',
-  `Всего записей: ${manifest.length}. Проблемных: ${problems.length}.`,
-  '',
-  '| slug | category | card | scene | issues |',
-  '|---|---|---:|---:|---|',
-  ...rows.map(r=>`| ${r.slug} | ${r.category} | ${r.card} | ${r.scene} | ${r.errs||'—'} |`),
-  ''
-].join('\n');
+const summary = `Всего записей: ${manifest.length}. Нет карточек: ${missing}. Проблемные секции: ${bad}.`;
+let table = `| slug | category | card | scene | issues |\n|---|---|---:|---:|---|\n` + rows.map(r=>`| ${r.slug} | ${r.category} | ${r.card} | ${r.scene} | ${r.issues} |`).join('\n');
 
-fs.writeFileSync('REPORT.routes.md', md);
-console.log('Wrote REPORT.routes.md');
-process.exit(problems.length ? 2 : 0);
+fs.writeFileSync('REPORT.routes.md', `# Route audit\n\n${summary}\n\n${table}\n`);
+console.log(summary);

@@ -53,7 +53,7 @@
   function prefetchHub() {
     if (prefetched) return;
     prefetched = true;
-    ['assets/js/router.js', 'assets/js/md.js', 'assets/js/progress.js'].forEach(function (src) {
+    ['assets/js/router.js', 'assets/js/md.js', 'assets/js/progress.v2.js'].forEach(function (src) {
       var link = document.createElement('link');
       link.rel = 'prefetch';
       link.href = src;

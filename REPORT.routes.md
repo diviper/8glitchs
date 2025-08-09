@@ -1,41 +1,41 @@
-# Route Audit Report
+# Route audit
 
-Всего записей: 35. Проблемных: 0.
+Всего записей: 35. Нет карточек: 0. Проблемные секции: 35.
 
 | slug | category | card | scene | issues |
 |---|---|---:|---:|---|
-| observer-problem | Квант | OK | OK | — |
-| nonlocality | Квант | OK | OK | — |
-| quantum-superposition | Квант | OK | OK | — |
-| quantum-decoherence | Квант | OK | OK | — |
-| quantum-tunneling | Квант | OK | OK | — |
-| quantum-teleportation | Квант | OK | OK | — |
-| quantum-zeno | Квант | OK | — | — |
-| delayed-choice | Квант | OK | — | — |
-| quantum-darwinism | Квант | OK | — | — |
-| collapse-problem | Квант | OK | — | — |
-| arrow-of-time | Время | OK | OK | — |
-| retrocausality | Время | OK | — | — |
-| block-universe | Время | OK | — | — |
-| invisible-universe | Космос | OK | OK | — |
-| fine-tuning | Космос | OK | OK | — |
-| cosmic-loneliness | Космос | OK | OK | — |
-| multiverse-inflation | Космос | OK | — | — |
-| heat-death | Космос | OK | — | — |
-| big-crunch-rip | Космос | OK | — | — |
-| consciousness-problem | Идентичность | OK | OK | — |
-| ship-of-theseus | Идентичность | OK | — | — |
-| mind-uploading | Идентичность | OK | — | — |
-| chinese-room | Идентичность | OK | — | — |
-| free-will-illusion | Идентичность | OK | OK | — |
-| belief-power | Информация | OK | OK | — |
-| landauer | Информация | OK | — | — |
-| bekenstein-bound | Информация | OK | — | — |
-| goodhart-law | Информация | OK | — | — |
-| simulation | Информация | OK | OK | — |
-| map-territory | Информация | OK | — | — |
-| zeno | Логика | OK | — | — |
-| banach-tarski | Логика | OK | OK | — |
-| godel | Логика | OK | — | — |
-| liar | Логика | OK | — | — |
-| anthropic | Космос | OK | — | — |
+| observer-problem | Квант | OK | OK | sections |
+| nonlocality | Квант | OK | OK | sections |
+| quantum-superposition | Квант | OK | OK | sections |
+| quantum-decoherence | Квант | OK | OK | sections |
+| quantum-tunneling | Квант | OK | OK | sections |
+| quantum-teleportation | Квант | OK | OK | sections |
+| quantum-zeno | Квант | OK | — | sections |
+| delayed-choice | Квант | OK | — | sections |
+| quantum-darwinism | Квант | OK | — | sections |
+| collapse-problem | Квант | OK | — | sections |
+| arrow-of-time | Время | OK | OK | sections |
+| retrocausality | Время | OK | — | sections |
+| block-universe | Время | OK | — | sections |
+| invisible-universe | Космос | OK | OK | sections |
+| fine-tuning | Космос | OK | OK | sections |
+| cosmic-loneliness | Космос | OK | OK | sections |
+| multiverse-inflation | Космос | OK | — | sections |
+| heat-death | Космос | OK | — | sections |
+| big-crunch-rip | Космос | OK | — | sections |
+| consciousness-problem | Идентичность | OK | OK | sections |
+| ship-of-theseus | Идентичность | OK | — | sections |
+| mind-uploading | Идентичность | OK | — | sections |
+| chinese-room | Идентичность | OK | — | sections |
+| free-will-illusion | Идентичность | OK | OK | sections |
+| belief-power | Информация | OK | OK | sections |
+| landauer | Информация | OK | — | sections |
+| bekenstein-bound | Информация | OK | — | sections |
+| goodhart-law | Информация | OK | — | sections |
+| simulation | Информация | OK | OK | sections |
+| map-territory | Информация | OK | — | sections |
+| zeno | Логика | OK | — | sections |
+| banach-tarski | Логика | OK | OK | sections |
+| godel | Логика | OK | — | sections |
+| liar | Логика | OK | — | sections |
+| anthropic | Космос | OK | — | sections |

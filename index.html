@@ -46,21 +46,25 @@
   <div id="content" class="content"></div>
 </div>
 <div id="sidebar-overlay"></div>
-<script src="assets/js/theme.js"></script>
-<script src="assets/js/lexicon.js"></script>
-<script src="assets/js/related.js"></script>
-<script src="assets/js/widgets.js"></script>
-<script src="assets/js/quiz.js"></script>
-<script src="assets/js/quest.js"></script>
-  <script src="assets/js/screen-shader.js"></script>
-  <script src="assets/js/night-mode.js"></script>
-  <script src="assets/js/audio.js"></script>
-  <script src="assets/js/paths.js"></script>
-  <script src="assets/js/progress.js"></script>
-  <script src="assets/js/md.js"></script>
-  <script src="assets/js/scene-frame.js"></script>
-  <script src="assets/js/intro.js" defer></script>
-  <script src="assets/js/router.js" defer></script>
+<script src="assets/js/paths.js"></script>
+<script>document.write(
+  [
+    'assets/js/theme.js',
+    'assets/js/lexicon.js',
+    'assets/js/related.js',
+    'assets/js/widgets.js',
+    'assets/js/quiz.js',
+    'assets/js/quest.js',
+    'assets/js/screen-shader.js',
+    'assets/js/night-mode.js',
+    'assets/js/audio.js',
+    'assets/js/progress.v2.js',
+    'assets/js/md.js',
+    'assets/js/scene-frame.js',
+    'assets/js/intro.js',
+    'assets/js/router.js'
+  ].map(s=>`<script src="${repoPaths.withV(s)}"><\/script>`).join('')
+);</script>
 <script>
   window.addEventListener('DOMContentLoaded', () => {
     window.initScreenShader?.();

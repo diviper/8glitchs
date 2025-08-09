@@ -902,6 +902,12 @@ input, select {
 .widget .row{display:flex;gap:8px;align-items:center;margin:6px 0}
 .widget label{opacity:.9;font-size:12px}
 
+.scene-frame, .scene-root {position:relative; width:100%; min-height:100vh;}
+.scene-bg, canvas.scene-bg {position:absolute; inset:0; width:100%; height:100%;}
+.scene-layer {position:relative; z-index:1; max-width:1080px; margin:0 auto; padding:24px;}
+/* на всякий если в сцене нет body — показываем заглушку (см. SceneFrame.mount) */
+.scene-empty {display:flex; align-items:center; justify-content:center; min-height:60vh; opacity:.7;}
+
 /* скрыть «БАГ #n», «серии», старый прогресс в сценах */
 .scene-frame .series,
 .scene-frame .series-header,
