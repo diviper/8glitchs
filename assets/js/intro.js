@@ -1,6 +1,8 @@
 let audioCtx = null;
 let masterGain = null;
 let muted = localStorage.getItem('intro:mute') === 'true';
+const muteBtn = document.getElementById('intro-mute');
+muteBtn?.toggleAttribute('data-muted', muted);
 
 function ensureAudio() {
   if (audioCtx && audioCtx.state !== 'closed') return;
@@ -43,7 +45,9 @@ function setMute(on) {
   muted = on ?? !muted;
   localStorage.setItem('intro:mute', muted);
   if (!audioCtx || audioCtx.state === 'closed') ensureAudio();
+  if (audioCtx.state === 'suspended') audioCtx.resume();
   masterGain.gain.value = muted ? 0 : 0.05;
+  muteBtn?.toggleAttribute('data-muted', muted);
 }
 
 window.intro = {

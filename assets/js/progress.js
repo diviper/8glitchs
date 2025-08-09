@@ -82,7 +82,6 @@ var quizCache = null;
 async function getQuizStats() {
   if (quizCache) return quizCache;
   var res = { total: 0, passed: 0, byCategory: {}, bySlug: {} };
-  if (typeof fetch === 'undefined') return res;
   try {
     var passedMap = {};
     for (var i = 0; i < localStorage.length; i++) {
@@ -94,26 +93,18 @@ async function getQuizStats() {
         passedMap[slug].add(parts[3]);
       }
     }
-    var manifest = await fetch('content/glitches.json').then(function (r) { return r.json(); });
-    for (var j = 0; j < manifest.length; j++) {
-      var g = manifest[j];
-      var slug = g.slug;
-      var mdPath = (g.paths && g.paths.card) || ('content/glitches/' + slug + '.md');
-      var text = await fetch(mdPath).then(function (r) { return r.text(); });
-      var count = (text.match(/<div class="quiz"/g) || []).length;
-      var cat = catSlugMap[g.category] || 'other';
+    var manifest = (window.repoPaths && window.repoPaths.getManifest ? window.repoPaths.getManifest() : []);
+    Object.keys(passedMap).forEach(function (slug) {
+      var count = passedMap[slug].size;
+      res.total += count;
+      res.passed += count;
+      var item = manifest.find ? manifest.find(function (i) { return i.slug === slug; }) : null;
+      var cat = item ? (catSlugMap[item.category] || 'other') : 'other';
       if (!res.byCategory[cat]) res.byCategory[cat] = { t: 0, p: 0 };
-      if (count) {
-        res.byCategory[cat].t += count;
-        res.total += count;
-        var p = passedMap[slug] ? Math.min(passedMap[slug].size, count) : 0;
-        res.byCategory[cat].p += p;
-        res.passed += p;
-        res.bySlug[slug] = { t: count, p: p };
-      } else {
-        res.bySlug[slug] = { t: 0, p: 0 };
-      }
-    }
+      res.byCategory[cat].t += count;
+      res.byCategory[cat].p += count;
+      res.bySlug[slug] = { t: count, p: count };
+    });
   } catch (e) {}
   quizCache = res;
   return res;
@@ -123,7 +114,10 @@ async function getStats() {
   var progress = getProgress();
   var res = { doneCount: progress.length, byCategory: {} };
   try {
-    var manifest = await fetch('content/glitches.json').then(function (r) { return r.json(); });
+    var manifest = (window.repoPaths && window.repoPaths.getManifest ? window.repoPaths.getManifest() : []);
+    if (!manifest.length && window.repoPaths && window.repoPaths.fetchText) {
+      manifest = JSON.parse(await window.repoPaths.fetchText('content/glitches.json'));
+    }
     manifest.forEach(function (g) {
       var slug = catSlugMap[g.category] || 'other';
       if (!res.byCategory[slug]) res.byCategory[slug] = 0;
