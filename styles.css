@@ -812,16 +812,20 @@ input, select {
 
 /* Content */
 .empty { height:40vh; display:grid; place-items:center; opacity:.7; }
-.head{display:flex;flex-direction:column;gap:8px;margin:12px 0 16px;}
-.head .title{font-size:22px;line-height:1.25;margin:0;}
-.head .meta{display:flex;flex-wrap:wrap;gap:6px 8px;align-items:center;}
-.head .tags{display:flex;flex-wrap:wrap;gap:6px 8px;}
+.card-head,.scene-head{display:flex;align-items:center;gap:12px;margin:12px 0;}
+.card-head .title,.scene-head .title{font-size:22px;line-height:1.25;margin:0;}
+.card-head .chips,.scene-head .chips{display:flex;flex-wrap:wrap;gap:6px 8px;}
 .chip{display:inline-flex;align-items:center;padding:6px 8px;border-radius:999px;background:var(--chip-bg);font-size:12px;}
 .chip.cat{color:#02040a;font-weight:600;}
-.card-wrap,.scene-wrap{max-width:980px;margin:0 auto;padding:16px;min-height:calc(100vh - 160px);}
-.scene-canvas{position:relative;min-height:360px;background:rgba(255,255,255,.03);border-radius:12px;border:1px solid rgba(255,255,255,.08);overflow:hidden}
-.scene-canvas canvas,.scene-canvas svg{display:block;width:100%;height:auto}
-.scene-empty{padding:16px;border:1px dashed rgba(255,255,255,.25);border-radius:12px;margin:12px 0;opacity:.9}
+.card-wrap{max-width:980px;margin:0 auto;padding:16px;min-height:calc(100vh - 160px);}
+/* контейнер сцены на всю высоту вьюпорта */
+.scene-wrap{position:relative;min-height:calc(100vh - 56px);display:flex;align-items:stretch;}
+/* фоновая канва/градиент тянется */
+.scene-bg{position:absolute;inset:0;pointer-events:none;}
+/* основной контент сцены */
+.scene-main{position:relative;flex:1;max-width:980px;margin:0 auto;padding:16px 20px 32px;}
+/* шапки без дырок */
+/* .card-head,.scene-head defined above */
 
 .md-body { max-width:100%; margin:0 auto; padding:16px 20px; line-height:1.65; color:inherit; }
 .md-body h2, .md-body h3 { margin:1.2em 0 .4em; font-size:clamp(18px,2vw,22px); scroll-margin-top:84px; }
@@ -837,9 +841,6 @@ input, select {
 .lex{border-bottom:1px dashed rgba(255,255,255,.5); cursor:help}
 .lex-pop{position:absolute; z-index:10000; max-width:320px; padding:10px 12px; border:1px solid rgba(255,255,255,.15); border-radius:10px; background:rgba(0,0,0,.85); backdrop-filter:blur(6px)}
 
-@media (max-width:480px){
-  .head .meta{flex-direction:column;align-items:flex-start;}
-}
 
 .overview-stats { max-width:1080px;margin:0 auto 8px;padding:10px 20px;border:1px solid rgba(255,255,255,.12);border-radius:12px;background:rgba(255,255,255,.03) }
 .overview-stats div { margin:6px 0 }
