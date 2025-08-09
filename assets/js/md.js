@@ -35,6 +35,7 @@
     var html = marked.parse(stripFrontMatter(markdown));
     var safe = DOMPurify.sanitize(html, { ADD_ATTR: ['target', 'rel'] });
     container.innerHTML = safe;
+    try { if (window.widgets && window.widgets.mountAll) window.widgets.mountAll(container); } catch (e) {}
     window.currentMarkdownContainer = container;
     container.querySelectorAll('a[target="_blank"]').forEach(function (a) {
       a.setAttribute('rel', 'noopener noreferrer');

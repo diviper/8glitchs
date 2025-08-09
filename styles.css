@@ -860,6 +860,10 @@ input, select {
 
 .callout { border:1px solid rgba(255,255,255,.12); border-radius:12px; padding:16px 18px; margin:16px 0; background:rgba(255,255,255,.03); }
 .callout.warn { border-color:#ff7b7b33; background:rgba(255,0,0,.06); }
+.widget{margin:14px 0;padding:12px;border:1px solid rgba(255,255,255,.14);border-radius:10px}
+.widget canvas,.widget svg{max-width:100%}
+.widget .row{display:flex;gap:8px;align-items:center;margin:6px 0}
+.widget label{opacity:.9;font-size:12px}
 
 /* скрыть «БАГ #n», «серии», старый прогресс в сценах */
 .scene-frame .series,
