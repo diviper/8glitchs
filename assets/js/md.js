@@ -55,8 +55,8 @@
     try { window.widgets?.mountAll(container); } catch (e) { console.warn('[widgets]', e); }
     container.querySelectorAll('.legacy-banner,.banner,.badges,.g-universe,.btns-legacy,[data-legacy]').forEach(function(n){ n.remove(); });
     var head = document.createElement('div');
-    head.className = 'card-head';
-    head.innerHTML = '<h1 class="title"></h1><span class="chip cat"></span><div class="chips tags"></div>';
+    head.className = 'head';
+    head.innerHTML = '<h1 class="title"></h1><span class="chip cat"></span><div class="tags"></div>';
     var mdH1 = container.querySelector('h1');
     var titleText = opts && opts.item && opts.item.title ? opts.item.title : (mdH1 ? mdH1.textContent : '');
     if (mdH1) mdH1.remove();
@@ -66,38 +66,22 @@
     catEl.textContent = cat;
     try {
       var th = window.theme || window.THEME;
-      catEl.style.background = th.categoryColor(cat);
-      var cFg = th.token ? th.token('chipFg') : '';
-      if (cFg) catEl.style.color = cFg;
+      catEl.style.color = th.catColor ? th.catColor(cat) : th.categoryColor?.(cat);
     } catch(e){}
     var tags = (opts && opts.item && opts.item.tags) ? opts.item.tags : [];
     var maxTags = 6;
     var tagBox = head.querySelector('.tags');
     tags.slice(0, maxTags).forEach(function(t){
       var s = document.createElement('span');
-      s.className = 'chip tag';
+      s.className = 'chip';
       s.textContent = t;
-      try {
-        var th = window.theme || window.THEME;
-        var bg = th.token ? th.token('chipBg') : '';
-        var fg = th.token ? th.token('chipFg') : '';
-        if (bg) s.style.background = bg;
-        if (fg) s.style.color = fg;
-      } catch(e){}
       tagBox.appendChild(s);
     });
     if (tags.length > maxTags) {
       var more = document.createElement('span');
-      more.className = 'chip tag';
+      more.className = 'chip';
       more.textContent = '+' + (tags.length - maxTags);
       more.title = tags.slice(maxTags).join(', ');
-      try {
-        var th2 = window.theme || window.THEME;
-        var bg2 = th2.token ? th2.token('chipBg') : '';
-        var fg2 = th2.token ? th2.token('chipFg') : '';
-        if (bg2) more.style.background = bg2;
-        if (fg2) more.style.color = fg2;
-      } catch(e){}
       tagBox.appendChild(more);
     }
     container.prepend(head);
