@@ -54,6 +54,26 @@
     }
   }
 
+  function renderSceneHead(opts){
+    opts = opts || {};
+    var title = opts.title || '';
+    var slug = opts.slug || '';
+    var head = document.createElement('div');
+    head.className = 'scene-head';
+    head.innerHTML = '\n      <a class="btn-link" href="#/glitch/' + slug + '">← К карточке</a>\n      <div class="spacer"></div>\n      <button class="btn-link" id="shareBtn">Поделиться</button>\n    ';
+    document.querySelector('#scene-frame')?.prepend(head);
+    head.querySelector('#shareBtn')?.addEventListener('click', async function(){
+      var url = location.href;
+      try{ await navigator.share?.({ title: title, url: url }); } catch(e){}
+      try{ await navigator.clipboard?.writeText(url); window.showToast?.('Ссылка скопирована'); } catch(e){}
+    });
+  }
+
+  function cleanupLegacy(){
+    document.querySelectorAll('.hero,.legacy,.series,.bug-series,.project-banner,.btns').forEach(function(n){ n.remove(); });
+    document.querySelectorAll('.chipbar,.chips,.hero-badges').forEach(function(n){ n.remove(); });
+  }
+
   function init(){
     if(typeof window.__initScene === 'function'){
       try{ window.__initScene(); } catch(e){}
@@ -69,5 +89,6 @@
 
   window.applyQuery = applyQuery;
   window.copyShareUrl = copyShareUrl;
+  window.sceneFrame = { renderSceneHead: renderSceneHead, cleanupLegacy: cleanupLegacy };
   window.addEventListener('DOMContentLoaded', init);
 })();
