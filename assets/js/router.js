@@ -423,7 +423,6 @@
     saveScroll(lastSlug);
     closeSidebar();
     if (!location.hash) {
-      location.hash = '#/overview';
       return;
     }
     var rawHash = location.hash.slice(1);
