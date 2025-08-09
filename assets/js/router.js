@@ -24,15 +24,28 @@
   var lastSlug = null;
   var scrollHandler = null;
 
+  if (sidebar) {
+    sidebar.addEventListener('click', function (e) {
+      var li = e.target.closest('.item[data-slug]');
+      if (!li) return;
+      e.preventDefault();
+      var slug = li.dataset.slug;
+      location.hash = '#/glitch/' + slug;
+    });
+  }
+
   function basePath() {
     var repo = location.pathname.split('/')[1];
     return repo ? '/' + repo + '/' : '/';
   }
 
-  async function loadMd(mdPath) {
-    var url = new URL(mdPath, basePath());
-    var r = await fetch(url.href, { cache: 'no-cache' });
-    if (!r.ok) throw new Error('MD not found: ' + mdPath + ' (' + r.status + ')');
+  function toUrl(p) {
+    return new URL(p, basePath()).href;
+  }
+
+  async function loadText(p) {
+    var r = await fetch(toUrl(p), { cache: 'no-cache' });
+    if (!r.ok) throw new Error(p + ' (' + r.status + ')');
     return r.text();
   }
 
@@ -197,7 +210,7 @@
     if (slug === 'intro') { contentEl.innerHTML = ''; window.intro?.show(); return; }
     if (slug === 'bugs') {
       try {
-        var showHtml = await fetch('reality_bugs_mindmap.html').then(function (r) { return r.text(); });
+        var showHtml = await loadText('reality_bugs_mindmap.html');
         contentEl.innerHTML = showHtml;
         setTitle('Show');
       } catch (e) {
@@ -214,15 +227,18 @@
     var mdPath = item && item.paths && item.paths.card ? item.paths.card : ('content/glitches/' + slug + '.md');
     contentEl.innerHTML = '<div class="card-wrap"><div class="md-body"></div></div>';
     var target = contentEl.querySelector('.md-body');
+    if (!target) return;
     var md = '';
     try {
-      md = await loadMd(mdPath);
+      md = await loadText(mdPath);
     } catch (e) {
       console.warn(e);
       showWarnCard(item);
       return;
     }
     await window.renderMarkdown(md, target, { slug: slug, item: item, manifest: glitches });
+    try { window.widgets?.mountAll(target); } catch (e) { console.warn('[widgets]', e); }
+    setActive(slug);
     var headings = target.querySelectorAll('h3');
     if (headings.length >= 2) {
       var toc = document.createElement('div');
@@ -284,7 +300,7 @@
     var root = document.getElementById('scene-root');
     if (item && item.paths && item.paths.scene) {
       try {
-        var html = await fetch(new URL(item.paths.scene, basePath())).then(function (r) { return r.text(); });
+        var html = await loadText(item.paths.scene);
         html = html.replace(/<script[^>]*scene-frame.js[^>]*><\/script>/gi, '');
         var parser = new DOMParser();
         var doc = parser.parseFromString(html, 'text/html');
@@ -436,10 +452,10 @@
           var cached = localStorage.getItem(key);
           if (cached) return JSON.parse(cached);
         } catch (e) {}
-        var data = await fetch(new URL('content/glitches.json', basePath()), { cache: 'no-store' }).then(function (r) { return r.json(); });
+        var data = await fetch(toUrl('content/glitches.json'), { cache: 'no-store' }).then(function (r) { return r.json(); });
         await Promise.all(data.map(async function (g) {
           try {
-            var txt = await loadMd(g.paths.card);
+            var txt = await loadText(g.paths.card);
             var m = txt.match(/^---\s*([\s\S]*?)\n---/);
             if (m) {
               var tagsMatch = m[1].match(/tags:\s*\[(.*?)\]/);
@@ -500,7 +516,7 @@
     results.forEach(function (item) {
       var g = item.g;
       var a = document.createElement('a');
-      a.className = 'gl-item';
+      a.className = 'gl-item item';
       a.href = '#/glitch/' + g.slug + getFilterQuery();
       a.dataset.slug = g.slug;
       a.setAttribute('tabindex', '0');
@@ -529,7 +545,7 @@
       }
       listEl.appendChild(a);
     });
-    highlightActive(activeSlug);
+    setActive(activeSlug);
   }
 
   function applyFilters(params) {
@@ -546,17 +562,17 @@
     saveCat();
   }
 
-  function highlightActive(slug) {
+  function setActive(slug) {
     var idx = -1;
-    listEl.querySelectorAll('.gl-item').forEach(function (el, i) {
-      var isActive = el.dataset.slug === slug;
-      el.classList.toggle('active', isActive);
-      el.setAttribute('aria-selected', isActive ? 'true' : 'false');
-      if (isActive) idx = i;
+    document.querySelectorAll('.sidebar .item').forEach(function (el, i) {
+      var on = el.dataset.slug === slug;
+      el.classList.toggle('active', on);
+      el.setAttribute('aria-selected', on ? 'true' : 'false');
+      if (on) idx = i;
     });
-  navIndex = idx;
-  updateFocused();
-}
+    navIndex = idx;
+    updateFocused();
+  }
 
 function parseHash(hash) {
   var h = hash.startsWith('#') ? hash.slice(1) : hash;
@@ -612,11 +628,11 @@ async function handleRoute() {
       await renderScene(slug, params);
     } else if (route === 'show') {
       await renderShow(slug);
-      highlightActive(null);
+      setActive(null);
       return;
     } else if (route === 'overview' || !route) {
       try {
-        var mdOverview = await fetch('content/overview.md').then(function (r) { return r.text(); });
+        var mdOverview = await loadText('content/overview.md');
         contentEl.innerHTML = '';
 
         var grid = document.createElement('div');
@@ -729,12 +745,12 @@ async function handleRoute() {
       } catch (e) {
         contentEl.innerHTML = '<div class="empty">Не нашлось</div>';
       }
-      highlightActive(null);
+      setActive(null);
       return;
     } else if (route === 'map') {
       setTitle('Карта');
       await renderMapRoute();
-      highlightActive(null);
+      setActive(null);
       return;
     } else {
       location.hash = '#/overview';
@@ -744,7 +760,7 @@ async function handleRoute() {
       location.hash = '#/overview';
     }
 
-    highlightActive(slug);
+    setActive(slug);
   }
 
   function currentSlug() {

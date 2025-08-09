@@ -819,11 +819,11 @@ input, select {
 .chip.cat{color:#02040a;font-weight:600;}
 .card-wrap{max-width:980px;margin:0 auto;padding:16px;min-height:calc(100vh - 160px);}
 /* контейнер сцены на всю высоту вьюпорта */
-.scene-wrap{position:relative;min-height:calc(100vh - 56px);display:flex;align-items:stretch;}
+.scene-wrap{position:relative;min-height:calc(100vh - 56px);}
 /* фоновая канва/градиент тянется */
 .scene-bg{position:absolute;inset:0;pointer-events:none;}
 /* основной контент сцены */
-.scene-main{position:relative;flex:1;max-width:980px;margin:0 auto;padding:16px 20px 32px;}
+.scene-main{position:relative;max-width:980px;margin:0 auto;padding:16px 20px 32px;}
 /* шапки без дырок */
 /* .card-head,.scene-head defined above */
 
@@ -970,6 +970,7 @@ input, select {
 
 #intro{position:fixed;inset:0;z-index:9999;display:grid;place-items:center;background:#000;overflow:hidden}
 #intro[hidden]{display:none}
+#intro.hidden{display:none !important;pointer-events:none}
 #intro-canvas{position:absolute;inset:0;width:100%;height:100%}
 .intro-ui{position:relative;text-align:center;padding:24px 28px}
 .intro-ui h1{margin:0 0 8px}

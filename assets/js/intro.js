@@ -3,9 +3,10 @@
     get k() { return { skip: 'intro:alwaysSkip', seen: 'intro:lastSeen' }; }
   };
   const { ctx, gain: busGain } = window.audioBus.ensure();
-  const master = ctx.createGain();
-  master.gain.value = 1;
-  master.connect(busGain);
+  const masterGain = ctx.createGain();
+  masterGain.gain.value = 1;
+  masterGain.connect(busGain);
+  const root = document.getElementById('intro');
 
   const noiseBuf = ctx.createBuffer(1, ctx.sampleRate * 2, ctx.sampleRate);
   const data = noiseBuf.getChannelData(0);
@@ -16,14 +17,14 @@
   const lp = ctx.createBiquadFilter();
   lp.type = 'lowpass';
   lp.frequency.value = 800;
-  noise.connect(lp).connect(master);
+  noise.connect(lp).connect(masterGain);
 
   const osc = ctx.createOscillator();
   osc.type = 'sine';
   osc.frequency.value = 110;
   const env = ctx.createGain();
   env.gain.value = 0.0;
-  osc.connect(env).connect(master);
+  osc.connect(env).connect(masterGain);
 
   let started = false, rafId;
   let ctx2d;
@@ -47,7 +48,7 @@
     const now = ctx.currentTime;
     env.gain.cancelScheduledValues(now);
     env.gain.linearRampToValueAtTime(0.0, now + 0.2);
-    master.gain.setTargetAtTime(0, now, 0.05);
+    masterGain.gain.setTargetAtTime(0, now, 0.05);
   }
 
   function applyMuteUI(btn) {
@@ -101,7 +102,7 @@
   }
 
   function showIntro() {
-    document.getElementById('intro')?.classList.remove('hidden');
+    root?.classList.remove('hidden');
     requestAnimationFrame(draw);
     requestIdleCallback?.(prefetch);
   }
@@ -118,9 +119,10 @@
   }
 
   function hide() {
+    root?.classList.add('hidden');
+    try { masterGain?.gain.setTargetAtTime(0, ctx.currentTime, 0.05); } catch {}
+    try { ctx?.close?.(); } catch {}
     cancelAnimationFrame(rafId);
-    stopAudio();
-    document.getElementById('intro')?.classList.add('hidden');
   }
 
   function hideToHub() {
@@ -130,7 +132,7 @@
   }
 
   function bind() {
-    const introEl = document.getElementById('intro');
+    const introEl = root;
     const enter = document.getElementById('intro-enter');
     const always = document.getElementById('intro-always-skip');
     const mute = document.getElementById('intro-mute');
