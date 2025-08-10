@@ -1,7 +1,7 @@
 [
   {"slug":"observer-problem","title":"Проблема наблюдателя","category":"Квант","status":"sceneExists","paths":{"card":"content/glitches/observer-problem.md","scene":"scenes/glitch-observer-problem.html"}},
   {"slug":"nonlocality","title":"Нелокальность (ЭПР/Белл)","category":"Квант","status":"sceneExists","paths":{"card":"content/glitches/nonlocality.md","scene":"scenes/glitch-nonlocality.html"},"quest":{"intro":"Пары фотонов ждут проверку Белла…","answer":"корреляции"}},
-  {"slug":"quantum-superposition","title":"Суперпозиция","category":"Квант","status":"sceneExists","paths":{"card":"content/glitches/quantum-superposition.md","scene":"scenes/glitch-quantum-superposition.html"},"quest":{"intro":"На экране мерцают полосы от двух щелей…","answer":"интерференция"}},
+  {"slug":"quantum-superposition","title":"Квантовая суперпозиция","category":"Квант","status":"sceneExists","paths":{"card":"content/glitches/quantum-superposition.md","scene":"scenes/glitch-quantum-superposition.html"},"quest":{"intro":"На экране мерцают полосы от двух щелей…","answer":"интерференция"}},
   {"slug":"quantum-decoherence","title":"Декогеренция","category":"Квант","status":"sceneExists","paths":{"card":"content/glitches/quantum-decoherence.md","scene":"scenes/glitch-quantum-decoherence.html"}},
   {"slug":"quantum-tunneling","title":"Квантовое туннелирование","category":"Квант","status":"sceneExists","paths":{"card":"content/glitches/quantum-tunneling.md","scene":"scenes/glitch-quantum-tunneling.html"}},
   {"slug":"quantum-teleportation","title":"Квантовая телепортация","category":"Квант","status":"sceneExists","paths":{"card":"content/glitches/quantum-teleportation.md","scene":"scenes/glitch-quantum-teleportation.html"}},

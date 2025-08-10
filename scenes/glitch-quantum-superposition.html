@@ -1,180 +1,108 @@
-<!-- superposition scene (UTF-8, no BOM) -->
-<style>
-  .scene--superpos {
-    --bg:#0b1020; --fg:#e8f0ff; --muted:#9bb0c8; --accent:#6ee7ff; --warn:#ff9a6e;
-    position:relative; width:100%; min-height:100vh; box-sizing:border-box;
-    padding:clamp(16px,3vw,28px); background:radial-gradient(1200px 600px at 60% 30%, #121a33 0%, #0b1020 60%, #090d1a 100%);
-    color:var(--fg); font:400 16px/1.5 system-ui, -apple-system, Segoe UI, Roboto, Inter, "Helvetica Neue", Arial;
-  }
-  .scene--superpos h1{margin:0 0 .5rem; font:700 clamp(22px,3.4vw,32px)/1.2 inherit}
-  .scene--superpos p.hint{color:var(--muted); margin:.25rem 0 1rem}
-  .panel{display:grid; grid-template-columns: 320px 1fr; gap:24px; align-items:start}
-  @media (max-width:880px){ .panel{grid-template-columns:1fr; gap:16px} }
-  .card{background:#0f1730cc; border:1px solid #1e2a52; border-radius:12px; padding:16px}
-  .ctrls{display:flex; align-items:center; gap:12px; flex-wrap:wrap}
-  .ctrls label{display:flex; align-items:center; gap:8px; cursor:pointer}
-  .legend{display:flex; gap:14px; flex-wrap:wrap; color:var(--muted); font-size:14px; margin-top:10px}
-  .dot{inline-size:10px; block-size:10px; border-radius:50%}
-  .dot.if{background:var(--accent)} .dot.wp{background:#bde056}
-  canvas{width:100%; height:360px; display:block; background:linear-gradient(180deg,#0c142b,#0b1122); border-radius:12px}
-  .row{display:flex; gap:10px; flex-wrap:wrap; margin-top:12px}
-  .btn{appearance:none; border:1px solid #2a3b74; background:#0d1a3a; color:var(--fg);
-       padding:8px 14px; border-radius:10px; cursor:pointer; transition:.15s transform ease, .15s background ease}
-  .btn:hover{transform:translateY(-1px); background:#10214a}
-  .btn.warn{border-color:#5a2c16; background:#2a120a; color:#ffd0bf}
-  .aside{color:var(--muted); font-size:14px}
-</style>
+<!-- htmlhint doctype-first:false -->
+<section class="scene full-bleed" data-scene="quantum-superposition">
+  <style>
+    .scene.full-bleed{position:relative;inset:0;display:block;min-height:calc(100vh - 64px)}
+    .scene .ui{position:absolute;left:1rem;top:1rem;background:rgba(0,0,0,.4);backdrop-filter:blur(6px);
+      padding:.75rem 1rem;border-radius:.75rem;display:flex;gap:.75rem;align-items:center}
+    .scene .ui label{display:flex;gap:.5rem;align-items:center;font:600 14px/1.2 system-ui}
+    .scene canvas{position:absolute;inset:0;width:100%;height:100%}
+    .scene .note{position:absolute;right:1rem;bottom:3.5rem;opacity:.75;font:12px/1.2 system-ui}
+    .scene .done{position:absolute;right:1rem;bottom:1rem}
+    .chip{display:inline-block;padding:.25rem .5rem;border-radius:999px;background:rgba(255,255,255,.08);font:12px/1.2 system-ui}
+    .btn{border:0;border-radius:.6rem;padding:.6rem 1rem;background:#1f6feb;color:#fff;font:600 14px/1;cursor:pointer}
+    .btn:active{transform:translateY(1px)}
+  </style>
 
-<div class="scene--superpos" data-scene-root>
-  <h1>Квантовая суперпозиция — мини-демо</h1>
-  <p class="hint">Переключи «наблюдателя»: с путевым детектором интерференция исчезает.</p>
-
-  <div class="panel">
-    <div class="card">
-      <div class="ctrls">
-        <label><input type="checkbox" id="detector"> Наблюдатель (which-path)</label>
-        <button class="btn" id="reset">Сброс</button>
-        <button class="btn warn" id="close">Завершить сцену</button>
-      </div>
-      <div class="legend">
-        <span><span class="dot if"></span> интерференция</span>
-        <span><span class="dot wp"></span> два независимых пучка (наблюдатель есть)</span>
-      </div>
-      <hr style="border:none;height:1px;background:#1c2650;margin:12px 0">
-      <div class="aside">
-        Модель грубая, но наглядная: без детектора интенсивность пропорциональна <code>cos²(k·x)</code> (с огибающей),
-        с детектором — сумме двух горбов без интерференции.
-      </div>
-    </div>
-
-    <div class="card">
-      <canvas id="plot" width="1100" height="420" aria-label="Экран за двойной щелью"></canvas>
-    </div>
+  <div class="ui" data-ui>
+    <label><input type="checkbox" id="which"> <span>Открыть детектор пути</span></label>
+    <span class="chip" id="mode">Интерференция</span>
   </div>
-</div>
 
-<script>
-/* scene: quantum-superposition (strict IIFE, no globals except SceneFrame usage) */
-(() => {
-  const root = (document.currentScript && document.currentScript.previousElementSibling?.closest('[data-scene-root]')) ||
-               document.querySelector('[data-scene-root]');
-  if (!root || root.__mounted) return; // idempotent
-  root.__mounted = true;
+  <canvas id="slit"></canvas>
+  <div class="note">Суперпозиция → интерференция; детектор пути → сумма интенсивностей без интерференции.</div>
+  <div class="done"><button class="btn" id="finish">Завершить сцену</button></div>
 
-  const $ = sel => root.querySelector(sel);
-  const canvas = $('#plot');
-  const ctx = canvas.getContext('2d', { alpha: false });
+  <script>
+  (function(){
+    const root = document.currentScript.closest('[data-scene="quantum-superposition"]');
+    const cvs  = root.querySelector('#slit');
+    const ctx  = cvs.getContext('2d', { alpha: false });
+    const which = root.querySelector('#which');
+    const mode = root.querySelector('#mode');
+    const finish = root.querySelector('#finish');
 
-  // DPI scale
-  const fit = () => {
-    const ratio = Math.max(1, Math.min(2, (window.devicePixelRatio||1)));
-    const cssW = canvas.clientWidth || 1100;
-    const cssH = canvas.clientHeight || 420;
-    canvas.width = Math.round(cssW * ratio);
-    canvas.height = Math.round(cssH * ratio);
-    ctx.setTransform(ratio,0,0,ratio,0,0); // draw in CSS pixels
-    draw();
-  };
+    let raf = 0, t = 0;
 
-  // model params (not physical units; just shape)
-  let detectorOn = false;
-  const env = (x, w=180) => Math.exp(-(x*x)/(2*w*w)); // gaussian envelope
-  function draw() {
-    const w = canvas.clientWidth || 1100;
-    const h = canvas.clientHeight || 420;
-    ctx.clearRect(0,0,w,h);
-
-    // axes bg
-    const grad = ctx.createLinearGradient(0,0,0,h);
-    grad.addColorStop(0,'#0c142b'); grad.addColorStop(1,'#0b1122');
-    ctx.fillStyle = grad; ctx.fillRect(0,0,w,h);
-
-    // grid
-    ctx.strokeStyle = 'rgba(255,255,255,.06)'; ctx.lineWidth = 1;
-    for (let y=0; y<=h; y+=60){ ctx.beginPath(); ctx.moveTo(0,y+.5); ctx.lineTo(w,y+.5); ctx.stroke(); }
-
-    // compute pattern
-    const midY = h*0.55;
-    const amp = h*0.28;
-    const cx = w/2;
-    const scaleX = 1; // 1px per sample
-    const step = 1;
-
-    // envelope(s)
-    ctx.lineWidth = 2;
-
-    if (!detectorOn){
-      // interference: envelope * cos^2(k x)
-      ctx.strokeStyle = '#6ee7ff';
-      ctx.beginPath();
-      for (let x=0; x<w; x+=step){
-        const X = (x - cx);
-        const envv = env(X, w*0.22);
-        const k = 2 * Math.PI / 28; // fringe spacing
-        const I = envv * Math.pow(Math.cos(k*X), 2);
-        const y = midY - amp * I;
-        if (x===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
-      }
-      ctx.stroke();
-    } else {
-      // which-path: two gaussians w/out interference
-      ctx.strokeStyle = '#bde056'; // first
-      ctx.beginPath();
-      for (let x=0; x<w; x+=step){
-        const X = (x - (cx - 36));
-        const I = env(X, w*0.28);
-        const y = midY - amp * I * .75;
-        if (x===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
-      }
-      ctx.stroke();
-
-      ctx.strokeStyle = '#94c431'; // second
-      ctx.beginPath();
-      for (let x=0; x<w; x+=step){
-        const X = (x - (cx + 36));
-        const I = env(X, w*0.28);
-        const y = midY - amp * I * .75;
-        if (x===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
-      }
-      ctx.stroke();
+    function fit(){
+      const dpr = Math.max(1, devicePixelRatio||1);
+      const w = root.clientWidth || 800;
+      const h = root.clientHeight || 500;
+      cvs.width = Math.floor(w*dpr);
+      cvs.height = Math.floor(h*dpr);
+      cvs.style.width = w+'px';
+      cvs.style.height = h+'px';
+      ctx.setTransform(dpr,0,0,dpr,0,0);
+      ctx.imageSmoothingEnabled = true;
     }
 
-    // baseline
-    ctx.strokeStyle = 'rgba(255,255,255,.12)'; ctx.lineWidth = 1.5;
-    ctx.beginPath(); ctx.moveTo(0, midY+.5); ctx.lineTo(w, midY+.5); ctx.stroke();
-  }
+    function gauss(x, mu, sigma){ const d=(x-mu)/sigma; return Math.exp(-0.5*d*d); }
 
-  // controls
-  const chk = $('#detector');
-  const btnReset = $('#reset');
-  const btnClose = $('#close');
+    function loop(){
+      raf = requestAnimationFrame(loop);
+      t += 0.008;
 
-  const onChk = () => { detectorOn = !!chk.checked; draw(); };
-  const onReset = () => { chk.checked = false; detectorOn = false; draw(); };
-  const onClose = () => {
-    try { window.SceneFrame && window.SceneFrame.unmount && window.SceneFrame.unmount(); }
-    catch(_) {}
-    // mark progress if доступно
-    try { window.markDone && window.markDone('quantum-superposition'); } catch(_){}
-    // fallback: уйти на обзор
-    if (location.hash.startsWith('#/scene/')) location.hash = '#/overview';
-  };
+      const W = cvs.width  / (window.devicePixelRatio||1);
+      const H = cvs.height / (window.devicePixelRatio||1);
 
-  chk.addEventListener('change', onChk);
-  btnReset.addEventListener('click', onReset);
-  btnClose.addEventListener('click', onClose);
-  window.addEventListener('resize', fit, { passive:true });
+      ctx.fillStyle = '#0a0f1a';
+      ctx.fillRect(0,0,W,H);
 
-  // mount
-  fit();
+      const k = 20;           // частота «фазы»
+      const sep = W*0.12;     // расстояние между щелями
+      const sigma = W*0.035;  // ширина «щели»
+      const center = W*0.5;
+      const mix = which.checked;
 
-  // cleanup hook for SceneFrame.unmount()
-  root.__cleanup = () => {
-    window.removeEventListener('resize', fit);
-    chk.removeEventListener('change', onChk);
-    btnReset.removeEventListener('click', onReset);
-    btnClose.removeEventListener('click', onClose);
-    root.__mounted = false;
-  };
-})();
-</script>
+      const grad = ctx.createLinearGradient(0,0,0,H);
+      grad.addColorStop(0,'#9ad1ff'); grad.addColorStop(1,'#68b0ff');
+      ctx.fillStyle = grad;
+
+      ctx.save();
+      ctx.translate(0, H*0.25);
+
+      const baseline = H*0.6;
+      for(let x=0;x<W;x++){
+        const X = x - center;
+
+        const a1 = gauss(X, -sep/2, sigma);
+        const a2 = gauss(X,  sep/2, sigma);
+
+        const amp = a1*Math.cos((X+sep/2)/k + t) + a2*Math.cos((X-sep/2)/k - t);
+        const I_interf = amp*amp;
+        const I_sum = a1*a1 + a2*a2;
+
+        const I = mix ? I_sum : I_interf;
+        const y = Math.min(baseline, I*baseline*1.4);
+
+        ctx.fillRect(x, baseline - y, 1, y);
+      }
+      ctx.restore();
+
+      mode.textContent = mix ? 'Без интерференции (детектор)' : 'Интерференция (нет детектора)';
+    }
+
+    function onMount(){ fit(); loop(); window.addEventListener('resize', fit); }
+    function onUnmount(){ cancelAnimationFrame(raf); window.removeEventListener('resize', fit); }
+
+    finish.addEventListener('click', () => {
+      try { window.Progress?.markDone?.('quantum-superposition'); } catch(e){}
+      finish.textContent = 'Готово ✓';
+      finish.disabled = true;
+    });
+
+    if (window.SceneFrame && typeof window.SceneFrame.register === 'function') {
+      window.SceneFrame.register(root, { onMount, onUnmount });
+    } else { onMount(); }
+  })();
+  </script>
+</section>
