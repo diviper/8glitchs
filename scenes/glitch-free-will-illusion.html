@@ -1,45 +1,49 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-<meta charset="UTF-8">
-<title>Иллюзия свободы воли</title>
-<style>
-body{background:#000;color:#fff;font-family:sans-serif;text-align:center;margin:0;padding:20px;}
-#timer{width:200px;height:200px;margin:0 auto;}
-#log{margin-top:15px;min-height:40px;}
-#controls{margin-top:10px;}
-</style>
-</head>
-<body>
-<svg id="timer" viewBox="0 0 200 200">
-  <circle cx="100" cy="100" r="90" stroke="#555" fill="none" stroke-width="2"></circle>
-  <line id="hand" x1="100" y1="100" x2="100" y2="20" stroke="#0ff" stroke-width="2"></line>
-  <circle id="rp" cx="100" cy="20" r="5" fill="#f00" style="display:none"></circle>
-</svg>
-<div id="controls">
-  <button id="decide">Я решил сейчас</button>
-  <label><input type="checkbox" id="showrp"> показывать RP</label>
-  <button id="reset">Reset</button>
-</div>
-<div id="log"></div>
-<script>
-var period=2000;
-var hand=document.getElementById('hand');
-var rpDot=document.getElementById('rp');
-var decideBtn=document.getElementById('decide');
-var showBox=document.getElementById('showrp');
-var logEl=document.getElementById('log');
-var mode='hide';
-var rpTime=0,cycleStart=0;var logs=[];
-function newCycle(){cycleStart=performance.now();rpTime=cycleStart+Math.random()*period;}
-function animate(){var t=performance.now();var angle=((t-cycleStart)%period)/period*2*Math.PI;var x=100+80*Math.sin(angle);var y=100-80*Math.cos(angle);hand.setAttribute('x2',x);hand.setAttribute('y2',y);if(t-cycleStart>period) newCycle();if(showBox.checked){var rpAngle=((rpTime-cycleStart)%period)/period*2*Math.PI;var rx=100+80*Math.sin(rpAngle);var ry=100-80*Math.cos(rpAngle);rpDot.setAttribute('cx',rx);rpDot.setAttribute('cy',ry);rpDot.style.display='block';} else {rpDot.style.display='none';}requestAnimationFrame(animate);}newCycle();requestAnimationFrame(animate);
-function record(){var now=performance.now();var dt=now-rpTime;logs.unshift('Δt: '+Math.round(dt)+' мс');logs=logs.slice(0,3);logEl.textContent=logs.join('\n');newCycle();}
-decideBtn.addEventListener('click',record);
-showBox.addEventListener('change',function(){mode=this.checked?'show':'hide';applyQuery({mode:mode});});
-document.getElementById('reset').addEventListener('click',function(){mode='hide';showBox.checked=false;applyQuery({});});
-window.__initScene=function(){};
-window.__applyParams=function(q){mode=q.mode==='show'?'show':'hide';showBox.checked=mode==='show';};
-</script>
-<script src="../assets/js/scene-frame.js"></script>
-</body>
-</html>
+<section class="scene full-bleed" data-scene="free-will-illusion">
+  <style>
+    .scene.full-bleed{display:flex;align-items:center;justify-content:center;flex-direction:column;background:var(--color-background)}
+    .timeline{width:min(90%,700px);height:10px;background:var(--color-surface);border-radius:5px;position:relative;margin:2rem 0}
+    .marker{position:absolute;top:50%;width:20px;height:20px;border-radius:50%;transform:translate(-50%,-50%);transition:all 1.5s cubic-bezier(.25,1,.5,1)}
+    .marker.brain{background:var(--color-primary);left:5%}
+    .marker.decision{background:var(--color-secondary);left:5%}
+    .marker-label{position:absolute;top:30px;transform:translateX(-50%);font-size:.8rem;color:var(--color-text-muted)}
+    .marker.brain .marker-label{color:var(--color-primary)}
+    .marker.decision .marker-label{color:var(--color-secondary)}
+    .controls{text-align:center}
+    .note{margin-bottom:1rem;color:var(--color-text-main);font-size:1.2rem;min-height:1.5em}
+    .done{position:absolute;right:1rem;bottom:1rem}
+  </style>
+
+  <div class="controls">
+    <div id="note" class="note">Нажмите, когда решите...</div>
+    <button id="action-btn" class="btn">Совершить действие</button>
+  </div>
+  <div class="timeline">
+    <div id="brain-marker" class="marker brain"><div class="marker-label">Активность мозга</div></div>
+    <div id="decision-marker" class="marker decision"><div class="marker-label">Ваше решение</div></div>
+  </div>
+  <div class="done"><button id="finish" class="btn">Завершить сцену</button></div>
+
+  <script>
+  (function(){
+    const root=document.currentScript.closest('[data-scene="free-will-illusion"]');
+    const note=root.querySelector('#note'),actionBtn=root.querySelector('#action-btn');
+    const brain=root.querySelector('#brain-marker'),decision=root.querySelector('#decision-marker');
+    const finishBtn=root.querySelector('#finish');
+
+    function runExperiment(){
+      actionBtn.disabled=true;
+      note.textContent='Запускаем процесс...';
+      brain.style.left='5%'; decision.style.left='5%';
+
+      setTimeout(()=>{ note.textContent='Мозг инициирует действие...'; brain.style.left='50%'; }, 500);
+      setTimeout(()=>{ note.textContent='Вы осознаете решение...'; decision.style.left='70%'; }, 1000);
+      setTimeout(()=>{ note.textContent='Действие совершено. Активность мозга предшествовала решению.'; }, 1500);
+      setTimeout(()=>{ actionBtn.disabled=false; note.textContent='Нажмите, когда решите...'; }, 4000);
+    }
+    function onMount(){ actionBtn.addEventListener('click',runExperiment); }
+    function onUnmount(){ actionBtn.removeEventListener('click',runExperiment); }
+    finishBtn.addEventListener('click',()=>{try{window.Progress?.markDone?.('free-will-illusion')}catch(e){};finishBtn.textContent='Готово ✓';finishBtn.disabled=true;});
+    if(window.SceneFrame?.register){window.SceneFrame.register(root,{onMount,onUnmount});}else{onMount();}
+  })();
+  </script>
+</section>
