@@ -578,6 +578,7 @@ async function handleRoute() {
   var slug = parsed.slug;
   var anchor = parsed.anchor;
   var params = parsed.query;
+  document.body.classList.toggle('map-active', route === 'map');
   if (!(route === 'show' && slug === 'intro')) { window.intro?.hide?.(); }
   applyFilters(params);
   updateHashQuery();
