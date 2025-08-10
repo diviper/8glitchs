@@ -1,6 +1,6 @@
 # Route audit
 
-Всего записей: 35. Нет карточек: 0. Проблемные секции: 3.
+Всего записей: 35. Нет карточек: 0. Проблемные секции: 0.
 
 | slug | category | card | scene | issues |
 |---|---|---:|---:|---|
@@ -18,12 +18,12 @@
 | retrocausality | Время | OK | — | — |
 | block-universe | Время | OK | — | — |
 | invisible-universe | Космос | OK | OK | — |
-| fine-tuning | Космос | OK | OK | sections |
-| cosmic-loneliness | Космос | OK | OK | sections |
+| fine-tuning | Космос | OK | OK | — |
+| cosmic-loneliness | Космос | OK | OK | — |
 | multiverse-inflation | Космос | OK | — | — |
 | heat-death | Космос | OK | — | — |
 | big-crunch-rip | Космос | OK | — | — |
-| consciousness-problem | Идентичность | OK | OK | sections |
+| consciousness-problem | Идентичность | OK | OK | — |
 | ship-of-theseus | Идентичность | OK | — | — |
 | mind-uploading | Идентичность | OK | — | — |
 | chinese-room | Идентичность | OK | — | — |

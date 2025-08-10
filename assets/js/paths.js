@@ -1,22 +1,63 @@
-window.Repo = (() => {
-  const base = (document.querySelector('base')?.href || (location.origin + location.pathname)).replace(/\/$/, '');
-  const toUrl = p => new URL(String(p).replace(/^\/+/, ''), base + '/');
-  async function fetchText(p) {
-    const res = await fetch(toUrl(p), { cache: 'no-store' });
-    if (!res.ok) throw new Error(`MD not found: ${p} (${res.status})`);
-    return res.text();
-  }
-  const loadScript = src => new Promise((res, rej) => {
-    const s = document.createElement('script');
-    s.src = src;
-    s.onload = res;
-    s.onerror = () => rej(new Error('load ' + src));
-    document.head.appendChild(s);
-  });
-  let manifest = [];
-  const setManifest = data => { manifest = Array.isArray(data) ? data : []; };
-  const getManifest = () => manifest;
-  const getManifestItem = slug => getManifest().find(x => x.slug === slug) || null;
-  return { url: toUrl, fetchText, loadScript, setManifest, getManifest, getManifestItem };
+const base = (() => {
+  const segs = location.pathname.split('/');
+  // If running from file://, path is like /path/to/repo/index.html -> ''
+  // If running from gh-pages, path is like /repo-name/ -> 'repo-name'
+  const repoName = segs.length > 2 ? segs[1] : '';
+  return `/${repoName}`;
 })();
-window.repoPaths = window.Repo;
+
+function toRepoURL(path) {
+  if (!path) throw new Error('toRepoURL: empty path');
+  const cleanPath = String(path).replace(/^\/+/, '');
+  // Use location.origin to handle both http and file protocols
+  return new URL(`${base}/${cleanPath}`.replace(/\/+/g, '/'), location.origin).toString();
+}
+
+async function fetchText(path, options) {
+  const url = toRepoURL(path);
+  const response = await fetch(url, options);
+  if (!response.ok) {
+    throw new Error(`fetchText failed for ${path}: ${response.status} ${response.statusText}`);
+  }
+  return response.text();
+}
+
+function loadScript(src) {
+  return new Promise((resolve, reject) => {
+    const script = document.createElement('script');
+    script.src = src;
+    script.async = true;
+    script.onload = resolve;
+    script.onerror = () => reject(new Error(`Script load error for ${src}`));
+    document.head.appendChild(script);
+  });
+}
+
+let manifestCache;
+async function getManifest() {
+  if (manifestCache) {
+    return manifestCache;
+  }
+  try {
+    const text = await fetchText('content/glitches.json');
+    manifestCache = JSON.parse(text);
+    return manifestCache;
+  } catch (error) {
+    console.error('Failed to load or parse manifest:', error);
+    return []; // Return empty array on failure
+  }
+}
+
+async function getManifestItem(slug) {
+  const manifest = await getManifest();
+  return manifest.find(item => item.slug === slug) || null;
+}
+
+export {
+  base,
+  toRepoURL,
+  fetchText,
+  loadScript,
+  getManifest,
+  getManifestItem,
+};

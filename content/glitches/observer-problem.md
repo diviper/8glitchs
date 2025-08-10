@@ -3,7 +3,7 @@ id: glitch-observer-problem
 title: Проблема наблюдателя
 category: Квант
 tags: [измерение, коллапс, декогеренция]
-status: draft
+status: published
 ---
 
 ### TL;DR

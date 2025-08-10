@@ -1,9 +1,9 @@
 ---
 id: glitch-anthropic
 title: Антропный принцип
-category: Наблюдатель
+category: Космос
 tags: [отбор наблюдателя, селекция]
-status: draft
+status: published
 ---
 
 <!-- markdownlint-disable MD033 -->

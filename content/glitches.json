@@ -27,7 +27,7 @@
   {"slug":"landauer","title":"Принцип Ландауэра","category":"Информация","status":"cardOnly","paths":{"card":"content/glitches/landauer.md","scene":null}},
   {"slug":"bekenstein-bound","title":"Предел Бекенштейна","category":"Информация","status":"cardOnly","paths":{"card":"content/glitches/bekenstein-bound.md","scene":null}},
   {"slug":"goodhart-law","title":"Закон Гудхарта","category":"Информация","status":"cardOnly","paths":{"card":"content/glitches/goodhart-law.md","scene":null}},
-  {"slug":"simulation","title":"Симуляционный аргумент","category":"Информация","status":"sceneExists","paths":{"card":"content/glitches/simulation.md","scene":"scenes/glitch-simulation-argument.html"}},
+  {"slug":"simulation","title":"Симуляционный аргумент","category":"Информация","status":"sceneExists","paths":{"card":"content/glitches/simulation.md","scene":"scenes/glitch-simulation.html"}},
   {"slug":"map-territory","title":"Карта и территория","category":"Информация","status":"cardOnly","paths":{"card":"content/glitches/map-territory.md","scene":null}},
   {"slug":"zeno","title":"Парадоксы Зенона","category":"Логика","status":"cardOnly","paths":{"card":"content/glitches/zeno.md","scene":null}},
   {"slug":"banach-tarski","title":"Банах–Тарский","category":"Логика","status":"sceneExists","paths":{"card":"content/glitches/banach-tarski.md","scene":"scenes/glitch-banach-tarski.html"}},

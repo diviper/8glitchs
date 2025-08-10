@@ -3,7 +3,7 @@ id: glitch-arrow-of-time
 title: Стрела времени
 category: Время
 tags: [энтропия, болцман, H-теорема]
-status: draft
+status: published
 ---
 
 <!-- markdownlint-disable MD033 -->

@@ -22,12 +22,10 @@
 </div>
   <nav>
     <button id="sidebar-toggle" type="button" aria-controls="sidebar">≡ Список</button>
-    <a class="btn-link" href="#/show/intro" id="homeBtn">Главная</a>
-    <a href="#/overview">Реестр</a>
-    <a href="#/scenes">Сцены</a>
+    <a class="btn-link" href="#/overview">Обзор</a>
     <a href="#/map">Карта</a>
     <button id="random-btn" class="btn-link" type="button">🎲 Случайный</button>
-  <button id="lexicon-toggle" class="btn-link" type="button" title="Термины">ⓘ Термины</button>
+    <a href="#" id="download-pdf-btn" class="btn-link" style="margin-left: auto;">Скачать PDF</a>
 </nav>
 <div class="hub">
   <aside class="sidebar">
@@ -46,11 +44,14 @@
   <div id="content" class="content"></div>
 </div>
 <div id="sidebar-overlay"></div>
-<script src="assets/js/paths.js"></script>
+
+<!-- Scripts that define globals, loaded before the module -->
 <script src="assets/js/progress.js"></script>
 <script src="assets/js/md.js"></script>
 <script src="assets/js/scene-frame.js"></script>
 <script src="assets/js/intro.js"></script>
-<script src="assets/js/router.js"></script>
+
+<!-- Main application entry point -->
+<script type="module" src="assets/js/router.js"></script>
 </body>
 </html>
