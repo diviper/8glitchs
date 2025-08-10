@@ -66,7 +66,12 @@ window.addEventListener('keydown', e => {
   if (e.key.toLowerCase() === 'm') setMute();
 });
 
-document.getElementById('intro-enter')?.addEventListener('click', startAudio);
+document.getElementById('intro-enter')?.addEventListener('click', () => {
+  startAudio();
+  try { window.intro?.hide?.(); } catch {}
+  localStorage.setItem('intro:skip', '1');
+  location.hash = '#/overview';
+});
 document.getElementById('intro-mute')?.addEventListener('click', function(){
   startAudio();
   setMute();

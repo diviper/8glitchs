@@ -1,8 +1,4 @@
 (() => {
-  if(!window.d3){
-    const t = document.querySelector('#content') || document.body;
-    t.innerHTML = '<div class="callout warn">Карта недоступна. D3 не загружен.</div>';
-  }
   const catSlugMap = {
     'Квант': 'quant',
     'Время': 'time',
@@ -21,14 +17,12 @@
     'Логика': '#ffd7a8',
     'Наблюдатель': '#b0ffc6'
   };
-  const manifestURL = window.repoURL ? window.repoURL('content/glitches.json') : 'content/glitches.json';
-
-  window.renderMindMapFallback = async function(){
+  window.renderFallbackList = async function () {
     const container = document.getElementById('content');
     if (!container) return;
     container.innerHTML = '';
     let manifest = [];
-    try { manifest = await fetch(manifestURL).then(r => r.json()); } catch(e){}
+    try { manifest = JSON.parse(await window.Repo.fetchText('content/glitches.json')); } catch (e) {}
     const cats = Array.from(new Set(manifest.map(g => g.category)));
     let html = '<ul>';
     cats.forEach(c => {
@@ -40,14 +34,14 @@
   };
 
   window.renderMindMap = async function () {
-    if (!window.d3 || !window.d3.forceSimulation) return window.renderMindMapFallback();
+    if (!window.d3 || !window.d3.forceSimulation) return window.renderFallbackList();
     const container = document.getElementById('content');
     if (!container) return;
     container.innerHTML = '';
 
     let manifest = [];
     try {
-      manifest = await fetch(manifestURL).then(r => r.json());
+      manifest = JSON.parse(await window.Repo.fetchText('content/glitches.json'));
     } catch (e) {}
 
     const toolbar = document.createElement('div');

@@ -1,24 +1,22 @@
-window.__BUILD = (new Date()).toISOString().replace(/[:.]/g,'');
-window.repoPaths = window.repoPaths||{};
-repoPaths.v = () => window.__BUILD;
-repoPaths.withV = (url) => url + (url.includes('?')?'&':'?') + 'v=' + repoPaths.v();
-repoPaths.loadScript = (src) => new Promise((res,rej)=>{
-  const s=document.createElement('script'); s.src=repoPaths.withV(src); s.onload=res; s.onerror=()=>rej(new Error('load '+src));
-  document.head.appendChild(s);
-});
-
-(()=>{'use strict';
-  const base = (() => {
-    const seg = location.pathname.split('/').filter(Boolean)[0] || '';
-    return seg ? `/${seg}/` : '/';
-  })();
-  function toRepoURL(p){ return new URL(p.replace(/^\//,''), location.origin + base).toString(); }
-  async function fetchText(p){
-    const res = await fetch(toRepoURL(p), {cache:'no-store'});
-    if(!res.ok) throw new Error(`MD not found: ${p} (${res.status})`);
+window.Repo = (() => {
+  const base = (document.querySelector('base')?.href || (location.origin + location.pathname)).replace(/\/$/, '');
+  const toUrl = p => new URL(String(p).replace(/^\/+/, ''), base + '/');
+  async function fetchText(p) {
+    const res = await fetch(toUrl(p), { cache: 'no-store' });
+    if (!res.ok) throw new Error(`MD not found: ${p} (${res.status})`);
     return res.text();
   }
-  function getManifest(){ return window.__manifest || []; }
-  function getManifestItem(slug){ return getManifest().find(x => x.slug===slug) || null; }
-  Object.assign(repoPaths, { base, toRepoURL, fetchText, getManifest, getManifestItem });
+  const loadScript = src => new Promise((res, rej) => {
+    const s = document.createElement('script');
+    s.src = src;
+    s.onload = res;
+    s.onerror = () => rej(new Error('load ' + src));
+    document.head.appendChild(s);
+  });
+  let manifest = [];
+  const setManifest = data => { manifest = Array.isArray(data) ? data : []; };
+  const getManifest = () => manifest;
+  const getManifestItem = slug => getManifest().find(x => x.slug === slug) || null;
+  return { url: toUrl, fetchText, loadScript, setManifest, getManifest, getManifestItem };
 })();
+window.repoPaths = window.Repo;

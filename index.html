@@ -47,29 +47,10 @@
 </div>
 <div id="sidebar-overlay"></div>
 <script src="assets/js/paths.js"></script>
-<script>document.write(
-  [
-    'assets/js/theme.js',
-    'assets/js/lexicon.js',
-    'assets/js/related.js',
-    'assets/js/widgets.js',
-    'assets/js/quiz.js',
-    'assets/js/quest.js',
-    'assets/js/screen-shader.js',
-    'assets/js/night-mode.js',
-    'assets/js/audio.js',
-    'assets/js/progress.v2.js',
-    'assets/js/md.js',
-    'assets/js/scene-frame.js',
-    'assets/js/intro.js',
-    'assets/js/router.js'
-  ].map(s=>`<script src="${repoPaths.withV(s)}"><\/script>`).join('')
-);</script>
-<script>
-  window.addEventListener('DOMContentLoaded', () => {
-    window.initScreenShader?.();
-    window.initNightMode?.();
-  });
-</script>
+<script src="assets/js/progress.js"></script>
+<script src="assets/js/md.js"></script>
+<script src="assets/js/scene-frame.js"></script>
+<script src="assets/js/intro.js"></script>
+<script src="assets/js/router.js"></script>
 </body>
 </html>
