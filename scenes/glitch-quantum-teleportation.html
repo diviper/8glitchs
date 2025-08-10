@@ -1,302 +1,97 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Глитчи Юниверси - Квантовая Телепортация</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link href="styles.css" rel="stylesheet">
-    <style>
-        .glitch-page {
-            background: linear-gradient(135deg, var(--dark-bg) 0%, var(--light-bg) 100%);
-            min-height: 100vh;
-            padding: 2rem 0;
-        }
+<!-- htmlhint doctype-first:false -->
+<section class="scene full-bleed" data-scene="quantum-teleportation">
+  <style>
+    .scene.full-bleed{position:relative;inset:0;display:grid;grid-template-rows:auto 1fr auto;min-height:calc(100vh - 64px)}
+    .panel{margin:1rem;display:flex;gap:1rem;flex-wrap:wrap;background:rgba(0,0,0,.4);backdrop-filter:blur(6px);padding:1rem;border-radius:.8rem}
+    .panel label{font:600 13px/1.2 system-ui;display:flex;gap:.5rem;align-items:center}
+    .chip{display:inline-block;padding:.25rem .5rem;border-radius:999px;background:rgba(255,255,255,.08);font:12px/1.2 system-ui}
+    .board{position:relative;margin:0 1rem 1rem 1rem;border-radius:.8rem;background:rgba(255,255,255,.03);display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem;padding:1rem}
+    .card{background:rgba(0,0,0,.35);border-radius:.8rem;padding:1rem}
+    .title{font:600 13px/1 system-ui;opacity:.85;margin-bottom:.5rem}
+    .state{font:12px/1.4 ui-monospace,monospace;opacity:.95}
+    .row{display:flex;gap:.5rem;align-items:center}
+    .btn{border:0;border-radius:.6rem;padding:.6rem 1rem;background:#1f6feb;color:#fff;font:600 14px/1;cursor:pointer}
+    .foot{display:flex;justify-content:flex-end;gap:.5rem;margin:0 1rem 1rem}
+  </style>
 
-        .glitch-content {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            border-radius: 15px;
-            padding: 2rem;
-            margin-bottom: 2rem;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-        }
+  <div class="panel">
+    <label>Состояние источника θ:
+      <input type="range" id="theta" min="0" max="180" step="1" value="32">
+      <span class="chip" id="tval">32°</span>
+    </label>
+    <span class="chip">|ψ⟩ = cos(θ/2)|0⟩ + sin(θ/2)|1⟩ (реальные амплитуды)</span>
+  </div>
 
-        .glitch-title {
-            font-size: 3rem;
-            margin-bottom: 2rem;
-            position: relative;
-            display: inline-block;
-        }
+  <div class="board">
+    <div class="card">
+      <div class="title">1) Подготовка</div>
+      <div class="state" id="prep">A–B = Bell; S = |ψ⟩</div>
+    </div>
+    <div class="card">
+      <div class="title">2) Измерения (два бита)</div>
+      <div class="state" id="meas">m₁,m₂ = —</div>
+    </div>
+    <div class="card">
+      <div class="title">3) Коррекции Боба</div>
+      <div class="state" id="corr">U = X^m₂ · Z^m₁</div>
+    </div>
+    <div class="card">
+      <div class="title">Исходное состояние |ψ⟩</div>
+      <div class="state" id="psi0">—</div>
+    </div>
+    <div class="card">
+      <div class="title">Итог на B после коррекций</div>
+      <div class="state" id="psiB">—</div>
+    </div>
+    <div class="card">
+      <div class="title">Совпадение</div>
+      <div class="state" id="fid">—</div>
+    </div>
+  </div>
 
-        .glitch-title::after {
-            content: '';
-            position: absolute;
-            bottom: -10px;
-            left: 0;
-            width: 100%;
-            height: 3px;
-            background: var(--accent-color);
-            transform: scaleX(0);
-            transition: transform 0.3s ease;
-        }
+  <div class="foot">
+    <button class="btn" id="go">Телепортировать</button>
+    <button class="btn" id="done">Завершить сцену</button>
+  </div>
 
-        .glitch-title:hover::after {
-            transform: scaleX(1);
-        }
+  <script>
+  (function(){
+    const root=document.currentScript.closest('[data-scene="quantum-teleportation"]');
+    const thetaEl=root.querySelector('#theta'), tval=root.querySelector('#tval');
+    const prep=root.querySelector('#prep'), meas=root.querySelector('#meas'), corr=root.querySelector('#corr');
+    const psi0=root.querySelector('#psi0'), psiB=root.querySelector('#psiB'), fid=root.querySelector('#fid');
+    const go=root.querySelector('#go'), done=root.querySelector('#done');
 
-        .glitch-section {
-            margin-bottom: 3rem;
-            opacity: 0;
-            transform: translateY(20px);
-            transition: opacity 0.5s ease, transform 0.5s ease;
-        }
+    function fmt(a,b){return 'α='+a.toFixed(3)+', β='+b.toFixed(3);} 
+    function stateFromTheta(deg){const th=deg*Math.PI/180; const a=Math.cos(th/2), b=Math.sin(th/2); return [a,b];}
+    function fidelity(a,b){const d=Math.hypot(a[0]-b[0], a[1]-b[1]); return Math.max(0,1-d).toFixed(3);}
 
-        .glitch-section.animate-fade-in {
-            opacity: 1;
-            transform: translateY(0);
-        }
+    function refresh(){
+      const ab=stateFromTheta(+thetaEl.value);
+      tval.textContent=thetaEl.value+'°';
+      psi0.textContent=fmt(ab[0],ab[1]);
+      prep.textContent='A–B = Bell; S = |ψ⟩ ('+fmt(ab[0],ab[1])+')';
+      meas.textContent='m₁,m₂ = —';
+      corr.textContent='U = X^m₂ · Z^m₁';
+      psiB.textContent='—'; fid.textContent='—';
+    }
 
-        .glitch-number {
-            font-size: 5rem;
-            font-weight: bold;
-            color: var(--accent-color);
-            opacity: 0.2;
-            position: absolute;
-            right: 2rem;
-            top: 2rem;
-            z-index: -1;
-        }
+    function teleport(){
+      const ab=stateFromTheta(+thetaEl.value);
+      const m1=(Math.random()<0.5)?0:1;
+      const m2=(Math.random()<0.5)?0:1;
+      meas.textContent='m₁='+m1+', m₂='+m2;
+      corr.textContent='U = X^'+m2+' · Z^'+m1;
+      psiB.textContent=fmt(ab[0],ab[1]);
+      fid.textContent='F ≈ '+fidelity(ab,ab);
+    }
 
-        .teleportation-experiment {
-            position: relative;
-            width: 100%;
-            height: 300px;
-            background: rgba(0, 0, 0, 0.2);
-            border-radius: 10px;
-            overflow: hidden;
-            margin: 2rem 0;
-        }
+    function onMount(){refresh(); thetaEl.addEventListener('input',refresh); go.addEventListener('click',teleport);}
+    function onUnmount(){thetaEl.removeEventListener('input',refresh); go.removeEventListener('click',teleport);}
 
-        .qubit {
-            position: absolute;
-            width: 20px;
-            height: 20px;
-            background: var(--primary-color);
-            border-radius: 50%;
-            top: 50%;
-            transform: translateY(-50%);
-            transition: all 1s ease-in-out;
-        }
+    done.addEventListener('click',()=>{try{window.Progress?.markDone?.('quantum-teleportation')}catch{};done.textContent='Готово ✓';done.disabled=true;});
 
-        .qubit.entangled {
-            background: var(--accent-color);
-        }
-
-        .qubit.source {
-            left: 20%;
-        }
-
-        .qubit.target {
-            left: 80%;
-        }
-
-        .measurement-result {
-            position: absolute;
-            top: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(255, 255, 255, 0.1);
-            padding: 0.5rem 1rem;
-            border-radius: 20px;
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
-
-        .measurement-result.visible {
-            opacity: 1;
-        }
-
-        .experiment-controls {
-            display: flex;
-            gap: 1rem;
-            margin: 1rem 0;
-        }
-
-        .experiment-stats {
-            display: flex;
-            justify-content: space-between;
-            padding: 1rem;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 10px;
-            margin-top: 1rem;
-        }
-
-        .navigation-buttons {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 2rem;
-        }
-
-        .navigation-buttons a {
-            padding: 0.5rem 1.5rem;
-            border-radius: 25px;
-            text-decoration: none;
-            transition: all 0.3s ease;
-        }
-
-        .navigation-buttons a:hover {
-            transform: translateY(-2px);
-        }
-    </style>
-</head>
-<body>
-    <nav class="navbar navbar-expand-lg navbar-dark">
-        <div class="container">
-            <a class="navbar-brand glitch-text" href="index.html">Глитчи Юниверси</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="index.html#glitches">Глитчи</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="index.html#visualizations">Визуализации</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="index.html#about">О проекте</a>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </nav>
-
-    <main class="glitch-page">
-        <div class="container">
-            <div class="glitch-content">
-                <h1 class="glitch-title glitch-text" data-text="Квантовая телепортация">Квантовая телепортация</h1>
-                <div class="glitch-number">04</div>
-
-                <div class="glitch-section">
-                    <h2>Введение</h2>
-                    <p>Квантовая телепортация - это процесс передачи квантового состояния частицы на расстояние с помощью запутанных частиц. Важно понимать, что это не передача материи, а передача квантового состояния.</p>
-                </div>
-
-                <div class="glitch-section">
-                    <h2>Принцип работы</h2>
-                    <p>Процесс квантовой телепортации состоит из трёх основных этапов:</p>
-                    <ol>
-                        <li>Создание пары запутанных частиц</li>
-                        <li>Измерение состояния исходной частицы вместе с одной из запутанных частиц</li>
-                        <li>Применение соответствующего преобразования к второй запутанной частице</li>
-                    </ol>
-                </div>
-
-                <div class="glitch-section">
-                    <h2>Интерактивный эксперимент</h2>
-                    <div class="teleportation-experiment" id="teleportation-experiment">
-                        <div class="qubit source"></div>
-                        <div class="qubit target"></div>
-                        <div class="measurement-result">Результат измерения: <span id="measurement-value">-</span></div>
-                    </div>
-                    <div class="experiment-controls">
-                        <button class="btn btn-primary" id="create-entangled">Создать запутанные частицы</button>
-                        <button class="btn btn-primary" id="measure-state">Измерить состояние</button>
-                        <button class="btn btn-secondary" id="reset-teleportation">Сбросить</button>
-                    </div>
-                    <div class="experiment-stats">
-                        <div>Успешные телепортации: <span id="successful-teleports">0</span></div>
-                        <div>Точность передачи: <span id="teleportation-accuracy">0%</span></div>
-                    </div>
-                </div>
-
-                <div class="glitch-section">
-                    <h2>Применение в квантовых технологиях</h2>
-                    <p>Квантовая телепортация является ключевым элементом в развитии:</p>
-                    <ul>
-                        <li>Квантовых компьютеров</li>
-                        <li>Квантовой криптографии</li>
-                        <li>Квантовых сетей</li>
-                        <li>Квантовых сенсоров</li>
-                    </ul>
-                </div>
-
-                <div class="navigation-buttons">
-                    <a href="reality_bug_03_quantum_tunneling.html" class="btn btn-outline-primary">← Квантовое туннелирование</a>
-                    <a href="index.html" class="btn btn-outline-secondary">На главную</a>
-                    <a href="reality_bug_05_quantum_superposition.html" class="btn btn-outline-primary">Квантовая суперпозиция →</a>
-                </div>
-            </div>
-        </div>
-    </main>
-
-    <footer class="footer mt-auto py-3">
-        <div class="container text-center">
-            <span class="text-muted">© 2024 Глитчи Юниверси. Все права защищены.</span>
-        </div>
-    </footer>
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="scripts.js"></script>
-    <script>
-        // Специфичный код для эксперимента с квантовой телепортацией
-        document.addEventListener('DOMContentLoaded', () => {
-            const sourceQubit = document.querySelector('.qubit.source');
-            const targetQubit = document.querySelector('.qubit.target');
-            const measurementResult = document.querySelector('.measurement-result');
-            const measurementValue = document.getElementById('measurement-value');
-            const createEntangledBtn = document.getElementById('create-entangled');
-            const measureStateBtn = document.getElementById('measure-state');
-            const resetBtn = document.getElementById('reset-teleportation');
-            const successfulTeleports = document.getElementById('successful-teleports');
-            const teleportationAccuracy = document.getElementById('teleportation-accuracy');
-            
-            let isEntangled = false;
-            let totalAttempts = 0;
-            let successfulAttempts = 0;
-
-            createEntangledBtn.addEventListener('click', () => {
-                if (!isEntangled) {
-                    sourceQubit.classList.add('entangled');
-                    targetQubit.classList.add('entangled');
-                    isEntangled = true;
-                    measurementResult.classList.remove('visible');
-                }
-            });
-
-            measureStateBtn.addEventListener('click', () => {
-                if (isEntangled) {
-                    totalAttempts++;
-                    const state = Math.random() < 0.5 ? '0' : '1';
-                    measurementValue.textContent = state;
-                    measurementResult.classList.add('visible');
-                    
-                    // Имитация телепортации
-                    setTimeout(() => {
-                        if (Math.random() < 0.95) { // 95% успешность
-                            successfulAttempts++;
-                        }
-                        successfulTeleports.textContent = successfulAttempts;
-                        teleportationAccuracy.textContent = 
-                            Math.round((successfulAttempts / totalAttempts) * 100) + '%';
-                    }, 1000);
-                }
-            });
-
-            resetBtn.addEventListener('click', () => {
-                sourceQubit.classList.remove('entangled');
-                targetQubit.classList.remove('entangled');
-                measurementResult.classList.remove('visible');
-                isEntangled = false;
-                totalAttempts = 0;
-                successfulAttempts = 0;
-                successfulTeleports.textContent = '0';
-                teleportationAccuracy.textContent = '0%';
-            });
-        });
-    </script>
-</body>
-</html> 
+    if(window.SceneFrame?.register){window.SceneFrame.register(root,{onMount,onUnmount});} else {onMount();}
+  })();
+  </script>
+</section>

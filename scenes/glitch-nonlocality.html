@@ -6,25 +6,25 @@
       background:rgba(0,0,0,.4);backdrop-filter:blur(6px);padding:1rem;border-radius:.8rem}
     .panel label{font:600 13px/1.2 system-ui;display:flex;gap:.5rem;align-items:center}
     .row{display:flex;gap:.5rem;align-items:center}
-    .val{display:inline-block;min-width:3.2rem;text-align:right}
+    .val{display:inline-block;min-width:3rem;text-align:right}
     .chip{display:inline-block;padding:.25rem .5rem;border-radius:999px;background:rgba(255,255,255,.08);font:12px/1.2 system-ui}
     canvas{position:absolute;inset:0;width:100%;height:100%}
-    .legend{position:absolute;right:1rem;top:1rem;display:flex;gap:.5rem;align-items:center;opacity:.8}
+    .legend{position:absolute;right:1rem;top:1rem;display:flex;gap:.5rem;align-items:center;opacity:.85}
     .bar{width:12px;height:12px;border-radius:3px;display:inline-block}
     .note{position:absolute;right:1rem;bottom:3.5rem;opacity:.75;font:12px/1.2 system-ui}
     .done{position:absolute;right:1rem;bottom:1rem}
     .btn{border:0;border-radius:.6rem;padding:.6rem 1rem;background:#1f6feb;color:#fff;font:600 14px/1;cursor:pointer}
   </style>
 
-  <div class="panel" data-ui>
+  <div class="panel">
     <div class="row">
       <label><input type="radio" name="model" value="lhv" checked> LHV</label>
       <label><input type="radio" name="model" value="qm"> QM</label>
       <span class="chip" id="sval">S = —</span>
     </div>
-    <div class="row"><label>a: <input type="range" id="a" min="-90" max="90" step="1" value="0"></label><span class="val" id="av">0°</span></div>
-    <div class="row"><label>a′: <input type="range" id="ap" min="-90" max="90" step="1" value="45"></label><span class="val" id="apv">45°</span></div>
-    <div class="row"><label>b: <input type="range" id="b" min="-90" max="90" step="1" value="22"></label><span class="val" id="bv">22°</span></div>
+    <div class="row"><label>a:  <input type="range" id="a"  min="-90" max="90" step="1" value="0"></label>  <span class="val" id="av">0°</span></div>
+    <div class="row"><label>a′: <input type="range" id="ap" min="-90" max="90" step="1" value="45"></label> <span class="val" id="apv">45°</span></div>
+    <div class="row"><label>b:  <input type="range" id="b"  min="-90" max="90" step="1" value="22"></label> <span class="val" id="bv">22°</span></div>
     <div class="row"><label>b′: <input type="range" id="bp" min="-90" max="90" step="1" value="-22"></label><span class="val" id="bpv">-22°</span></div>
   </div>
 
@@ -35,95 +35,66 @@
 
   <script>
   (function(){
-    const root = document.currentScript.closest('[data-scene="nonlocality"]');
-    const cvs = root.querySelector('#plot'); const ctx = cvs.getContext('2d', { alpha:false });
-    const sval = root.querySelector('#sval'); const finish = root.querySelector('#finish');
-    const inputs = ['a','ap','b','bp'].map(id => root.querySelector('#'+id));
-    const vals = ['av','apv','bv','bpv'].map(id => root.querySelector('#'+id));
-    let model = 'lhv', raf=0;
+    const root=document.currentScript.closest('[data-scene="nonlocality"]');
+    const cvs=root.querySelector('#plot'), ctx=cvs.getContext('2d',{alpha:false});
+    const sval=root.querySelector('#sval'), finish=root.querySelector('#finish');
+    const inputs=['a','ap','b','bp'].map(id=>root.querySelector('#'+id));
+    const vals=['av','apv','bv','bpv'].map(id=>root.querySelector('#'+id));
+    let model='lhv';
 
-    root.querySelectorAll('input[name="model"]').forEach(r => r.addEventListener('change', e => { model = e.target.value; draw(); }));
-
-    inputs.forEach((el, i) => el.addEventListener('input', () => {
-      vals[i].textContent = el.value + '°';
-      draw();
-    }));
+    root.querySelectorAll('input[name="model"]').forEach(r=>r.addEventListener('change',e=>{model=e.target.value;draw();}));
+    inputs.forEach((el,i)=>el.addEventListener('input',()=>{vals[i].textContent=el.value+'°';draw();}));
 
     function fit(){
-      const dpr = Math.max(1, devicePixelRatio||1);
-      const w = root.clientWidth || 960, h = root.clientHeight || 560;
-      cvs.width = Math.floor(w*dpr); cvs.height = Math.floor(h*dpr);
-      cvs.style.width = w+'px'; cvs.style.height = h+'px';
+      const dpr=Math.max(1,devicePixelRatio||1);
+      const w=root.clientWidth||960, h=root.clientHeight||560;
+      cvs.width=Math.floor(w*dpr); cvs.height=Math.floor(h*dpr);
+      cvs.style.width=w+'px'; cvs.style.height=h+'px';
       ctx.setTransform(dpr,0,0,dpr,0,0);
     }
-
-    // модели корреляций
-    function E_qm(deg){ const x = deg*Math.PI/180; return -Math.cos(x); }
-    // простая «треугольная» LHV аппроксимация: период π, без нарушения CHSH
+    function E_qm(deg){const x=deg*Math.PI/180;return -Math.cos(x);}
+    // упрощённая LHV-аппроксимация, гарантирует S<=2
     function E_lhv(deg){
-      const x = Math.abs((deg%180+180)%180); // [0,180)
-      const u = (x>90)? 180-x : x; // [0,90]
-      // линейная аппроксимация (E≈1-4u/π) ограниченная [-1,1]
-      const e = 1 - (4*u/180)*Math.PI; // грубо, но даёт S<=2 для стандартных наборов углов
-      return Math.max(-1, Math.min(1, e));
+      const x=Math.abs((deg%180+180)%180);
+      const u=(x>90)?180-x:x;
+      const e=1-(4*u/180);
+      return Math.max(-1,Math.min(1,e));
     }
-
-    function E(a,b){ const d = (a-b); return (model==='qm')? E_qm(d) : E_lhv(d); }
+    function E(a,b){const d=a-b;return (model==='qm')?E_qm(d):E_lhv(d);}
 
     function draw(){
-      cancelAnimationFrame(raf); raf = requestAnimationFrame(_draw);
-    }
-
-    function _draw(){
-      const W = cvs.width/(devicePixelRatio||1), H = cvs.height/(devicePixelRatio||1);
-      ctx.fillStyle = '#0a0f1a'; ctx.fillRect(0,0,W,H);
-
+      const W=cvs.width/(devicePixelRatio||1), H=cvs.height/(devicePixelRatio||1);
+      ctx.fillStyle='#0a0f1a'; ctx.fillRect(0,0,W,H);
       const a=+inputs[0].value, ap=+inputs[1].value, b=+inputs[2].value, bp=+inputs[3].value;
 
-      const s = Math.abs(E(a,b) + E(a,bp) + E(ap,b) - E(ap,bp));
-      const sQM = Math.abs((-Math.cos((a-b)*Math.PI/180)) + (-Math.cos((a-bp)*Math.PI/180)) + (-Math.cos((ap-b)*Math.PI/180)) - (-Math.cos((ap-bp)*Math.PI/180)));
-      const sLHV= (()=>{ const old=model; model='lhv'; const v=Math.abs(E(a,b)+E(a,bp)+E(ap,b)-E(ap,bp)); model=old; return v; })();
+      const S=Math.abs(E(a,b)+E(a,bp)+E(ap,b)-E(ap,bp));
+      const S_QM=Math.abs(E_qm(a-b)+E_qm(a-bp)+E_qm(ap-b)-E_qm(ap-bp));
+      const S_LHV=Math.abs(E_lhv(a-b)+E_lhv(a-bp)+E_lhv(ap-b)-E_lhv(ap-bp));
+      sval.textContent='S = '+S.toFixed(3);
 
-      sval.textContent = 'S = ' + s.toFixed(3);
-
-      // оси
-      const pad = 64; const X0 = pad; const X1 = W-pad; const Y0 = H-pad; const Y1= pad;
-      ctx.strokeStyle = 'rgba(255,255,255,.2)'; ctx.lineWidth = 1;
+      const pad=64, X0=pad, X1=W-pad, Y0=H-pad, Y1=pad, maxS=3;
+      ctx.strokeStyle='rgba(255,255,255,.22)'; ctx.lineWidth=1;
       ctx.beginPath(); ctx.moveTo(X0,Y0); ctx.lineTo(X1,Y0); ctx.moveTo(X0,Y0); ctx.lineTo(X0,Y1); ctx.stroke();
 
-      // направляющие уровни 2 и 2√2
-      const maxS = 3; const y2 = Y0 - (2/maxS)*(Y0-Y1); const ymax = Y0 - ((2*Math.SQRT2)/maxS)*(Y0-Y1);
-      ctx.setLineDash([5,4]); ctx.strokeStyle='rgba(255,255,255,.25)';
-      ctx.beginPath(); ctx.moveTo(X0,y2); ctx.lineTo(X1,y2); ctx.moveTo(X0,ymax); ctx.lineTo(X1,ymax); ctx.stroke();
+      const y2=Y0-(2/maxS)*(Y0-Y1), yTs=Y0-((2*Math.SQRT2)/maxS)*(Y0-Y1);
+      ctx.setLineDash([6,5]); ctx.strokeStyle='rgba(255,255,255,.28)';
+      ctx.beginPath(); ctx.moveTo(X0,y2); ctx.lineTo(X1,y2); ctx.moveTo(X0,yTs); ctx.lineTo(X1,yTs); ctx.stroke();
       ctx.setLineDash([]);
 
-      // столбики S_QM и S_LHV
-      const bw = 60; const cx = X0+100;
-      function bar(x, val, color){
-        const y = Y0 - (val/maxS)*(Y0-Y1);
-        ctx.fillStyle=color; ctx.fillRect(x-bw/2, y, bw, Y0-y);
-        ctx.fillStyle='rgba(255,255,255,.8)'; ctx.font='12px system-ui'; ctx.textAlign='center';
-        ctx.fillText(val.toFixed(3), x, y - 6);
-      }
-      bar(cx, sQM, '#9ad1ff'); bar(cx+100, sLHV, '#ffb86c');
+      const bw=60, cx=X0+120;
+      function bar(x,val,color){const y=Y0-(val/maxS)*(Y0-Y1); ctx.fillStyle=color; ctx.fillRect(x-bw/2,y,bw,Y0-y);
+        ctx.fillStyle='rgba(255,255,255,.85)'; ctx.font='12px system-ui'; ctx.textAlign='center'; ctx.fillText(val.toFixed(3),x,y-6);}
+      bar(cx,S_QM,'#9ad1ff'); bar(cx+110,S_LHV,'#ffb86c');
 
-      // подписи осей
-      ctx.fillStyle='rgba(255,255,255,.7)'; ctx.font='12px system-ui'; ctx.textAlign='left';
-      ctx.fillText('S', X0+6, Y1+12);
-      ctx.textAlign='center'; ctx.fillText('QM', cx, Y0+18); ctx.fillText('LHV', cx+100, Y0+18);
+      ctx.fillText('QM',cx,Y0+18); ctx.fillText('LHV',cx+110,Y0+18);
     }
 
-    finish.addEventListener('click', () => {
-      try { window.Progress?.markDone?.('nonlocality'); } catch(e){}
-      finish.textContent='Готово ✓'; finish.disabled=true;
-    });
+    function onMount(){fit(); inputs.forEach((el,i)=>vals[i].textContent=el.value+'°'); draw(); window.addEventListener('resize',()=>{fit(); draw();});}
+    function onUnmount(){window.removeEventListener('resize',fit);}
 
-    function onMount(){ fit(); inputs.forEach((el,i)=> vals[i].textContent = el.value+'°'); draw(); window.addEventListener('resize', ()=>{fit(); draw();}); }
-    function onUnmount(){ cancelAnimationFrame(raf); window.removeEventListener('resize', fit); }
+    finish.addEventListener('click',()=>{try{window.Progress?.markDone?.('nonlocality')}catch{};finish.textContent='Готово ✓';finish.disabled=true;});
 
-    if (window.SceneFrame && typeof window.SceneFrame.register === 'function') {
-      window.SceneFrame.register(root, { onMount, onUnmount });
-    } else { onMount(); }
+    if(window.SceneFrame?.register){window.SceneFrame.register(root,{onMount,onUnmount});} else {onMount();}
   })();
   </script>
 </section>
