@@ -34,11 +34,12 @@
     });
   }
 
-  var paths = window.repoPaths || {
-    toRepoURL: function (p) { return p; },
+  var paths = window.repoPaths || window.Repo || {
+    url: function (p) { return p; },
     fetchText: function (p) { return fetch(p).then(function (r) { return r.text(); }); },
     getManifestItem: function () { return null; },
-    getManifest: function () { return []; }
+    getManifest: function () { return []; },
+    loadScript: function (src) { return new Promise(function(res, rej){ var s=document.createElement('script'); s.src=src; s.onload=res; s.onerror=rej; document.head.appendChild(s); }); }
   };
 
   function updateFocused() {
@@ -167,30 +168,15 @@
 
 
   
-  async function renderMapRoute(){
+  async function renderMapRoute() {
     try {
-      if (!window.d3) await repoPaths.loadScript('https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js');
-      if (!window.d3?.select) throw new Error('no d3.select');
-      if (!window.renderMindMap) await repoPaths.loadScript('assets/js/map.js');
-      if (window.renderMindMap) {
-        window.renderMindMap();
-      } else {
-        throw new Error('renderMindMap missing');
-      }
+      if (!window.d3) await paths.loadScript('https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js');
+      if (!window.renderMindMap) await paths.loadScript('assets/js/map.js');
+      if (window.d3 && window.renderMindMap) await window.renderMindMap();
+      else if (typeof window.renderFallbackList === 'function') window.renderFallbackList();
     } catch (e) {
-      console.warn('[map] offline/fallback:', e);
-      try {
-        if (!window.renderMindMapFallback) await repoPaths.loadScript('assets/js/map.js');
-        if (window.renderMindMapFallback) {
-          window.renderMindMapFallback();
-        } else {
-          var t = document.querySelector('#content') || document.body;
-          t.innerHTML = '<div class="callout warn">Карта недоступна. Проверьте сеть.</div>';
-        }
-      } catch (e2) {
-        var target = document.querySelector('#content') || document.body;
-        target.innerHTML = '<div class="callout warn">Карта недоступна. Проверьте сеть.</div>';
-      }
+      console.warn('[map] fallback:', e);
+      if (typeof window.renderFallbackList === 'function') window.renderFallbackList();
     }
   }
 
@@ -446,22 +432,8 @@
           if (cached) return JSON.parse(cached);
         } catch (e) {}
         var data = JSON.parse(await paths.fetchText('content/glitches.json'));
-        await Promise.all(data.map(async function (g) {
-          try {
-            var txt = await paths.fetchText(g.paths.card);
-            var m = txt.match(/^---\s*([\s\S]*?)\n---/);
-            if (m) {
-              var tagsMatch = m[1].match(/tags:\s*\[(.*?)\]/);
-              if (tagsMatch) {
-                g.tags = tagsMatch[1].split(',').map(function (s) {
-                  return s.trim().replace(/^['"]|['"]$/g, '');
-                });
-              }
-            }
-          } catch (e) { g.tags = []; }
-        }));
         try { localStorage.setItem(key, JSON.stringify(data)); } catch (e) {}
-        try { window.__manifest = data; window.glitches = data; } catch (e) {}
+        try { window.__manifest = data; window.glitches = data; paths.setManifest && paths.setManifest(data); } catch (e) {}
         return data;
       })();
     }
