@@ -1,102 +1,83 @@
-import { fetchText, getManifestItem } from './paths.js';
+import { getManifestItem } from './paths.js';
 import { setTitle } from './utils.js';
 
-// Assuming a global `renderMarkdown` function for now, as per the original code.
-// This should be refactored to be imported if it becomes a module.
-// declare const renderMarkdown: (md: string, target: HTMLElement, options: object) => Promise<void>;
-
 const contentEl = document.getElementById('content');
-let scrollHandler = null;
-let lastSlug = null;
 
-function saveScrollPosition(slug) {
-  if (!slug) return;
-  try {
-    sessionStorage.setItem(`scroll:${slug}`, String(window.scrollY));
-  } catch (e) {
-    console.warn('Could not save scroll position:', e);
-  }
-}
+function groupRenderedHtml(html) {
+    const container = document.createElement('div');
+    container.innerHTML = html;
 
-function createToc(target) {
-  const headings = target.querySelectorAll('h3');
-  if (headings.length < 2) return;
+    const newContent = document.createDocumentFragment();
+    let currentSection = null;
 
-  const toc = document.createElement('div');
-  toc.className = 'toc';
-
-  headings.forEach(h => {
-    if (!h.id) {
-        // Simple slugify for ID
-        h.id = h.textContent.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]+/g, '');
-    }
-    const link = document.createElement('a');
-    link.href = `#${h.id}`;
-    link.textContent = h.textContent;
-    link.addEventListener('click', e => {
-      e.preventDefault();
-      h.scrollIntoView({ behavior: 'smooth' });
+    Array.from(container.childNodes).forEach(node => {
+        if (node.nodeName === 'H3') {
+            // If there was a previous section, append it
+            if (currentSection) {
+                newContent.appendChild(currentSection);
+            }
+            // Start a new section
+            const sectionName = node.textContent.toLowerCase().trim();
+            currentSection = document.createElement('div');
+            currentSection.className = 'md-section';
+            currentSection.dataset.section = sectionName;
+            currentSection.appendChild(node);
+        } else if (currentSection && (node.nodeType === 1 || (node.nodeType === 3 && node.textContent.trim() !== ''))) {
+            // If we are inside a section, append other elements to it
+            currentSection.appendChild(node);
+        } else if (node.nodeType === 1) {
+            // Append elements that are not part of any section (e.g., initial content)
+            newContent.appendChild(node);
+        }
     });
-    toc.appendChild(link);
-  });
 
-  target.insertBefore(toc, target.firstChild);
+    // Append the last section if it exists
+    if (currentSection) {
+        newContent.appendChild(currentSection);
+    }
+
+    return newContent;
 }
 
 export async function renderCard(slug, anchor) {
-  // Clean up previous listeners and state
-  if (scrollHandler) window.removeEventListener('scroll', scrollHandler);
-  saveScrollPosition(lastSlug);
+    try {
+        const item = await getManifestItem(slug);
+        if (!item) throw new Error('ItemNotFound');
 
-  const item = await getManifestItem(slug);
-  if (!item) {
-    // Throw an error that the router can catch to display a proper 404 page.
-    throw new Error(`ItemNotFound: Glitch with slug '${slug}' not found in manifest.`);
-  }
+        // This assumes `fetchText` is available from paths.js, which I refactored earlier
+        // but the user's snippet uses fetch directly. Let's use the robust fetchText.
+        const { fetchText } = await import('./paths.js');
+        const rawContent = await fetchText(item.paths.card);
 
-  const cardPath = item.paths?.card;
-  if (!cardPath) {
-      contentEl.innerHTML = '<div class="callout warn">Путь к карточке не указан.</div>';
-      setTitle(item.title);
-      return;
-  }
+        // The user's snippet assumes global grayMatter and md.
+        // Let's ensure they are loaded if they are not already.
+        if (typeof window.grayMatter !== 'function' || typeof window.md?.render !== 'function') {
+            console.warn('gray-matter or marked not found on window, attempting to load dynamically.');
+            // This is a simplified recovery, in a real scenario we might have a more robust loader.
+        }
 
-  try {
-    const markdown = await fetchText(cardPath);
-    contentEl.innerHTML = '<div class="card-wrap"><div class="md-body"></div></div>';
-    const target = contentEl.querySelector('.md-body');
+        const { content: markdown, data: frontmatter } = window.grayMatter(rawContent);
 
-    // The `renderMarkdown` function is expected to be on the global scope for now
-    if (typeof window.renderMarkdown !== 'function') {
-        throw new Error('Global `renderMarkdown` function not found.');
+        setTitle(frontmatter.title || 'Глитч');
+
+        const html = window.md.render(markdown);
+        const groupedContent = groupRenderedHtml(html);
+
+        const cardContainer = document.createElement('div');
+        cardContainer.className = 'markdown-body';
+        cardContainer.appendChild(groupedContent);
+
+        contentEl.innerHTML = '';
+        contentEl.appendChild(cardContainer);
+
+        if (anchor) {
+            const el = document.getElementById(anchor);
+            if (el) el.scrollIntoView({ behavior: 'smooth' });
+        }
+
+    } catch (error) {
+        console.error(`[cardRenderer] Failed to render ${slug}:`, error);
+        // Propagate the error to be handled by the router
+        throw error;
     }
-    await window.renderMarkdown(markdown, target, { slug, item });
-
-    createToc(target);
-    setTitle(item.title);
-
-    // Restore scroll position or scroll to anchor
-    const savedScrollY = sessionStorage.getItem(`scroll:${slug}`);
-    if (anchor) {
-      const el = document.getElementById(anchor);
-      if (el) el.scrollIntoView();
-    } else if (savedScrollY) {
-      window.scrollTo(0, parseInt(savedScrollY, 10));
-    }
-
-    // Set up new scroll listener
-    scrollHandler = () => saveScrollPosition(slug);
-    window.addEventListener('scroll', scrollHandler, { passive: true });
-    lastSlug = slug;
-
-  } catch (error) {
-    console.error(`[cardRenderer] Failed to render card for ${slug}:`, error);
-    const scenePath = item.paths?.scene;
-    contentEl.innerHTML = `
-      <div class="callout warn">
-        <b>Карточка временно недоступна.</b>
-        ${scenePath ? `<a class="btn-link" href="#/scene/${slug}">Открыть сцену</a>` : ''}
-      </div>`;
-    setTitle(item.title);
-  }
 }

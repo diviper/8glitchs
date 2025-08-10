@@ -332,3 +332,51 @@ nav {
 #intro.hidden { display: none !important; }
 .intro-ui { position: relative; text-align: center; }
 #intro-mute { position: fixed; top: 12px; right: 12px; }
+
+/* --- Card Renderer V2 Styles --- */
+.content .markdown-body {
+  max-width: 900px; /* Как вы и просили ранее */
+  margin: 0 auto;
+  padding: 1rem;
+}
+
+.md-section {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 0.8rem;
+  margin-bottom: 1.25rem;
+  padding: 1.25rem;
+  overflow: hidden;
+}
+
+.md-section h3 {
+  margin-top: 0;
+  margin-bottom: 0.75rem;
+  font-size: 1.1rem;
+  letter-spacing: 0.5px;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+/* --- Thematic Icons --- */
+.md-section h3::before {
+  content: '';
+  display: inline-block;
+  width: 24px;
+  height: 24px;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  opacity: 0.7;
+}
+
+.md-section[data-section="tldr"] h3::before { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%2382aaff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z'/%3E%3Cpath d='m9 12 2 2 4-4'/%3E%3C/svg%3E"); }
+.md-section[data-section="научная опора"] h3::before { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23c3e88d' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 2a10 10 0 1 0 10 10'/%3E%3Cpath d='M12 12a10 10 0 1 0-10-10'/%3E%3Cpath d='M2 12a10 10 0 1 0 10 10'/%3E%3Cpath d='M2 12a10 10 0 1 0 10-10'/%3E%3C/svg%3E"); }
+.md-section[data-section="парадокс"] h3::before { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23ffcb6b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='10'/%3E%3Cpath d='M12 16v-4'/%3E%3Cpath d='M12 8h.01'/%3E%3C/svg%3E"); }
+.md-section[data-section="дневник дивайпера"] h3::before { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23f07178' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z'/%3E%3Cpath d='M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z'/%3E%3C/svg%3E"); }
+.md-section[data-section="юнг"] h3::before { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23c792ea' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 21v-2'/%3E%3Cpath d='M12 15v-2'/%3E%3Cpath d='M12 9V7'/%3E%3Cpath d='M12 5V3'/%3E%3Cpath d='M5 12H3'/%3E%3Cpath d='M9 12H7'/%3E%3Cpath d='M17 12h-2'/%3E%3E%3Cpath d='M21 12h-2'/%3E%3Cpath d='m16.24 7.76-.78-.78'/%3E%3Cpath d='m8.54 15.46-.78-.78'/%3E%3Cpath d='m16.24 16.24-.78.78'/%3E%3Cpath d='m8.54 8.54-.78.78'/%3E%3C/svg%3E"); }
+.md-section[data-section="сенека"] h3::before { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%2389ddff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 2L2 7l10 5 10-5-10-5z'/%3E%3Cpath d='M2 17l10 5 10-5'/%3E%3Cpath d='M2 12l10 5 10-5'/%3E%3C/svg%3E"); }
+.md-section[data-section="рик"] h3::before { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23f78c6c' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M10 21c-1.7 0-3-1.3-3-3 0-1.7 1.3-3 3-3h1'/%3E%3Cpath d='M17 21c1.7 0 3-1.3 3-3s-1.3-3-3-3h-1'/%3E%3Cpath d='M12 15c-1.7 0-3-1.3-3-3 0-1.7 1.3-3 3-3s3 1.3 3 3'/%3E%3Cpath d='M12 9c1.1 0 2-1.3 2-3s-.9-3-2-3-2 1.3-2 3 .9 3 2 3z'/%3E%3Cpath d='M12 15v-3'/%3E%3Cpath d='M10 15H7'/%3E%3Cpath d='M14 15h3'/%3E%3Cpath d='M10 21H7'/%3E%3Cpath d='M14 21h3'/%3E%3C/svg%3E"); }
+.md-section[data-section="сцена/механика"] h3::before { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23ff5370' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m18 8-4 4h-3v-3l4-4 4 4z'/%3E%3Cpath d='m2 22 5-5'/%3E%3Cpath d='m13.5 8.5 5 5'/%3E%3Cpath d='M2 2l5 5'/%3E%3Cpath d='M7.5 15.5 9 17l-5 5-1.5-1.5z'/%3E%3C/svg%3E"); }
+.md-section[data-section="ссылки"] h3::before { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%2389ddff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.72'/%3E%3Cpath d='M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.72-1.72'/%3E%3C/svg%3E"); }
