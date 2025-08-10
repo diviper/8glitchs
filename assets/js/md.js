@@ -12,23 +12,20 @@
     });
   }
 
-  // Создаем глобальное "обещание", которое разрешится, когда все библиотеки будут готовы
+  // Загружаем скрипты из локальной папки /assets/js/libs/
   window.libsReady = Promise.all([
-    loadScript('https://cdn.jsdelivr.net/npm/marked@4.3.0/marked.min.js'),
-    // Загружаем специальную браузерную версию gray-matter
-    loadScript('https://cdn.jsdelivr.net/npm/gray-matter@4.0.3/browser.js')
+    loadScript('assets/js/libs/marked.min.js'),
+    loadScript('assets/js/libs/gray-matter.js')
   ]).then(() => {
-    // После загрузки, создаем удобные псевдонимы в window
     if (window.marked) {
-      window.md = window.marked; // marked_api.parse -> md.render
+      window.md = window.marked;
     }
     if (window.matter) {
-      // Браузерная версия gray-matter называется `matter`
       window.grayMatter = window.matter;
     }
-    console.log('Markdown & gray-matter libraries are ready.');
+    console.log('Markdown & gray-matter libraries loaded locally.');
   }).catch(error => {
-    console.error('Failed to load critical libraries:', error);
+    console.error('Failed to load local libraries:', error);
   });
 
 })();

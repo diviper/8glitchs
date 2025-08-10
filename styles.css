@@ -1,186 +1,75 @@
-/* --- 8G-17: Final "Synthwave" Theming Implementation --- */
-/* --- Author: Gemini AI Project Manager --- */
-/* --- Date: 2025-08-10 --- */
-
-/* 1. ROOT VARIABLES & GLOBAL STYLES */
+/* --- 8G-18: Final Theming Implementation --- */
 :root {
-  --color-background: #0d0221;    /* Глубокий индиго */
-  --color-surface: #1d0f3b;       /* Фиолетовый оттенок для карточек */
-  --color-primary: #f92f60;      /* Неоновый розовый/красный */
-  --color-secondary: #00f6ff;    /* Неоновый циан */
-  --color-text-main: #f5f5f5;      /* Слегка приглушенный белый */
-  --color-text-muted: #a7a2a9;     /* Серый для второстепенного текста */
-  --color-border: rgba(0, 246, 255, 0.2); /* Полупрозрачная рамка */
-
+  --color-background: #0d0221;
+  --color-surface: #1d0f3b;
+  --color-primary: #f92f60;
+  --color-secondary: #00f6ff;
+  --color-text-main: #f5f5f5;
+  --color-text-muted: #a7a2a9;
+  --color-border: rgba(0, 246, 255, 0.2);
   --font-main: 'ui-monospace', 'Cascadia Code', 'Source Code Pro', Menlo, Consolas, 'DejaVu Sans Mono', monospace;
   --text-glow-primary: 0 0 8px var(--color-primary);
   --text-glow-secondary: 0 0 5px var(--color-secondary);
 }
-
-* {
-  box-sizing: border-box;
-}
-
+* { box-sizing: border-box; }
 html, body {
-  width: 100%;
-  height: 100%;
-  margin: 0;
-  padding: 0;
+  width: 100%; height: 100%; margin: 0; padding: 0;
   background-color: var(--color-background);
   color: var(--color-text-main);
   font-family: var(--font-main);
   font-size: 16px;
 }
-
-a {
-  color: var(--color-secondary);
-  text-decoration: none;
-  transition: all 0.2s ease;
-}
-
-a:hover {
-  filter: brightness(1.2);
-  text-shadow: var(--text-glow-secondary);
-}
-
-/* 2. LAYOUT & NAVIGATION */
+a { color: var(--color-secondary); text-decoration: none; transition: all 0.2s ease; }
+a:hover { filter: brightness(1.2); text-shadow: var(--text-glow-secondary); }
 nav {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
+  display: flex; align-items: center; gap: 1rem;
   padding: 0.75rem 1.5rem;
   background-color: rgba(13, 2, 33, 0.8);
   backdrop-filter: blur(10px);
   border-bottom: 1px solid var(--color-border);
-  position: sticky;
-  top: 0;
-  z-index: 1000;
+  position: sticky; top: 0; z-index: 1000;
 }
-
 nav .btn-link, #sidebar-toggle {
-  color: var(--color-text-main);
-  background: none;
-  border: none;
-  font-family: var(--font-main);
-  font-size: 1rem;
-  cursor: pointer;
-  padding: 0.5rem 1rem;
-  border-radius: 4px;
+  color: var(--color-text-main); background: none; border: none;
+  font-family: var(--font-main); font-size: 1rem; cursor: pointer;
+  padding: 0.5rem 1rem; border-radius: 4px;
 }
-
-nav .btn-link:hover, #sidebar-toggle:hover {
-  background-color: var(--color-surface);
-  color: var(--color-secondary);
-}
-
-.sidebar {
-  background-color: #140a2b;
-  border-right: 1px solid var(--color-border);
-}
-
-/* 3. CARD RENDERER STYLES */
-.content .markdown-body {
-  max-width: 900px;
-  margin: 0 auto;
-  padding: 2rem 1rem;
-}
-
+nav .btn-link:hover, #sidebar-toggle:hover { background-color: var(--color-surface); color: var(--color-secondary); }
+.sidebar { background-color: #140a2b; border-right: 1px solid var(--color-border); }
+.content .markdown-body { max-width: 900px; margin: 0 auto; padding: 2rem 1rem; }
 .md-section {
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: 0.5rem;
-  margin-bottom: 1.5rem;
-  padding: 1.5rem;
+  background: var(--color-surface); border: 1px solid var(--color-border);
+  border-radius: 0.5rem; margin-bottom: 1.5rem; padding: 1.5rem;
   box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.5);
   transition: all 0.2s ease-in-out;
 }
-
 .md-section:hover {
   border-color: var(--color-secondary);
   transform: translateY(-2px);
   box-shadow: 0 0 25px rgba(0, 246, 255, 0.15), inset 0 0 20px rgba(0, 0, 0, 0.5);
 }
-
 .md-section h3 {
-  margin-top: 0;
-  margin-bottom: 1rem;
-  color: var(--color-primary);
-  font-size: 1.2rem;
-  letter-spacing: 1.5px;
-  text-transform: uppercase;
+  margin-top: 0; margin-bottom: 1rem; color: var(--color-primary);
+  font-size: 1.2rem; letter-spacing: 1.5px; text-transform: uppercase;
   text-shadow: var(--text-glow-primary);
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
+  display: flex; align-items: center; gap: 0.75rem;
 }
-
-.md-section h3::before {
-  content: '>';
-  color: var(--color-secondary);
-  text-shadow: var(--text-glow-secondary);
-  font-weight: bold;
-}
-
-.md-section p, .md-section li {
-  color: var(--color-text-main);
-  line-height: 1.8;
-  font-size: 1rem;
-  text-shadow: 0 0 2px rgba(245, 245, 245, 0.05);
-}
-
-.md-section ul {
-  padding-left: 20px;
-}
-
-.md-section li {
-  margin-bottom: 0.5rem;
-}
-
-.md-section a {
-  border-bottom: 1px dotted var(--color-secondary);
-}
-
-.md-section a:hover {
-  color: var(--color-background);
-  background-color: var(--color-secondary);
-  border-bottom: 1px dotted var(--color-background);
-}
-
-/* 4. UTILITY & OTHER CLASSES */
+.md-section h3::before { content: '>'; color: var(--color-secondary); text-shadow: var(--text-glow-secondary); font-weight: bold; }
+.md-section p, .md-section li { color: var(--color-text-main); line-height: 1.8; font-size: 1rem; text-shadow: 0 0 2px rgba(245, 245, 245, 0.05); }
+.md-section ul { padding-left: 20px; }
+.md-section li { margin-bottom: 0.5rem; }
+.md-section a { border-bottom: 1px dotted var(--color-secondary); }
+.md-section a:hover { color: var(--color-background); background-color: var(--color-secondary); border-bottom: 1px dotted var(--color-background); }
 .btn {
-  background-color: var(--color-primary);
-  color: #fff;
-  border: none;
-  padding: 0.8rem 1.5rem;
-  font-family: var(--font-main);
-  border-radius: 4px;
-  cursor: pointer;
-  text-transform: uppercase;
-  letter-spacing: 1px;
+  background-color: var(--color-primary); color: #fff; border: none;
+  padding: 0.8rem 1.5rem; font-family: var(--font-main); border-radius: 4px;
+  cursor: pointer; text-transform: uppercase; letter-spacing: 1px;
   transition: all 0.2s ease;
 }
-
-.btn:hover {
-  filter: brightness(1.2);
-  box-shadow: 0 0 15px var(--color-primary);
+.btn:hover { filter: brightness(1.2); box-shadow: 0 0 15px var(--color-primary); }
+#search, #category-filter {
+    background-color: var(--color-surface); color: var(--color-text-main);
+    border: 1px solid var(--color-border); padding: 0.75rem;
+    width: calc(100% - 2rem); margin: 1rem 1rem 0 1rem; border-radius: 4px;
 }
-
-#search {
-    background-color: var(--color-surface);
-    color: var(--color-text-main);
-    border: 1px solid var(--color-border);
-    padding: 0.75rem;
-    width: calc(100% - 2rem);
-    margin: 1rem;
-    border-radius: 4px;
-}
-
-#category-filter {
-    background-color: var(--color-surface);
-    color: var(--color-text-main);
-    border: 1px solid var(--color-border);
-    padding: 0.75rem;
-    width: calc(100% - 2rem);
-    margin: 0 1rem 1rem 1rem;
-    border-radius: 4px;
-}
+#category-filter { margin-bottom: 1rem; }
