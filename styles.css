@@ -982,5 +982,5 @@ input, select {
 #intro button:focus-visible,#intro label:focus-within{outline:2px solid #fff;outline-offset:2px}
 @media (prefers-reduced-motion: reduce){ #intro-canvas{opacity:.4} }
 
-/* Шире Markdown-контент */
+/* Шире область рендера карточек */
 .md, .markdown-body { max-width: 900px; }
