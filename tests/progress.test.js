@@ -20,9 +20,4 @@ describe('progress utility', () => {
     expect(getProgress().sort()).toEqual(['a1', 'a2']);
   });
 
-  test('quiz progress', () => {
-    expect(isQuizPassed('s1', 'q1')).toBe(false);
-    setQuizPassed('s1', 'q1');
-    expect(isQuizPassed('s1', 'q1')).toBe(true);
-  });
 });

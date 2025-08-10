@@ -19,7 +19,7 @@
   {"slug":"heat-death","title":"Тепловая смерть вселенной","category":"Космос","status":"cardOnly","paths":{"card":"content/glitches/heat-death.md","scene":null}},
   {"slug":"big-crunch-rip","title":"Большое сжатие / Большой разрыв","category":"Космос","status":"cardOnly","paths":{"card":"content/glitches/big-crunch-rip.md","scene":null}},
   {"slug":"consciousness-problem","title":"Проблема сознания (hard problem)","category":"Идентичность","status":"sceneExists","paths":{"card":"content/glitches/consciousness-problem.md","scene":"scenes/glitch-consciousness-problem.html"}},
-  {"slug":"ship-of-theseus","title":"Корабль Тесея","category":"Идентичность","status":"cardOnly","paths":{"card":"content/glitches/ship-of-theseus.md","scene":null}},
+  {"slug":"ship-of-theseus","title":"Корабль Тесея","category":"Идентичность","status":"sceneExists","paths":{"card":"content/glitches/ship-of-theseus.md","scene":"scenes/glitch-ship-of-theseus.html"}},
   {"slug":"mind-uploading","title":"Загрузка разума / копирование личности","category":"Идентичность","status":"cardOnly","paths":{"card":"content/glitches/mind-uploading.md","scene":null}},
   {"slug":"chinese-room","title":"Китайская комната (Сёрл)","category":"Идентичность","status":"cardOnly","paths":{"card":"content/glitches/chinese-room.md","scene":null}},
   {"slug":"free-will-illusion","title":"Иллюзия свободы воли","category":"Идентичность","status":"sceneExists","paths":{"card":"content/glitches/free-will-illusion.md","scene":"scenes/glitch-free-will-illusion.html"}},
