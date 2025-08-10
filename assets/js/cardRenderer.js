@@ -3,6 +3,41 @@ import { setTitle } from './utils.js';
 
 const contentEl = document.getElementById('content');
 
+/**
+ * Внутренний парсер, заменяющий gray-matter.
+ * Извлекает данные из YAML Front-Matter и основной контент.
+ * @param {string} rawContent - Полное содержимое .md файла.
+ * @returns {{data: object, content: string}}
+ */
+function internalParseFrontmatter(rawContent) {
+  const frontmatterRegex = /^---\r?\n([\s\S]+?)\r?\n---\r?\n/;
+  const match = rawContent.match(frontmatterRegex);
+
+  const data = {};
+  let content = rawContent;
+
+  if (match) {
+    content = rawContent.slice(match[0].length);
+    const frontmatterStr = match[1];
+
+    frontmatterStr.split(/\r?\n/).forEach(line => {
+      const parts = line.match(/^([^:]+):\s*(.*)$/);
+      if (parts) {
+        const key = parts[1].trim();
+        let value = parts[2].trim();
+        // Простое преобразование для тегов-массивов
+        if (key === 'tags' && value.startsWith('[') && value.endsWith(']')) {
+            value = value.substring(1, value.length - 1).split(',').map(tag => tag.trim());
+        }
+        data[key] = value;
+      }
+    });
+  }
+
+  return { data, content };
+}
+
+
 function groupRenderedHtml(html) {
     const container = document.createElement('div');
     container.innerHTML = html;
@@ -28,24 +63,25 @@ function groupRenderedHtml(html) {
 
 export async function renderCard(slug, anchor) {
     try {
-        // ЭТА СТРОКА - КЛЮЧЕВОЕ ИСПРАВЛЕНИЕ
-        // Ждем, пока window.libsReady (из md.js) не завершится успешно
-        await window.libsReady;
+        // Убедимся, что marked.js загружен (он грузится из index.html)
+        if (typeof window.marked !== 'object') {
+            throw new Error('Markdown parser (marked.js) is not loaded.');
+        }
 
         const item = await getManifestItem(slug);
         if (!item) throw new Error('ItemNotFound');
 
-        // The user's code used fetch(), but my paths.js provides a more robust fetchText()
-        // that handles base paths correctly. I will use that.
-        const { fetchText } = await import('./paths.js');
-        const rawContent = await fetchText(item.paths.card);
+        const response = await fetch(item.paths.card);
+        if (!response.ok) throw new Error('NetworkError');
 
-        // Теперь мы на 100% уверены, что window.grayMatter и window.md существуют
-        const { content: markdown, data: frontmatter } = window.grayMatter(rawContent);
+        const rawContent = await response.text();
+
+        // Используем наш новый внутренний парсер
+        const { content: markdown, data: frontmatter } = internalParseFrontmatter(rawContent);
 
         setTitle(frontmatter.title || 'Глитч');
 
-        const html = window.md.parse(markdown); // Используем md.parse() как рекомендовано marked v4+
+        const html = window.marked.parse(markdown);
         const groupedContent = groupRenderedHtml(html);
 
         const cardContainer = document.createElement('div');
