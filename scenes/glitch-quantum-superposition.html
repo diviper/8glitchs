@@ -1,288 +1,180 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Глитчи Юниверси - Квантовая Суперпозиция</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link href="styles.css" rel="stylesheet">
-    <style>
-        .glitch-page {
-            background: linear-gradient(135deg, var(--dark-bg) 0%, var(--light-bg) 100%);
-            min-height: 100vh;
-            padding: 2rem 0;
-        }
+<!-- superposition scene (UTF-8, no BOM) -->
+<style>
+  .scene--superpos {
+    --bg:#0b1020; --fg:#e8f0ff; --muted:#9bb0c8; --accent:#6ee7ff; --warn:#ff9a6e;
+    position:relative; width:100%; min-height:100vh; box-sizing:border-box;
+    padding:clamp(16px,3vw,28px); background:radial-gradient(1200px 600px at 60% 30%, #121a33 0%, #0b1020 60%, #090d1a 100%);
+    color:var(--fg); font:400 16px/1.5 system-ui, -apple-system, Segoe UI, Roboto, Inter, "Helvetica Neue", Arial;
+  }
+  .scene--superpos h1{margin:0 0 .5rem; font:700 clamp(22px,3.4vw,32px)/1.2 inherit}
+  .scene--superpos p.hint{color:var(--muted); margin:.25rem 0 1rem}
+  .panel{display:grid; grid-template-columns: 320px 1fr; gap:24px; align-items:start}
+  @media (max-width:880px){ .panel{grid-template-columns:1fr; gap:16px} }
+  .card{background:#0f1730cc; border:1px solid #1e2a52; border-radius:12px; padding:16px}
+  .ctrls{display:flex; align-items:center; gap:12px; flex-wrap:wrap}
+  .ctrls label{display:flex; align-items:center; gap:8px; cursor:pointer}
+  .legend{display:flex; gap:14px; flex-wrap:wrap; color:var(--muted); font-size:14px; margin-top:10px}
+  .dot{inline-size:10px; block-size:10px; border-radius:50%}
+  .dot.if{background:var(--accent)} .dot.wp{background:#bde056}
+  canvas{width:100%; height:360px; display:block; background:linear-gradient(180deg,#0c142b,#0b1122); border-radius:12px}
+  .row{display:flex; gap:10px; flex-wrap:wrap; margin-top:12px}
+  .btn{appearance:none; border:1px solid #2a3b74; background:#0d1a3a; color:var(--fg);
+       padding:8px 14px; border-radius:10px; cursor:pointer; transition:.15s transform ease, .15s background ease}
+  .btn:hover{transform:translateY(-1px); background:#10214a}
+  .btn.warn{border-color:#5a2c16; background:#2a120a; color:#ffd0bf}
+  .aside{color:var(--muted); font-size:14px}
+</style>
 
-        .glitch-content {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            border-radius: 15px;
-            padding: 2rem;
-            margin-bottom: 2rem;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-        }
+<div class="scene--superpos" data-scene-root>
+  <h1>Квантовая суперпозиция — мини-демо</h1>
+  <p class="hint">Переключи «наблюдателя»: с путевым детектором интерференция исчезает.</p>
 
-        .glitch-title {
-            font-size: 3rem;
-            margin-bottom: 2rem;
-            position: relative;
-            display: inline-block;
-        }
+  <div class="panel">
+    <div class="card">
+      <div class="ctrls">
+        <label><input type="checkbox" id="detector"> Наблюдатель (which-path)</label>
+        <button class="btn" id="reset">Сброс</button>
+        <button class="btn warn" id="close">Завершить сцену</button>
+      </div>
+      <div class="legend">
+        <span><span class="dot if"></span> интерференция</span>
+        <span><span class="dot wp"></span> два независимых пучка (наблюдатель есть)</span>
+      </div>
+      <hr style="border:none;height:1px;background:#1c2650;margin:12px 0">
+      <div class="aside">
+        Модель грубая, но наглядная: без детектора интенсивность пропорциональна <code>cos²(k·x)</code> (с огибающей),
+        с детектором — сумме двух горбов без интерференции.
+      </div>
+    </div>
 
-        .glitch-title::after {
-            content: '';
-            position: absolute;
-            bottom: -10px;
-            left: 0;
-            width: 100%;
-            height: 3px;
-            background: var(--accent-color);
-            transform: scaleX(0);
-            transition: transform 0.3s ease;
-        }
+    <div class="card">
+      <canvas id="plot" width="1100" height="420" aria-label="Экран за двойной щелью"></canvas>
+    </div>
+  </div>
+</div>
 
-        .glitch-title:hover::after {
-            transform: scaleX(1);
-        }
+<script>
+/* scene: quantum-superposition (strict IIFE, no globals except SceneFrame usage) */
+(() => {
+  const root = (document.currentScript && document.currentScript.previousElementSibling?.closest('[data-scene-root]')) ||
+               document.querySelector('[data-scene-root]');
+  if (!root || root.__mounted) return; // idempotent
+  root.__mounted = true;
 
-        .glitch-section {
-            margin-bottom: 3rem;
-            opacity: 0;
-            transform: translateY(20px);
-            transition: opacity 0.5s ease, transform 0.5s ease;
-        }
+  const $ = sel => root.querySelector(sel);
+  const canvas = $('#plot');
+  const ctx = canvas.getContext('2d', { alpha: false });
 
-        .glitch-section.animate-fade-in {
-            opacity: 1;
-            transform: translateY(0);
-        }
+  // DPI scale
+  const fit = () => {
+    const ratio = Math.max(1, Math.min(2, (window.devicePixelRatio||1)));
+    const cssW = canvas.clientWidth || 1100;
+    const cssH = canvas.clientHeight || 420;
+    canvas.width = Math.round(cssW * ratio);
+    canvas.height = Math.round(cssH * ratio);
+    ctx.setTransform(ratio,0,0,ratio,0,0); // draw in CSS pixels
+    draw();
+  };
 
-        .glitch-number {
-            font-size: 5rem;
-            font-weight: bold;
-            color: var(--accent-color);
-            opacity: 0.2;
-            position: absolute;
-            right: 2rem;
-            top: 2rem;
-            z-index: -1;
-        }
+  // model params (not physical units; just shape)
+  let detectorOn = false;
+  const env = (x, w=180) => Math.exp(-(x*x)/(2*w*w)); // gaussian envelope
+  function draw() {
+    const w = canvas.clientWidth || 1100;
+    const h = canvas.clientHeight || 420;
+    ctx.clearRect(0,0,w,h);
 
-        .superposition-experiment {
-            position: relative;
-            width: 100%;
-            height: 300px;
-            background: rgba(0, 0, 0, 0.2);
-            border-radius: 10px;
-            overflow: hidden;
-            margin: 2rem 0;
-        }
+    // axes bg
+    const grad = ctx.createLinearGradient(0,0,0,h);
+    grad.addColorStop(0,'#0c142b'); grad.addColorStop(1,'#0b1122');
+    ctx.fillStyle = grad; ctx.fillRect(0,0,w,h);
 
-        .qubit {
-            position: absolute;
-            width: 20px;
-            height: 20px;
-            background: var(--primary-color);
-            border-radius: 50%;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            transition: all 1s ease-in-out;
-        }
+    // grid
+    ctx.strokeStyle = 'rgba(255,255,255,.06)'; ctx.lineWidth = 1;
+    for (let y=0; y<=h; y+=60){ ctx.beginPath(); ctx.moveTo(0,y+.5); ctx.lineTo(w,y+.5); ctx.stroke(); }
 
-        .qubit.superposed {
-            background: var(--accent-color);
-            box-shadow: 0 0 20px var(--accent-color);
-        }
+    // compute pattern
+    const midY = h*0.55;
+    const amp = h*0.28;
+    const cx = w/2;
+    const scaleX = 1; // 1px per sample
+    const step = 1;
 
-        .state-indicator {
-            position: absolute;
-            top: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(255, 255, 255, 0.1);
-            padding: 0.5rem 1rem;
-            border-radius: 20px;
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
+    // envelope(s)
+    ctx.lineWidth = 2;
 
-        .state-indicator.visible {
-            opacity: 1;
-        }
+    if (!detectorOn){
+      // interference: envelope * cos^2(k x)
+      ctx.strokeStyle = '#6ee7ff';
+      ctx.beginPath();
+      for (let x=0; x<w; x+=step){
+        const X = (x - cx);
+        const envv = env(X, w*0.22);
+        const k = 2 * Math.PI / 28; // fringe spacing
+        const I = envv * Math.pow(Math.cos(k*X), 2);
+        const y = midY - amp * I;
+        if (x===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
+      }
+      ctx.stroke();
+    } else {
+      // which-path: two gaussians w/out interference
+      ctx.strokeStyle = '#bde056'; // first
+      ctx.beginPath();
+      for (let x=0; x<w; x+=step){
+        const X = (x - (cx - 36));
+        const I = env(X, w*0.28);
+        const y = midY - amp * I * .75;
+        if (x===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
+      }
+      ctx.stroke();
 
-        .experiment-controls {
-            display: flex;
-            gap: 1rem;
-            margin: 1rem 0;
-        }
+      ctx.strokeStyle = '#94c431'; // second
+      ctx.beginPath();
+      for (let x=0; x<w; x+=step){
+        const X = (x - (cx + 36));
+        const I = env(X, w*0.28);
+        const y = midY - amp * I * .75;
+        if (x===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
+      }
+      ctx.stroke();
+    }
 
-        .experiment-stats {
-            display: flex;
-            justify-content: space-between;
-            padding: 1rem;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 10px;
-            margin-top: 1rem;
-        }
+    // baseline
+    ctx.strokeStyle = 'rgba(255,255,255,.12)'; ctx.lineWidth = 1.5;
+    ctx.beginPath(); ctx.moveTo(0, midY+.5); ctx.lineTo(w, midY+.5); ctx.stroke();
+  }
 
-        .navigation-buttons {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 2rem;
-        }
+  // controls
+  const chk = $('#detector');
+  const btnReset = $('#reset');
+  const btnClose = $('#close');
 
-        .navigation-buttons a {
-            padding: 0.5rem 1.5rem;
-            border-radius: 25px;
-            text-decoration: none;
-            transition: all 0.3s ease;
-        }
+  const onChk = () => { detectorOn = !!chk.checked; draw(); };
+  const onReset = () => { chk.checked = false; detectorOn = false; draw(); };
+  const onClose = () => {
+    try { window.SceneFrame && window.SceneFrame.unmount && window.SceneFrame.unmount(); }
+    catch(_) {}
+    // mark progress if доступно
+    try { window.markDone && window.markDone('quantum-superposition'); } catch(_){}
+    // fallback: уйти на обзор
+    if (location.hash.startsWith('#/scene/')) location.hash = '#/overview';
+  };
 
-        .navigation-buttons a:hover {
-            transform: translateY(-2px);
-        }
-    </style>
-</head>
-<body>
-    <nav class="navbar navbar-expand-lg navbar-dark">
-        <div class="container">
-            <a class="navbar-brand glitch-text" href="index.html">Глитчи Юниверси</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="index.html#glitches">Глитчи</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="index.html#visualizations">Визуализации</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="index.html#about">О проекте</a>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </nav>
+  chk.addEventListener('change', onChk);
+  btnReset.addEventListener('click', onReset);
+  btnClose.addEventListener('click', onClose);
+  window.addEventListener('resize', fit, { passive:true });
 
-    <main class="glitch-page">
-        <div class="container">
-            <div class="glitch-content">
-                <h1 class="glitch-title glitch-text" data-text="Квантовая суперпозиция">Квантовая суперпозиция</h1>
-                <div class="glitch-number">05</div>
+  // mount
+  fit();
 
-                <div class="glitch-section">
-                    <h2>Введение</h2>
-                    <p>Квантовая суперпозиция - это фундаментальный принцип квантовой механики, согласно которому квантовая система может находиться одновременно в нескольких состояниях до момента измерения. Это явление лежит в основе многих парадоксов квантовой механики.</p>
-                </div>
-
-                <div class="glitch-section">
-                    <h2>Кот Шрёдингера</h2>
-                    <p>Мысленный эксперимент с котом Шрёдингера иллюстрирует принцип суперпозиции. Кот находится в суперпозиции состояний "жив" и "мёртв" до тех пор, пока не будет произведено измерение. Это показывает, как квантовые эффекты могут проявляться на макроскопическом уровне.</p>
-                </div>
-
-                <div class="glitch-section">
-                    <h2>Интерактивный эксперимент</h2>
-                    <div class="superposition-experiment" id="superposition-experiment">
-                        <div class="qubit"></div>
-                        <div class="state-indicator">Состояние: <span id="state-value">-</span></div>
-                    </div>
-                    <div class="experiment-controls">
-                        <button class="btn btn-primary" id="create-superposition">Создать суперпозицию</button>
-                        <button class="btn btn-primary" id="measure-state">Измерить состояние</button>
-                        <button class="btn btn-secondary" id="reset-superposition">Сбросить</button>
-                    </div>
-                    <div class="experiment-stats">
-                        <div>Измерения |0⟩: <span id="zero-measurements">0</span></div>
-                        <div>Измерения |1⟩: <span id="one-measurements">0</span></div>
-                    </div>
-                </div>
-
-                <div class="glitch-section">
-                    <h2>Применение в квантовых вычислениях</h2>
-                    <p>Суперпозиция является основой квантовых вычислений:</p>
-                    <ul>
-                        <li>Квантовые биты (кубиты) могут находиться в суперпозиции</li>
-                        <li>Позволяет выполнять параллельные вычисления</li>
-                        <li>Используется в квантовых алгоритмах</li>
-                        <li>Лежит в основе квантовой криптографии</li>
-                    </ul>
-                </div>
-
-                <div class="navigation-buttons">
-                    <a href="reality_bug_04_quantum_teleportation.html" class="btn btn-outline-primary">← Квантовая телепортация</a>
-                    <a href="index.html" class="btn btn-outline-secondary">На главную</a>
-                    <a href="reality_bug_06_quantum_decoherence.html" class="btn btn-outline-primary">Квантовая декогеренция →</a>
-                </div>
-            </div>
-        </div>
-    </main>
-
-    <footer class="footer mt-auto py-3">
-        <div class="container text-center">
-            <span class="text-muted">© 2024 Глитчи Юниверси. Все права защищены.</span>
-        </div>
-    </footer>
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="scripts.js"></script>
-    <script>
-        // Специфичный код для эксперимента с квантовой суперпозицией
-        document.addEventListener('DOMContentLoaded', () => {
-            const qubit = document.querySelector('.qubit');
-            const stateIndicator = document.querySelector('.state-indicator');
-            const stateValue = document.getElementById('state-value');
-            const createSuperpositionBtn = document.getElementById('create-superposition');
-            const measureStateBtn = document.getElementById('measure-state');
-            const resetBtn = document.getElementById('reset-superposition');
-            const zeroMeasurements = document.getElementById('zero-measurements');
-            const oneMeasurements = document.getElementById('one-measurements');
-            
-            let isSuperposed = false;
-            let zeroCount = 0;
-            let oneCount = 0;
-
-            createSuperpositionBtn.addEventListener('click', () => {
-                if (!isSuperposed) {
-                    qubit.classList.add('superposed');
-                    isSuperposed = true;
-                    stateIndicator.classList.remove('visible');
-                }
-            });
-
-            measureStateBtn.addEventListener('click', () => {
-                if (isSuperposed) {
-                    const state = Math.random() < 0.5 ? '|0⟩' : '|1⟩';
-                    stateValue.textContent = state;
-                    stateIndicator.classList.add('visible');
-                    
-                    if (state === '|0⟩') {
-                        zeroCount++;
-                    } else {
-                        oneCount++;
-                    }
-                    
-                    zeroMeasurements.textContent = zeroCount;
-                    oneMeasurements.textContent = oneCount;
-                    
-                    qubit.classList.remove('superposed');
-                    isSuperposed = false;
-                }
-            });
-
-            resetBtn.addEventListener('click', () => {
-                qubit.classList.remove('superposed');
-                stateIndicator.classList.remove('visible');
-                isSuperposed = false;
-                zeroCount = 0;
-                oneCount = 0;
-                zeroMeasurements.textContent = '0';
-                oneMeasurements.textContent = '0';
-            });
-        });
-    </script>
-</body>
-</html> 
+  // cleanup hook for SceneFrame.unmount()
+  root.__cleanup = () => {
+    window.removeEventListener('resize', fit);
+    chk.removeEventListener('change', onChk);
+    btnReset.removeEventListener('click', onReset);
+    btnClose.removeEventListener('click', onClose);
+    root.__mounted = false;
+  };
+})();
+</script>
