@@ -3,44 +3,100 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Сцена — Принцип Ландауэра</title>
+  <title>Принцип Ландауэра</title>
   <style>
-    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, 'Helvetica Neue', Arial, 'Noto Sans', 'Apple Color Emoji', 'Segoe UI Emoji'; background:#0b1326; color:#fff; margin:0; }
-    .scene { min-height: 60vh; padding: 24px; display: grid; place-items: center; text-align: center; }
-    .box { background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.12); border-radius: 12px; padding: 24px; max-width: 720px; }
-    .box h1 { margin: 0 0 8px; font-size: 24px; }
-    .box p { margin: 0 0 12px; color: #9aa4b2; }
-    .box .controls { display:flex; gap:8px; justify-content:center; margin-top: 12px; }
-    .btn { appearance:none; border:1px solid rgba(255,255,255,.2); background:transparent; color:#fff; padding:8px 12px; border-radius:8px; cursor:pointer; }
-    .btn:hover { background: rgba(255,255,255,.08); }
+    :root{--fg:#e6f1ff;--muted:#9aa4b2;--bg:#0b1326;--accent:#58a6ff}
+    html,body{height:100%}
+    body{margin:0;background:var(--bg);color:var(--fg);font:14px/1.4 system-ui}
+    .ui{position:fixed;left:16px;top:16px;background:#00000066;backdrop-filter:blur(8px);border:1px solid #ffffff22;border-radius:12px;padding:10px 12px;display:flex;gap:12px;align-items:center;z-index:1}
+    .ui label{display:flex;gap:6px;align-items:center}
+    .chip{padding:2px 8px;border-radius:999px;background:#ffffff12;color:var(--muted)}
+    .btn{border:1px solid #ffffff2a;background:#ffffff10;color:var(--fg);padding:8px 12px;border-radius:10px;cursor:pointer}
+    .btn:active{transform:translateY(1px)}
+    canvas{position:absolute;inset:0;width:100%;height:100%}
+    .note{position:fixed;right:16px;bottom:16px;color:var(--muted)}
   </style>
 </head>
 <body>
-  <div class="scene">
-    <div class="box">
-      <h1>Принцип Ландауэра</h1>
-      <p>Интерактивная сцена для «Принцип Ландауэра». Заглушка. Замените на реальную механику.</p>
-      <div class="controls">
-        <button class="btn" id="act">Действие</button>
-        <button class="btn" id="share">Параметры</button>
-      </div>
-      <pre id="out" style="text-align:left; white-space:pre-wrap; margin-top: 12px;"></pre>
+  <section class="scene" data-scene="landauer">
+    <div class="ui">
+      <label>T (K): <input id="temp" type="range" min="50" max="600" value="300"></label>
+      <span class="chip" id="etxt">E ≥ kT ln2 = ?</span>
+      <button class="btn" id="erase">Стереть бит</button>
+      <button class="btn" id="finish">Готово</button>
     </div>
-  </div>
-  <script>
-  (function(){
-    window.__initScene = function(){
-      const out = document.getElementById('out');
-      const act = document.getElementById('act');
-      act?.addEventListener('click', function(){ out.textContent = 'tick:' + Date.now(); });
-      const sh = document.getElementById('share');
-      sh?.addEventListener('click', function(){ const p = window.__getShareParams(); out.textContent = 'share:' + JSON.stringify(p); });
-    };
-    window.__applyParams = function(params){
-      try { document.getElementById('out').textContent = 'params:' + JSON.stringify(params||{}); } catch(e){}
-    };
-    window.__getShareParams = function(){ return { s: 'landauer', t: 'Принцип Ландауэра' }; };
-  })();
-  </script>
+    <canvas id="cv"></canvas>
+    <div class="note">Стирание бита информации неизбежно рассеивает тепло ≥ kT ln2.</div>
+    <script>
+    (function(){
+      const root=document.currentScript.closest('[data-scene="landauer"]');
+      const cvs=root.querySelector('#cv'), ctx=cvs.getContext('2d',{alpha:false});
+      const temp=root.querySelector('#temp'), etxt=root.querySelector('#etxt');
+      const erase=root.querySelector('#erase'), finish=root.querySelector('#finish');
+      let raf=0, heat=0, last=performance.now();
+
+      function fit(){
+        const dpr=Math.max(1,devicePixelRatio||1);
+        const w=window.innerWidth, h=window.innerHeight;
+        cvs.width=Math.floor(w*dpr); cvs.height=Math.floor(h*dpr);
+        cvs.style.width=w+'px'; cvs.style.height=h+'px';
+        ctx.setTransform(dpr,0,0,dpr,0,0);
+      }
+
+      function drawChamber(W,H){
+        ctx.strokeStyle='#5c6f91'; ctx.lineWidth=2;
+        ctx.strokeRect(W*0.28,H*0.28, W*0.44, H*0.44); // камера
+        // поршень
+        const x=W*0.28 + (W*0.44)*(0.5 + 0.45*Math.sin(performance.now()*0.001));
+        ctx.fillStyle='#5c6f91'; ctx.fillRect(x-3,H*0.28,6,H*0.44);
+        // тепловое поле
+        const t=parseFloat(temp.value);
+        const hue=200 + (t-50)/(600-50)*100;
+        const grad=ctx.createLinearGradient(0,H*0.28,0,H*0.72);
+        grad.addColorStop(0, `hsla(${hue},70%,65%,0.18)`);
+        grad.addColorStop(1, `hsla(${hue},70%,45%,0.28)`);
+        ctx.fillStyle=grad; ctx.fillRect(W*0.28,H*0.28, W*0.44, H*0.44);
+      }
+
+      function kTln2(){
+        const k=1.380649e-23; // Дж/К
+        const T=parseFloat(temp.value);
+        return k*T*Math.LN2;
+      }
+
+      function formatE(e){
+        // показать в зДж и eV
+        const zJ = e*1e21; // зептоДж
+        const eV = e/1.602176634e-19;
+        return zJ.toFixed(2)+' zJ | '+eV.toFixed(4)+' eV';
+      }
+
+      erase.addEventListener('click',()=>{ heat += kTln2()* (0.9 + Math.random()*0.2); });
+
+      function loop(now){
+        raf=requestAnimationFrame(loop);
+        const W=cvs.width/(devicePixelRatio||1), H=cvs.height/(devicePixelRatio||1);
+        const dt=(now-last)*0.001; last=now;
+        ctx.fillStyle='#08101e'; ctx.fillRect(0,0,W,H);
+        drawChamber(W,H);
+
+        // Панель энергии
+        const E=kTln2();
+        etxt.textContent='E ≥ kT ln2 = '+formatE(E);
+        // Накопленное тепло
+        heat *= 0.995; // медленное охлаждение в окружение
+        ctx.fillStyle='#ff9ac244';
+        const bar = Math.min(1, heat / (E*30));
+        ctx.fillRect(W*0.78, H*0.72 - bar*H*0.44, W*0.04, bar*H*0.44);
+        ctx.strokeStyle='#9ad1ff55'; ctx.strokeRect(W*0.78, H*0.28, W*0.04, H*0.44);
+      }
+
+      function onMount(){fit(); requestAnimationFrame(loop); window.addEventListener('resize',fit);} 
+      function onUnmount(){cancelAnimationFrame(raf); window.removeEventListener('resize',fit);} 
+      finish.addEventListener('click',()=>{try{window.progress?.markDone?.('landauer')}catch{};finish.textContent='Готово ✓';finish.disabled=true;});
+      if(window.SceneFrame?.register){window.SceneFrame.register(root,{onMount,onUnmount});} else {onMount();}
+    })();
+    </script>
+  </section>
 </body>
 </html>

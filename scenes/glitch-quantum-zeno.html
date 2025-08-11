@@ -3,44 +3,92 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Сцена — Квантовый парадокс Зенона</title>
+  <title>Квантовый парадокс Зенона</title>
   <style>
-    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, 'Helvetica Neue', Arial, 'Noto Sans', 'Apple Color Emoji', 'Segoe UI Emoji'; background:#0b1326; color:#fff; margin:0; }
-    .scene { min-height: 60vh; padding: 24px; display: grid; place-items: center; text-align: center; }
-    .box { background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.12); border-radius: 12px; padding: 24px; max-width: 720px; }
-    .box h1 { margin: 0 0 8px; font-size: 24px; }
-    .box p { margin: 0 0 12px; color: #9aa4b2; }
-    .box .controls { display:flex; gap:8px; justify-content:center; margin-top: 12px; }
-    .btn { appearance:none; border:1px solid rgba(255,255,255,.2); background:transparent; color:#fff; padding:8px 12px; border-radius:8px; cursor:pointer; }
-    .btn:hover { background: rgba(255,255,255,.08); }
+    :root{--fg:#e6f1ff;--muted:#9aa4b2;--bg:#0b1326;--accent:#58a6ff}
+    html,body{height:100%}
+    body{margin:0;background:var(--bg);color:var(--fg);font:14px/1.4 system-ui}
+    .ui{position:fixed;left:16px;top:16px;background:#00000066;backdrop-filter:blur(8px);border:1px solid #ffffff22;border-radius:12px;padding:10px 12px;display:flex;gap:12px;align-items:center;z-index:1}
+    .ui label{display:flex;gap:6px;align-items:center}
+    .chip{padding:2px 8px;border-radius:999px;background:#ffffff12;color:var(--muted)}
+    .btn{border:1px solid #ffffff2a;background:#ffffff10;color:var(--fg);padding:8px 12px;border-radius:10px;cursor:pointer}
+    .btn:active{transform:translateY(1px)}
+    canvas{position:absolute;inset:0;width:100%;height:100%}
+    .note{position:fixed;right:16px;bottom:16px;color:var(--muted)}
   </style>
 </head>
 <body>
-  <div class="scene">
-    <div class="box">
-      <h1>Квантовый парадокс Зенона</h1>
-      <p>Интерактивная сцена для «Квантовый парадокс Зенона». Заглушка. Замените на реальную механику.</p>
-      <div class="controls">
-        <button class="btn" id="act">Действие</button>
-        <button class="btn" id="share">Параметры</button>
-      </div>
-      <pre id="out" style="text-align:left; white-space:pre-wrap; margin-top: 12px;"></pre>
+  <section class="scene" data-scene="quantum-zeno">
+    <div class="ui">
+      <label>Частота измерений: <input id="rate" type="range" min="0" max="60" value="0"></label>
+      <span class="chip" id="mode">Без наблюдения</span>
+      <button class="btn" id="finish">Готово</button>
     </div>
-  </div>
-  <script>
-  (function(){
-    window.__initScene = function(){
-      const out = document.getElementById('out');
-      const act = document.getElementById('act');
-      act?.addEventListener('click', function(){ out.textContent = 'tick:' + Date.now(); });
-      const sh = document.getElementById('share');
-      sh?.addEventListener('click', function(){ const p = window.__getShareParams(); out.textContent = 'share:' + JSON.stringify(p); });
-    };
-    window.__applyParams = function(params){
-      try { document.getElementById('out').textContent = 'params:' + JSON.stringify(params||{}); } catch(e){}
-    };
-    window.__getShareParams = function(){ return { s: 'quantum-zeno', t: 'Квантовый парадокс Зенона' }; };
-  })();
-  </script>
+    <canvas id="cv"></canvas>
+    <div class="note">Чем чаще измеряем, тем сильнее подавляем распад/эволюцию состояния.</div>
+    <script>
+    (function(){
+      const root=document.currentScript.closest('[data-scene="quantum-zeno"]');
+      const cvs=root.querySelector('#cv'), ctx=cvs.getContext('2d',{alpha:false});
+      const rate=root.querySelector('#rate'), mode=root.querySelector('#mode');
+      const finish=root.querySelector('#finish');
+      let raf=0, last=performance.now(), t=0;
+
+      function fit(){
+        const dpr=Math.max(1,devicePixelRatio||1);
+        const w=window.innerWidth, h=window.innerHeight;
+        cvs.width=Math.floor(w*dpr); cvs.height=Math.floor(h*dpr);
+        cvs.style.width=w+'px'; cvs.style.height=h+'px';
+        ctx.setTransform(dpr,0,0,dpr,0,0);
+      }
+
+      // Простая двухуровневая система: вероятность остаться в |psi0>
+      // Без наблюдения: P0(t) = cos^2(Ω t). С частыми измерениями — редукция к 1.
+      function P0(t, omega, measurementsPerSec){
+        if(measurementsPerSec<=0){ return Math.cos(omega*t)**2; }
+        const dt=1/measurementsPerSec;
+        const n=Math.max(1, Math.floor(t/dt));
+        const pStep=Math.cos(omega*dt)**2; // выживание за шаг
+        return Math.pow(pStep, n);
+      }
+
+      function bar(x,y,w,h,color){ ctx.fillStyle=color; ctx.fillRect(x,y,w,h); }
+
+      function loop(now){
+        raf=requestAnimationFrame(loop);
+        const W=cvs.width/(devicePixelRatio||1), H=cvs.height/(devicePixelRatio||1);
+        const dt=(now-last)*0.001; last=now; t+=dt;
+        ctx.fillStyle='#08101e'; ctx.fillRect(0,0,W,H);
+        const meas = parseInt(rate.value,10);
+        mode.textContent= meas>0 ? ('Наблюдение: '+meas+' Гц') : 'Без наблюдения';
+
+        const omega=2.2; // произвольная частота
+        const pStay=P0(t, omega, meas);
+        const pFlip=1-pStay;
+
+        // Визуализация: две колонки вероятностей
+        const bw=W*0.18, base=H*0.7;
+        bar(W*0.35, base - pStay*base, bw, pStay*base, '#58a6ff');
+        bar(W*0.55, base - pFlip*base, bw, pFlip*base, '#ff9ac2');
+        ctx.fillStyle='#9aa4b2'; ctx.fillText('P(|ψ0>)', W*0.35, base+16);
+        ctx.fillText('P(|ψ1>)', W*0.55, base+16);
+
+        // Осциллограмма
+        ctx.strokeStyle='#9ad1ff'; ctx.beginPath();
+        for(let x=0;x<W;x++){
+          const time = t + x/W*6; // окно 6с
+          const y = base*0.35*(1-P0(time, omega, meas));
+          if(x===0) ctx.moveTo(x, H*0.22 + y); else ctx.lineTo(x, H*0.22 + y);
+        }
+        ctx.stroke();
+      }
+
+      function onMount(){fit(); last=performance.now(); requestAnimationFrame(loop); window.addEventListener('resize',fit);} 
+      function onUnmount(){cancelAnimationFrame(raf); window.removeEventListener('resize',fit);} 
+      finish.addEventListener('click',()=>{try{window.progress?.markDone?.('quantum-zeno')}catch{};finish.textContent='Готово ✓';finish.disabled=true;});
+      if(window.SceneFrame?.register){window.SceneFrame.register(root,{onMount,onUnmount});} else {onMount();}
+    })();
+    </script>
+  </section>
 </body>
 </html>

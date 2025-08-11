@@ -3,44 +3,114 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Сцена — Задержанный выбор (Уилер)</title>
+  <title>Задержанный выбор (Уилер)</title>
   <style>
-    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, 'Helvetica Neue', Arial, 'Noto Sans', 'Apple Color Emoji', 'Segoe UI Emoji'; background:#0b1326; color:#fff; margin:0; }
-    .scene { min-height: 60vh; padding: 24px; display: grid; place-items: center; text-align: center; }
-    .box { background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.12); border-radius: 12px; padding: 24px; max-width: 720px; }
-    .box h1 { margin: 0 0 8px; font-size: 24px; }
-    .box p { margin: 0 0 12px; color: #9aa4b2; }
-    .box .controls { display:flex; gap:8px; justify-content:center; margin-top: 12px; }
-    .btn { appearance:none; border:1px solid rgba(255,255,255,.2); background:transparent; color:#fff; padding:8px 12px; border-radius:8px; cursor:pointer; }
-    .btn:hover { background: rgba(255,255,255,.08); }
+    :root{--fg:#e6f1ff;--muted:#9aa4b2;--bg:#0b1326;--accent:#58a6ff}
+    html,body{height:100%}
+    body{margin:0;background:var(--bg);color:var(--fg);font:14px/1.4 system-ui}
+    .ui{position:fixed;left:16px;top:16px;background:#00000066;backdrop-filter:blur(8px);border:1px solid #ffffff22;border-radius:12px;padding:10px 12px;display:flex;gap:12px;align-items:center;z-index:1}
+    .ui label{display:flex;gap:6px;align-items:center}
+    .chip{padding:2px 8px;border-radius:999px;background:#ffffff12;color:var(--muted)}
+    .btn{border:1px solid #ffffff2a;background:#ffffff10;color:var(--fg);padding:8px 12px;border-radius:10px;cursor:pointer}
+    .btn:active{transform:translateY(1px)}
+    canvas{position:absolute;inset:0;width:100%;height:100%}
+    .note{position:fixed;right:16px;bottom:16px;color:var(--muted)}
   </style>
 </head>
 <body>
-  <div class="scene">
-    <div class="box">
-      <h1>Задержанный выбор (Уилер)</h1>
-      <p>Интерактивная сцена для «Задержанный выбор (Уилер)». Заглушка. Замените на реальную механику.</p>
-      <div class="controls">
-        <button class="btn" id="act">Действие</button>
-        <button class="btn" id="share">Параметры</button>
-      </div>
-      <pre id="out" style="text-align:left; white-space:pre-wrap; margin-top: 12px;"></pre>
+  <section class="scene" data-scene="delayed-choice">
+    <div class="ui">
+      <label><input id="insert-bs" type="checkbox"> Вставить второй делитель (B2)</label>
+      <span class="chip" id="mode">Интерференция</span>
+      <button class="btn" id="finish">Готово</button>
     </div>
-  </div>
-  <script>
-  (function(){
-    window.__initScene = function(){
-      const out = document.getElementById('out');
-      const act = document.getElementById('act');
-      act?.addEventListener('click', function(){ out.textContent = 'tick:' + Date.now(); });
-      const sh = document.getElementById('share');
-      sh?.addEventListener('click', function(){ const p = window.__getShareParams(); out.textContent = 'share:' + JSON.stringify(p); });
-    };
-    window.__applyParams = function(params){
-      try { document.getElementById('out').textContent = 'params:' + JSON.stringify(params||{}); } catch(e){}
-    };
-    window.__getShareParams = function(){ return { s: 'delayed-choice', t: 'Задержанный выбор (Уилер)' }; };
-  })();
-  </script>
+    <canvas id="cv"></canvas>
+    <div class="note">Уилер: решать «волна/частица» можно после прохождения первой части установки.</div>
+    <script>
+    (function(){
+      const root=document.currentScript.closest('[data-scene="delayed-choice"]');
+      const cvs=root.querySelector('#cv'), ctx=cvs.getContext('2d',{alpha:false});
+      const b2=root.querySelector('#insert-bs'), mode=root.querySelector('#mode');
+      const finish=root.querySelector('#finish');
+      let raf=0, t0=performance.now();
+
+      function fit(){
+        const dpr=Math.max(1,devicePixelRatio||1);
+        const w=window.innerWidth, h=window.innerHeight;
+        cvs.width=Math.floor(w*dpr); cvs.height=Math.floor(h*dpr);
+        cvs.style.width=w+'px'; cvs.style.height=h+'px';
+        ctx.setTransform(dpr,0,0,dpr,0,0);
+      }
+
+      function drawSetup(W,H){
+        ctx.strokeStyle='#5c6f91'; ctx.lineWidth=2;
+        // Источник слева
+        ctx.beginPath(); ctx.arc(80,H*0.5,10,0,Math.PI*2); ctx.stroke();
+        // Делитель 1
+        ctx.strokeRect(W*0.32,H*0.35,10,H*0.3);
+        // Плечо верхнее/нижнее
+        ctx.beginPath(); ctx.moveTo(90,H*0.5); ctx.lineTo(W*0.32,H*0.4); ctx.moveTo(90,H*0.5); ctx.lineTo(W*0.32,H*0.6); ctx.stroke();
+        // Зеркала
+        ctx.save(); ctx.translate(W*0.62,H*0.35); ctx.rotate(Math.PI/4); ctx.strokeRect(-6,-30,12,60); ctx.restore();
+        ctx.save(); ctx.translate(W*0.62,H*0.65); ctx.rotate(-Math.PI/4); ctx.strokeRect(-6,-30,12,60); ctx.restore();
+        // Детекторы
+        ctx.strokeStyle='#86e1ff'; ctx.strokeRect(W*0.85,H*0.45,14,40);
+        ctx.strokeRect(W*0.85,H*0.15,14,40);
+        ctx.strokeRect(W*0.85,H*0.75,14,40);
+        // Делитель 2 опционально
+        if(b2.checked){ ctx.strokeStyle='#9ad1ff'; ctx.strokeRect(W*0.74,H*0.35,10,H*0.3); }
+      }
+
+      function randn(){
+        let u=0,v=0; while(u===0)u=Math.random(); while(v===0)v=Math.random();
+        return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v);
+      }
+
+      function loop(){
+        raf=requestAnimationFrame(loop);
+        const W=cvs.width/(devicePixelRatio||1), H=cvs.height/(devicePixelRatio||1);
+        ctx.fillStyle='#08101e'; ctx.fillRect(0,0,W,H);
+        drawSetup(W,H);
+        const time=(performance.now()-t0)*0.001;
+        mode.textContent=b2.checked? 'Интерференция (B2 вставлен)' : 'Маршрут/частица (B2 отсутствует)';
+
+        // Пакеты фотонов
+        const n=28; ctx.lineWidth=2;
+        for(let i=0;i<n;i++){
+          const ph=i/n; const y0=H*0.5 + randn()*3; const x=80 + ph*(W*0.32-90);
+          const split=ph>0.98; // дошли до B1
+          const amp=Math.max(0,Math.sin(time*2 + i*0.4));
+          const aUp=amp*0.5, aDown=1-amp*0.5;
+          // путь до зеркал
+          ctx.strokeStyle='#58a6ff77';
+          ctx.beginPath(); ctx.moveTo(x,y0); ctx.lineTo(W*0.32,H*0.4); ctx.stroke();
+          ctx.beginPath(); ctx.moveTo(x,y0); ctx.lineTo(W*0.32,H*0.6); ctx.stroke();
+          // после зеркал
+          ctx.beginPath(); ctx.moveTo(W*0.62,H*0.4); ctx.lineTo(W*0.74,H*0.5); ctx.stroke();
+          ctx.beginPath(); ctx.moveTo(W*0.62,H*0.6); ctx.lineTo(W*0.74,H*0.5); ctx.stroke();
+          // на B2: либо складываем амплитуды, либо разводим пути
+          ctx.strokeStyle='#9ad1ffcc';
+          if(b2.checked){
+            // интерференция: амплитуды складываются/вычитаются → верхний детектор ярче
+            const I1=(aUp+aDown)*(aUp+aDown); const I2=(aUp-aDown)*(aUp-aDown);
+            ctx.beginPath(); ctx.moveTo(W*0.74,H*0.5); ctx.lineTo(W*0.85,H*0.2); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(W*0.74,H*0.5); ctx.lineTo(W*0.85,H*0.8); ctx.stroke();
+            ctx.fillStyle='#9ad1ff44'; ctx.fillRect(W*0.86,H*0.15, I1*24, 40);
+            ctx.fillStyle='#ff9ac244'; ctx.fillRect(W*0.86,H*0.75, I2*24, 40);
+          } else {
+            // нет B2: пути не встречаются → клики в среднем поровну
+            ctx.beginPath(); ctx.moveTo(W*0.74,H*0.5); ctx.lineTo(W*0.85,H*0.5); ctx.stroke();
+            ctx.fillStyle='#9ad1ff44'; ctx.fillRect(W*0.86,H*0.45, 12, 40);
+          }
+        }
+      }
+
+      function onMount(){fit(); loop(); window.addEventListener('resize',fit);} 
+      function onUnmount(){cancelAnimationFrame(raf); window.removeEventListener('resize',fit);} 
+      finish.addEventListener('click',()=>{try{window.progress?.markDone?.('delayed-choice')}catch{};finish.textContent='Готово ✓';finish.disabled=true;});
+      if(window.SceneFrame?.register){window.SceneFrame.register(root,{onMount,onUnmount});} else {onMount();}
+    })();
+    </script>
+  </section>
 </body>
 </html>

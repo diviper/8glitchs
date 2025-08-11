@@ -279,7 +279,7 @@
       html = html.replace(/<script[^>]*scene-frame.js[^>]*><\/script>/gi, '');
       var parser = new DOMParser();
       var doc = parser.parseFromString(html, 'text/html');
-      window.SceneFrame?.mount(root, doc.body ? doc.body.innerHTML : html);
+             window.SceneFrame?.open(doc.body ? doc.body.innerHTML : html);
       if (typeof window.__initScene === 'function') { try { window.__initScene(); } catch(e){} }
       if (typeof window.__applyParams === 'function') { try { window.__applyParams(params); } catch(e){} }
       if (typeof window.setLastVisited === 'function') {
