@@ -11,7 +11,8 @@
     "doctor:manifest": "node scripts/doctor-manifest.mjs --write --stubs",
     "check:cards": "node scripts/check-cards.mjs",
     "check:links": "node scripts/check-links.mjs",
-    "audit:routes": "node scripts/audit-routes.mjs"
+    "audit:routes": "node scripts/audit-routes.mjs",
+    "gen:scenes": "node scripts/generate-scene-stubs.mjs"
   },
   "keywords": [],
   "author": "",
