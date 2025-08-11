@@ -28,8 +28,8 @@ async function main(){
     while((m = re.exec(txt))){
       const url = m[1];
       const status = await check(url);
-      const msg = status === 200 || status === 301 ? 'ok' : 'warn';
-      console[msg](`${status} ${url} (${f})`);
+      const method = status === 200 || status === 301 ? 'log' : 'warn';
+      console[method](`${status} ${url} (${f})`);
     }
   }
 }
