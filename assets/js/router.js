@@ -328,6 +328,17 @@
       }
     });
   }
+  // keep aria-expanded in sync
+  function syncAria() {
+    if (!sidebarToggle) return;
+    const expanded = sidebar.classList.contains('is-open');
+    sidebarToggle.setAttribute('aria-expanded', expanded ? 'true' : 'false');
+  }
+  const _openSidebar = openSidebar;
+  openSidebar = function(){ _openSidebar(); syncAria(); };
+  const _closeSidebar = closeSidebar;
+  closeSidebar = function(){ _closeSidebar(); syncAria(); };
+  syncAria();
   if (sidebarOverlay) {
     sidebarOverlay.addEventListener('click', function(){ history.back(); });
   }
